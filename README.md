@@ -29,10 +29,12 @@ PDF File
 
 Parses bank statement PDFs using [pdfplumber](https://github.com/jsvine/pdfplumber). Extracts:
 
-- **Statement headers**: bank name, account number, statement period, sort code, opening/closing balance
+- **Statement headers**: bank name, account number, statement period, branch/sort code, opening/closing balance
 - **Transaction lines**: date, description, amount, balance, transaction type (debit/credit)
 
-Supports both table-based and text-based PDF layouts. Handles multi-line descriptions, multiple date formats (`DD/MM/YYYY`, `DD-MM-YYYY`, `DD Mon YYYY`, `YYYY-MM-DD`, etc.), and various currency symbols (`£`, `$`, `€`).
+Supports both table-based and text-based PDF layouts. Handles multi-line descriptions, multiple date formats (`DD/MM/YYYY`, `DD-MM-YYYY`, `DD Mon YYYY`, `YYYY-MM-DD`, etc.), and various currency symbols (`£`, `$`, `€`, `R`).
+
+The extractor uses a **bank profile system** to handle bank-specific PDF formats. See [Bank Profiles](#bank-profiles) below.
 
 ### Stage 2: Data Cleansing
 
@@ -101,6 +103,14 @@ python3 main.py --pdf-dir data/
 python3 main.py --pdf-file path/to/statement.pdf
 ```
 
+### Specify a bank profile
+
+```bash
+python3 main.py --pdf-file statement.pdf --bank absa
+```
+
+Available profiles: `absa`, `fnb`, `nedbank`, `standard_bank`, `capitec`. If `--bank` is not specified, the bank is auto-detected from the PDF content.
+
 ### Skip AI classification (regex only)
 
 ```bash
@@ -111,7 +121,8 @@ python3 main.py --pdf-dir data/ --dry-run
 
 ```
 usage: main.py [-h] [--pdf-dir PDF_DIR] [--pdf-file PDF_FILE]
-               [--db-path DB_PATH] [--rules-path RULES_PATH] [--dry-run]
+               [--db-path DB_PATH] [--rules-path RULES_PATH]
+               [--dry-run] [--bank BANK]
 
 options:
   --pdf-dir PDF_DIR       Directory containing PDF bank statements (default: data)
@@ -120,6 +131,7 @@ options:
   --rules-path RULES_PATH Path to the classification rules JSON file
                           (default: config/classification_rules.json)
   --dry-run               Skip the AI classification stage
+  --bank BANK             Bank profile to use for PDF parsing (default: auto-detect)
 ```
 
 ## Project Structure
@@ -133,22 +145,99 @@ BankStatementProcessor/
 ├── src/
 │   ├── pipeline/
 │   │   ├── queue.py                 # Pipeline, Stage base class, PipelineContext
-│   │   ├── pdf_extractor.py         # Stage 1: PDF parsing
+│   │   ├── pdf_extractor.py         # Stage 1: PDF parsing (profile-aware)
 │   │   ├── data_cleanser.py         # Stage 2: Dedup, validation, DB insert
 │   │   ├── regex_classifier.py      # Stage 3: Regex-based classification
 │   │   └── ai_classifier.py         # Stage 4: Claude API classification
+│   ├── profiles/
+│   │   ├── base.py                  # BankProfile dataclass
+│   │   ├── factory.py               # BankProfileFactory (registry + auto-detection)
+│   │   └── south_africa.py          # ABSA, FNB, Nedbank, Standard Bank, Capitec
 │   ├── models/
 │   │   └── database.py              # SQLAlchemy models + DB initialisation
 │   └── utils/
 │       └── logger.py                # Logging configuration
 ├── data/                            # Place PDF files here (also stores SQLite DB)
 ├── logs/                            # Pipeline log files (auto-created)
-└── tests/                           # Test suite (48 tests)
+└── tests/                           # Test suite (119 tests)
     ├── test_pipeline.py
     ├── test_pdf_extractor.py
     ├── test_data_cleanser.py
     ├── test_regex_classifier.py
-    └── test_ai_classifier.py
+    ├── test_ai_classifier.py
+    └── test_bank_profiles.py
+```
+
+## Bank Profiles
+
+The PDF extractor uses a **profile system** to handle the formatting differences between banks. Each profile encapsulates:
+
+- **Header patterns** — regex patterns for extracting bank name, account number, branch/sort code, statement period, and balances
+- **Date formats** — ordered list of date formats to try when parsing transaction dates
+- **Column keywords** — keywords that identify table columns (date, description, debit, credit, balance)
+- **Currency handling** — currency symbol and thousands separator for amount parsing
+- **Text extraction pattern** — regex for extracting transactions from raw text (fallback when tables aren't detected)
+
+### Supported South African Banks
+
+| Bank | Profile key | Currency | Thousands separator | Key features |
+|---|---|---|---|---|
+| **ABSA** | `absa` | R (ZAR) | Space | "Cheque Account" label, period as "01 January 2024 to 31 January 2024", branch code |
+| **FNB** | `fnb` | R (ZAR) | Space | Clean table layouts, 10–12 digit account numbers, "First National Bank" detection |
+| **Nedbank** | `nedbank` | R (ZAR) | Space | "Account No" label, Greenbacks awareness, "Nedbank Ltd" detection |
+| **Standard Bank** | `standard_bank` | R (ZAR) | Space | "Statement Period" label, "SBSA" detection |
+| **Capitec** | `capitec` | R (ZAR) | Space | Single "Amount" column (not separate debit/credit), "Global One" branding, "Branch" without "Code" |
+
+All South African profiles handle:
+- **Rand amounts**: `R 1 234.56` (space thousands separator) and `R1,234.56` (comma fallback)
+- **Branch codes**: 4–6 digit codes instead of UK sort codes
+- **SA date formats**: `DD/MM/YYYY`, `DD Month YYYY`, `DD Mon YYYY`
+
+### Auto-Detection
+
+When no `--bank` argument is provided, the system automatically detects the bank by scanning the first page of the PDF for known keywords (e.g., "ABSA", "First National Bank", "Capitec"). The profile with the most keyword matches is selected. If no bank is detected, a generic profile is used that preserves the original UK-centric parsing behaviour.
+
+### Manual Selection
+
+Use the `--bank` flag to skip auto-detection and force a specific profile:
+
+```bash
+python3 main.py --pdf-file statement.pdf --bank fnb
+```
+
+### Adding a New Bank Profile
+
+To add support for a new bank, create a factory function in `src/profiles/south_africa.py` (or a new region file) and register it with the factory:
+
+```python
+# In src/profiles/south_africa.py (or a new file)
+
+def my_bank_profile() -> BankProfile:
+    return _sa_base_profile(
+        name="My Bank",
+        detection_keywords=["my bank", "my bank ltd"],
+        # Override any other fields as needed
+    )
+
+# Register in the register_all() function:
+BankProfileFactory.register("my_bank", my_bank_profile)
+```
+
+The `_sa_base_profile()` helper provides shared South African defaults (ZAR currency, space thousands separator, branch code patterns, SA date formats). Override individual fields as needed for your bank.
+
+For a non-SA bank, create a `BankProfile` directly:
+
+```python
+from src.profiles.base import BankProfile
+
+def my_uk_bank_profile() -> BankProfile:
+    return BankProfile(
+        name="My UK Bank",
+        detection_keywords=["my uk bank"],
+        currency_symbol="£",
+        thousands_separator=",",
+        # ... other overrides
+    )
 ```
 
 ## Database Schema
