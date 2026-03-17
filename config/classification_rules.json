@@ -1,0 +1,76 @@
+{
+  "rules": [
+    {
+      "pattern": "(?i)tesco|sainsbury|lidl|aldi|asda|waitrose|morrisons|co-op food|marks.*spencer.*food|grocery|supermarket",
+      "category": "Groceries",
+      "priority": 1,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)electric|gas|water|energy|thames|british gas|edf|eon|scottish power|bulb|octopus energy",
+      "category": "Utilities",
+      "priority": 2,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)rent|mortgage|letting|housing assoc|home loan",
+      "category": "Rent/Mortgage",
+      "priority": 3,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)salary|wages|payroll|monthly pay|net pay",
+      "category": "Salary",
+      "priority": 4,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)transfer|tfr|standing order|direct debit|dd\\b|so\\b",
+      "category": "Transfer",
+      "priority": 5,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)netflix|spotify|amazon prime|disney|apple\\.com|subscription|youtube premium|hulu",
+      "category": "Subscriptions",
+      "priority": 6,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)uber|lyft|taxi|bus|train|rail|tube|tfl|transport|parking|petrol|fuel|shell|bp\\b|esso",
+      "category": "Transport",
+      "priority": 7,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)restaurant|cafe|coffee|starbucks|costa|mcdonald|burger|pizza|nandos|deliveroo|just eat|uber eats",
+      "category": "Dining",
+      "priority": 8,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)cinema|theatre|theater|pub|bar|club|entertainment|gaming|steam|playstation|xbox",
+      "category": "Entertainment",
+      "priority": 9,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)pharmacy|doctor|dentist|hospital|health|medical|nhs|bupa|vitality|gym|fitness",
+      "category": "Healthcare",
+      "priority": 10,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)insurance|aviva|admiral|direct line|axa|zurich|legal.*general",
+      "category": "Insurance",
+      "priority": 11,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)atm|cash|withdrawal|cashpoint",
+      "category": "Cash Withdrawal",
+      "priority": 12,
+      "source": "manual"
+    }
+  ]
+}
