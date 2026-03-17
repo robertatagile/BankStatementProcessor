@@ -14,6 +14,7 @@ from src.pipeline.data_cleanser import DataCleanserStage
 from src.pipeline.pdf_extractor import PDFExtractorStage
 from src.pipeline.queue import Pipeline, PipelineContext
 from src.pipeline.regex_classifier import RegexClassifierStage
+from src.profiles import BankProfileFactory
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -43,10 +44,18 @@ def build_pipeline(
     rules_path: str,
     api_key: str | None,
     dry_run: bool,
+    bank: str | None = None,
 ) -> Pipeline:
     """Build the processing pipeline with all stages."""
+    if bank:
+        profile = BankProfileFactory.get(bank)
+        extractor = PDFExtractorStage(profile=profile, auto_detect=False)
+        logger.info(f"Using bank profile: {profile.name}")
+    else:
+        extractor = PDFExtractorStage()  # auto-detect from PDF
+
     stages = [
-        PDFExtractorStage(),
+        extractor,
         DataCleanserStage(session_factory),
         RegexClassifierStage(rules_path, session_factory),
     ]
@@ -103,6 +112,16 @@ def main() -> None:
         action="store_true",
         help="Skip the AI classification stage",
     )
+    parser.add_argument(
+        "--bank",
+        type=str,
+        default=None,
+        help=(
+            "Bank profile to use for PDF parsing. "
+            "Available: absa, fnb, nedbank, standard_bank, capitec. "
+            "If not specified, the bank is auto-detected from the PDF."
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -121,7 +140,9 @@ def main() -> None:
     api_key = os.environ.get("ANTHROPIC_API_KEY")
 
     # Build pipeline
-    pipeline = build_pipeline(session_factory, rules_path, api_key, args.dry_run)
+    pipeline = build_pipeline(
+        session_factory, rules_path, api_key, args.dry_run, args.bank
+    )
 
     # Collect PDF files
     if args.pdf_file:

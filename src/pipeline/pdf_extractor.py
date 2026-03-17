@@ -8,82 +8,69 @@ from typing import Optional
 import pdfplumber
 
 from src.pipeline.queue import PipelineContext, Stage
+from src.profiles.base import BankProfile
+from src.profiles.factory import BankProfileFactory
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-# Date formats to try when parsing transaction dates
-DATE_FORMATS = [
-    "%d/%m/%Y",
-    "%d-%m-%Y",
-    "%d %b %Y",
-    "%d %B %Y",
-    "%m/%d/%Y",
-    "%Y-%m-%d",
-    "%d/%m/%y",
-    "%d-%m-%y",
-]
-
-# Regex patterns for extracting header fields
-HEADER_PATTERNS = {
-    "bank_name": re.compile(
-        r"^(.+?(?:Bank|Building Society|Credit Union|Financial))", re.IGNORECASE
-    ),
-    "account_number": re.compile(
-        r"(?:Account\s*(?:Number|No\.?|#)?)\s*[:\-]?\s*(\d[\d\s\-]{4,})", re.IGNORECASE
-    ),
-    "sort_code": re.compile(
-        r"(?:Sort\s*Code)\s*[:\-]?\s*(\d{2}[\-\s]?\d{2}[\-\s]?\d{2})", re.IGNORECASE
-    ),
-    "period_start": re.compile(
-        r"(?:Statement\s+(?:Period|Date|From))\s*[:\-]?\s*(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})",
-        re.IGNORECASE,
-    ),
-    "period_end": re.compile(
-        r"(?:to|ending|through)\s*[:\-]?\s*(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})",
-        re.IGNORECASE,
-    ),
-    "opening_balance": re.compile(
-        r"(?:Opening|Start|Beginning|Brought\s+Forward)\s*(?:Balance)?\s*[:\-]?\s*[£$€]?\s*([\d,]+\.\d{2})",
-        re.IGNORECASE,
-    ),
-    "closing_balance": re.compile(
-        r"(?:Closing|End|Ending|Carried\s+Forward)\s*(?:Balance)?\s*[:\-]?\s*[£$€]?\s*([\d,]+\.\d{2})",
-        re.IGNORECASE,
-    ),
-}
+# Keep module-level constants for backward compatibility
+DATE_FORMATS = BankProfile().date_formats
+HEADER_PATTERNS = BankProfile().header_patterns
 
 
 class PDFExtractorStage(Stage):
     """Stage 1: Extract statement headers and transaction lines from a PDF."""
 
+    def __init__(
+        self,
+        profile: Optional[BankProfile] = None,
+        auto_detect: bool = True,
+    ):
+        self._profile = profile
+        self._auto_detect = auto_detect
+
     def process(self, context: PipelineContext) -> PipelineContext:
         logger.info(f"Extracting data from: {context.file_path}")
 
         with pdfplumber.open(context.file_path) as pdf:
+            # Resolve the bank profile
+            profile = self._resolve_profile(pdf)
+
             full_text = "\n".join(
                 page.extract_text() or "" for page in pdf.pages
             )
-            context.raw_header = self._extract_header(full_text)
-            context.raw_lines = self._extract_lines(pdf)
+            context.raw_header = self._extract_header(full_text, profile)
+            context.raw_lines = self._extract_lines(pdf, profile)
 
         logger.info(
             f"Extracted header: {context.raw_header.get('bank_name', 'Unknown')} | "
-            f"Lines: {len(context.raw_lines)}"
+            f"Profile: {profile.name} | Lines: {len(context.raw_lines)}"
         )
         return context
 
-    def _extract_header(self, text: str) -> dict:
+    def _resolve_profile(self, pdf: pdfplumber.PDF) -> BankProfile:
+        """Determine which bank profile to use."""
+        if self._profile is not None:
+            return self._profile
+
+        if self._auto_detect and pdf.pages:
+            page1_text = pdf.pages[0].extract_text() or ""
+            return BankProfileFactory.detect(page1_text)
+
+        return BankProfile()
+
+    def _extract_header(self, text: str, profile: BankProfile) -> dict:
         """Extract statement header fields from the full document text."""
         header = {}
-        for field_name, pattern in HEADER_PATTERNS.items():
+        for field_name, pattern in profile.header_patterns.items():
             match = pattern.search(text)
             if match:
                 value = match.group(1).strip()
                 if field_name in ("opening_balance", "closing_balance"):
-                    value = self._parse_amount(value)
+                    value = profile.parse_amount(value)
                 elif field_name in ("period_start", "period_end"):
-                    value = self._parse_date(value)
+                    value = self._parse_date_with_profile(value, profile)
                 header[field_name] = value
 
         # Default missing fields
@@ -96,7 +83,9 @@ class PDFExtractorStage(Stage):
 
         return header
 
-    def _extract_lines(self, pdf: pdfplumber.PDF) -> list[dict]:
+    def _extract_lines(
+        self, pdf: pdfplumber.PDF, profile: BankProfile
+    ) -> list[dict]:
         """Extract transaction lines from all pages."""
         all_lines = []
 
@@ -105,13 +94,13 @@ class PDFExtractorStage(Stage):
             tables = page.extract_tables()
             if tables:
                 for table in tables:
-                    lines = self._parse_table(table, page_num)
+                    lines = self._parse_table(table, page_num, profile)
                     all_lines.extend(lines)
             else:
                 # Fall back to text-based extraction
                 text = page.extract_text()
                 if text:
-                    lines = self._parse_text(text, page_num)
+                    lines = self._parse_text(text, page_num, profile)
                     all_lines.extend(lines)
 
         # Handle multi-line descriptions (rows with description but no amount)
@@ -120,53 +109,59 @@ class PDFExtractorStage(Stage):
         logger.debug(f"Total transaction lines extracted: {len(all_lines)}")
         return all_lines
 
-    def _parse_table(self, table: list[list], page_num: int) -> list[dict]:
+    def _parse_table(
+        self, table: list[list], page_num: int, profile: BankProfile
+    ) -> list[dict]:
         """Parse a pdfplumber extracted table into transaction dicts."""
         lines = []
         if not table or len(table) < 2:
             return lines
 
         # Try to identify column positions from the header row
-        header_row = [str(cell).strip().lower() if cell else "" for cell in table[0]]
-        col_map = self._identify_columns(header_row)
+        header_row = [
+            str(cell).strip().lower() if cell else "" for cell in table[0]
+        ]
+        col_map = self._identify_columns(header_row, profile)
 
         for row_idx, row in enumerate(table[1:], 2):
-            if not row or all(cell is None or str(cell).strip() == "" for cell in row):
+            if not row or all(
+                cell is None or str(cell).strip() == "" for cell in row
+            ):
                 continue
 
-            line = self._parse_row(row, col_map, page_num, row_idx)
+            line = self._parse_row(row, col_map, page_num, row_idx, profile)
             if line:
                 lines.append(line)
 
         return lines
 
-    def _identify_columns(self, header_row: list[str]) -> dict:
-        """Map column names to their indices."""
+    def _identify_columns(
+        self, header_row: list[str], profile: BankProfile
+    ) -> dict:
+        """Map column names to their indices using the profile's keyword mappings."""
         col_map = {}
         for idx, col_name in enumerate(header_row):
             if not col_name:
                 continue
-            if any(kw in col_name for kw in ("date",)):
-                col_map.setdefault("date", idx)
-            elif any(kw in col_name for kw in ("description", "details", "particulars", "narrative")):
-                col_map.setdefault("description", idx)
-            elif any(kw in col_name for kw in ("debit", "withdrawal", "out", "dr")):
-                col_map.setdefault("debit", idx)
-            elif any(kw in col_name for kw in ("credit", "deposit", "in", "cr")):
-                col_map.setdefault("credit", idx)
-            elif any(kw in col_name for kw in ("balance",)):
-                col_map.setdefault("balance", idx)
-            elif any(kw in col_name for kw in ("amount",)):
-                col_map.setdefault("amount", idx)
+            for logical_col, keywords in profile.column_keywords.items():
+                if any(kw in col_name for kw in keywords):
+                    col_map.setdefault(logical_col, idx)
+                    break
 
-        # If no header match, use positional defaults:
-        # [0]=Date, [1]=Description, [2]=Debit, [3]=Credit, [4]=Balance
+        # If no header match, use profile's positional defaults
         if not col_map:
-            col_map = {"date": 0, "description": 1, "debit": 2, "credit": 3, "balance": 4}
+            col_map = dict(profile.default_column_map)
 
         return col_map
 
-    def _parse_row(self, row: list, col_map: dict, page_num: int, row_idx: int) -> dict | None:
+    def _parse_row(
+        self,
+        row: list,
+        col_map: dict,
+        page_num: int,
+        row_idx: int,
+        profile: BankProfile,
+    ) -> Optional[dict]:
         """Parse a single table row into a transaction dict."""
 
         def get_cell(key: str) -> str:
@@ -183,7 +178,11 @@ class PDFExtractorStage(Stage):
             return None
 
         # Parse date
-        parsed_date = self._parse_date(date_str) if date_str else None
+        parsed_date = (
+            self._parse_date_with_profile(date_str, profile)
+            if date_str
+            else None
+        )
         if not parsed_date and not date_str:
             # This might be a continuation line (multi-line description)
             return {"_continuation": True, "description": description}
@@ -191,7 +190,7 @@ class PDFExtractorStage(Stage):
         # Parse amounts
         if "amount" in col_map:
             amount_str = get_cell("amount")
-            amount = self._parse_amount(amount_str)
+            amount = profile.parse_amount(amount_str)
             # Negative amount = debit, positive = credit
             if amount is not None and amount < 0:
                 transaction_type = "debit"
@@ -201,8 +200,8 @@ class PDFExtractorStage(Stage):
         else:
             debit_str = get_cell("debit")
             credit_str = get_cell("credit")
-            debit = self._parse_amount(debit_str)
-            credit = self._parse_amount(credit_str)
+            debit = profile.parse_amount(debit_str)
+            credit = profile.parse_amount(credit_str)
 
             if debit and debit > 0:
                 amount = debit
@@ -219,7 +218,7 @@ class PDFExtractorStage(Stage):
                 return None
 
         balance_str = get_cell("balance")
-        balance = self._parse_amount(balance_str)
+        balance = profile.parse_amount(balance_str)
 
         return {
             "date": parsed_date,
@@ -229,24 +228,19 @@ class PDFExtractorStage(Stage):
             "transaction_type": transaction_type,
         }
 
-    def _parse_text(self, text: str, page_num: int) -> list[dict]:
+    def _parse_text(
+        self, text: str, page_num: int, profile: BankProfile
+    ) -> list[dict]:
         """Fall back to line-by-line regex extraction from raw text."""
         lines = []
-        # Pattern: Date Description Amount (optional balance)
-        # e.g. "01/01/2024  TESCO STORES  -45.67  1,234.56"
-        pattern = re.compile(
-            r"(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})\s+"  # date
-            r"(.+?)\s+"                                     # description
-            r"(-?[£$€]?\s?[\d,]+\.\d{2})"                 # amount
-            r"(?:\s+(-?[£$€]?\s?[\d,]+\.\d{2}))?"         # optional balance
-        )
+        pattern = profile.compile_text_pattern()
 
         for line in text.split("\n"):
             match = pattern.search(line.strip())
             if match:
                 date_str, desc, amount_str, balance_str = match.groups()
-                parsed_date = self._parse_date(date_str)
-                amount = self._parse_amount(amount_str)
+                parsed_date = self._parse_date_with_profile(date_str, profile)
+                amount = profile.parse_amount(amount_str)
 
                 if parsed_date and amount is not None:
                     if amount < 0:
@@ -255,13 +249,19 @@ class PDFExtractorStage(Stage):
                     else:
                         transaction_type = "credit"
 
-                    lines.append({
-                        "date": parsed_date,
-                        "description": desc.strip(),
-                        "amount": amount,
-                        "balance": self._parse_amount(balance_str) if balance_str else None,
-                        "transaction_type": transaction_type,
-                    })
+                    lines.append(
+                        {
+                            "date": parsed_date,
+                            "description": desc.strip(),
+                            "amount": amount,
+                            "balance": (
+                                profile.parse_amount(balance_str)
+                                if balance_str
+                                else None
+                            ),
+                            "transaction_type": transaction_type,
+                        }
+                    )
 
         return lines
 
@@ -276,7 +276,26 @@ class PDFExtractorStage(Stage):
         return merged
 
     @staticmethod
-    def _parse_date(date_str: str) -> datetime | None:
+    def _parse_date_with_profile(
+        date_str: str, profile: BankProfile
+    ) -> Optional[datetime]:
+        """Try profile's date formats to parse a date string."""
+        if not date_str:
+            return None
+        date_str = date_str.strip()
+        for fmt in profile.date_formats:
+            try:
+                return datetime.strptime(date_str, fmt).date()
+            except ValueError:
+                continue
+        return None
+
+    # ------------------------------------------------------------------
+    # Backward-compatible static methods (used by existing tests)
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _parse_date(date_str: str) -> Optional[datetime]:
         """Try multiple date formats to parse a date string."""
         if not date_str:
             return None
@@ -289,7 +308,7 @@ class PDFExtractorStage(Stage):
         return None
 
     @staticmethod
-    def _parse_amount(amount_str: str) -> Decimal | None:
+    def _parse_amount(amount_str: str) -> Optional[Decimal]:
         """Parse an amount string into a Decimal, handling currency symbols and commas."""
         if not amount_str:
             return None
