@@ -1,0 +1,10 @@
+{
+  "name": "bank-statement-processor-ui-smoke",
+  "private": true,
+  "scripts": {
+    "test:ui": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.53.2"
+  }
+}

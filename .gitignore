@@ -10,6 +10,13 @@ dist/
 build/
 .venv/
 venv/
+node_modules/
+test-results/
+playwright-report/
+.playwright/
+.claude/
+.vscode/
+uploads/
 teststatement/input/*.pdf
 teststatement/input/processed/
 teststatement/input/failed/

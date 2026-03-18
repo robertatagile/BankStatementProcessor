@@ -11,6 +11,7 @@ This document explains the integration testing strategy for the Bank Statement P
 ```
 teststatement/
 ├── run_test.sh              ← launcher script
+├── run_test.ps1             ← Windows PowerShell launcher
 ├── test_statements.db       ← SQLite DB (created per run, deleted on reset)
 └── input/
     ├── April2025.pdf        ← PDFs to process (you add these)
@@ -30,6 +31,11 @@ cp ~/statements/*.pdf teststatement/input/
 
 # 2. Run the test (from project root OR inside teststatement/)
 bash teststatement/run_test.sh
+```
+
+```powershell
+# Windows PowerShell / pwsh
+pwsh -File .\teststatement\run_test.ps1
 ```
 
 ### What the Script Does
@@ -81,6 +87,12 @@ Database summary:
     Groceries                 67
     Utilities                 54
 ```
+
+  ### Windows Notes
+
+  - `run_test.ps1` is the Windows equivalent of `run_test.sh`
+  - The PowerShell script auto-detects Python using `py -3`, `python`, or `python3`
+  - If Python dependencies are not installed yet, install them first with `py -3 -m pip install -r requirements.txt` or `python -m pip install -r requirements.txt`
 
 ### Database Inspection
 

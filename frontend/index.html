@@ -202,8 +202,8 @@ $fileInput.addEventListener('change',async()=>{
 
   try{
     const r=await fetch(API+'/api/upload',{method:'POST',body:fd});
-    if(!r.ok){const e=await r.json();alert(e.detail||'Upload failed');return}
-    const d=await r.json();
+    const d=await readResponsePayload(r);
+    if(!r.ok){alert(extractErrorMessage(r,d,'Upload failed'));return}
     activeJobId=d.job_id;
     showProcessing();
     startPolling(d.job_id);
@@ -335,6 +335,24 @@ function renderResult(res){
 }
 
 /* ── Utilities ───────────────────────────────────────────── */
+async function readResponsePayload(response){
+  const contentType=response.headers.get('content-type')||'';
+  const body=await response.text();
+  if(!body)return null;
+  if(contentType.includes('application/json'))return JSON.parse(body);
+  try{return JSON.parse(body)}catch{return body}
+}
+
+function extractErrorMessage(response,payload,fallback){
+  if(payload&&typeof payload==='object'){
+    if(payload.detail)return payload.detail;
+    if(payload.message)return payload.message;
+    if(payload.error)return payload.error;
+  }
+  if(typeof payload==='string'&&payload.trim())return payload.trim();
+  return fallback||response.statusText||'Request failed';
+}
+
 function esc(s){if(!s)return'';const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 function fmt(n){return Number(n).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}
 function fmtDate(s){if(!s)return'';const d=new Date(s);return d.toLocaleDateString()+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}

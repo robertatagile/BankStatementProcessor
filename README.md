@@ -176,8 +176,6 @@ BankStatementProcessor/
 │   ├── nginx.conf                   # Nginx config (reverse-proxy to backend)
 │   └── Dockerfile                   # Frontend Docker image
 ├── data/                            # SQLite DB (auto-created)
-├── uploads/                         # Uploaded PDFs (auto-created)
-├── data/                            # Place PDF files here (also stores SQLite DB)
 ├── docs/
 │   └── INTEGRATION_TESTING.md       # Integration testing guide
 ├── logs/                            # Pipeline log files (auto-created)
@@ -185,7 +183,8 @@ BankStatementProcessor/
 │   └── input/                       # Drop real PDFs here
 │       ├── processed/               # Successfully processed PDFs
 │       └── failed/                  # PDFs that failed processing
-└── tests/                           # Test suite (132 tests)
+├── uploads/                         # Uploaded PDFs (auto-created)
+└── tests/                           # Test suite
     ├── test_pipeline.py
     ├── test_pdf_extractor.py
     ├── test_data_cleanser.py

@@ -37,6 +37,9 @@ class Statement(Base):
     lines: Mapped[List["StatementLine"]] = relationship(
         back_populates="statement", cascade="all, delete-orphan"
     )
+    job: Mapped[Optional["ProcessingJob"]] = relationship(
+        back_populates="statement"
+    )
     info: Mapped[Optional["StatementInfo"]] = relationship(
         back_populates="statement", uselist=False, cascade="all, delete-orphan"
     )
