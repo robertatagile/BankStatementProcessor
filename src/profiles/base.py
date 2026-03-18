@@ -137,12 +137,24 @@ class BankProfile:
         symbols = set(self.currency_symbol + "£$€R")
         cleaned = "".join(ch for ch in cleaned if ch not in symbols)
 
+        # Handle trailing minus (e.g. "27 212,96-")
+        if cleaned.endswith("-"):
+            cleaned = cleaned[:-1].strip()
+            negate = True
+
         # Remove thousands separators
         if self.thousands_separator == " ":
             # For space separator: remove spaces between digit groups
             cleaned = re.sub(r"(?<=\d)\s+(?=\d)", "", cleaned)
-        # Always remove commas as a universal thousands separator fallback
-        cleaned = cleaned.replace(",", "")
+
+        # Handle comma-as-decimal (e.g. Afrikaans "16 270,50")
+        # Detect: if there's a comma followed by exactly 2 digits at end and no dot
+        if re.search(r",\d{2}$", cleaned) and "." not in cleaned:
+            cleaned = cleaned.replace(",", ".")
+        else:
+            # Always remove commas as a universal thousands separator fallback
+            cleaned = cleaned.replace(",", "")
+
         # Remove any other configured separator
         if self.thousands_separator not in (" ", ","):
             cleaned = cleaned.replace(self.thousands_separator, "")

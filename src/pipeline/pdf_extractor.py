@@ -164,14 +164,15 @@ class PDFExtractorStage(Stage):
         # --- 4. FNB-style: street address starting with digits ---
         if "address_line1" not in header:
             street_match = re.search(
-                r"(?:^|\n)(\d+\s*[A-Z][A-Z\s]*(?:STREET|STR|ROAD|RD|AVENUE|AVE|DRIVE|DR|LANE|LN|WAY|CRESCENT|CRES|CLOSE|CL|PLACE|PL|BOULEVARD|BLVD))\b",
+                r"(?:^|\n)(\d+\s*[A-Z][A-Z\s]*(?:STREET|STR|STRAAT|ROAD|RD|WEG|AVENUE|AVE|LAAN|DRIVE|DR|RYLAAN|LANE|LN|WAY|CRESCENT|CRES|CLOSE|CL|PLACE|PL|PLEK|BOULEVARD|BLVD))\b",
                 text, re.IGNORECASE,
             )
             if street_match:
                 header["address_line1"] = street_match.group(1).strip()
 
-        # --- 5. Suburb: all-caps word(s) on a line by themselves ---
+        # --- 5. Suburb: all-caps word(s) on a line by themselves, or at start of line ---
         if "address_line2" not in header:
+            # First try: pure uppercase line by itself
             suburb_pattern = re.compile(r"(?:^|\n)([A-Z]{4,}(?:\s+[A-Z]{3,})*)\s*$", re.MULTILINE)
             suburbs = []
             for m in suburb_pattern.finditer(text):
@@ -180,14 +181,32 @@ class PDFExtractorStage(Stage):
                     continue
                 if candidate not in suburbs:
                     suburbs.append(candidate)
+
+            # Second try: uppercase word(s) at start of line followed by non-alpha
+            # (handles "MONUMENTPARK UIT 8 Posbus 7263")
+            if not suburbs:
+                start_pattern = re.compile(r"(?:^|\n)([A-Z]{4,}(?:\s+[A-Z]{3,})*)\s+(?=[a-z0-9])", re.MULTILINE)
+                for m in start_pattern.finditer(text):
+                    candidate = m.group(1).strip()
+                    # Remove Afrikaans noise words
+                    candidate = re.sub(r"\s+(?:UIT|VAN|NA)\s*$", "", candidate)
+                    if re.search(r"(?:ACCOUNT|STATEMENT|BALANCE|TRANSACTION|DELIVERY|BRANCH|GOLD|PAGE|RAND|TURNOVER|CLOSING|OPENING|CHARGES|PRODUCT|SUMMARY)", candidate):
+                        continue
+                    if candidate not in suburbs and len(candidate) >= 4:
+                        suburbs.append(candidate)
+
             if suburbs:
                 header.setdefault("address_line2", suburbs[0])
                 if len(suburbs) > 1:
                     header.setdefault("address_line3", suburbs[1])
 
-        # --- 6. Postal code: 3-5 digit number at start of a line ---
+        # --- 6. Postal code: 3-4 digit number at start of a line ---
+        # Match 4-digit code followed by space+letter (city name) to avoid phone numbers
         if "postal_code" not in header:
-            postal_match = re.search(r"(?:^|\n)(\d{3,5})\s", text)
+            postal_match = re.search(r"(?:^|\n)(\d{4})\s+[A-Za-z]", text)
+            if not postal_match:
+                # Fallback: 3-digit code on its own line
+                postal_match = re.search(r"(?:^|\n)(\d{3,4})\s*$", text, re.MULTILINE)
             if postal_match:
                 header["postal_code"] = postal_match.group(1)
 
@@ -539,8 +558,10 @@ class PDFExtractorStage(Stage):
                 amount = profile.parse_amount(amount_str)
 
                 if parsed_date and amount is not None:
-                    # Determine transaction type from Cr/Dr suffix or sign
+                    # Determine transaction type from Cr/Dr suffix, sign,
+                    # or Afrikaans Kt/Dt keywords in description
                     amount_upper = (amount_str or "").strip().upper()
+                    desc_upper = desc.upper()
                     if amount_upper.endswith("CR"):
                         transaction_type = "credit"
                     elif amount_upper.endswith("DR"):
@@ -548,6 +569,9 @@ class PDFExtractorStage(Stage):
                     elif amount < 0:
                         transaction_type = "debit"
                         amount = abs(amount)
+                    elif re.search(r"\bKT\b", desc_upper):
+                        # Afrikaans: "Kt" = Krediet (credit)
+                        transaction_type = "credit"
                     elif profile.unsigned_is_debit:
                         transaction_type = "debit"
                     else:
@@ -603,19 +627,42 @@ class PDFExtractorStage(Stage):
             if d is not None and hasattr(d, "year") and d.year == 1900:
                 line["date"] = d.replace(year=ref_year)
 
-    @staticmethod
+    # Afrikaans → English month name mapping for date parsing
+    _AFR_MONTHS = {
+        "Jan": "Jan", "Feb": "Feb", "Mrt": "Mar", "Maa": "Mar",
+        "Apr": "Apr", "Mei": "May", "Jun": "Jun", "Jul": "Jul",
+        "Aug": "Aug", "Sep": "Sep", "Okt": "Oct", "Nov": "Nov",
+        "Des": "Dec",
+        "Januarie": "January", "Februarie": "February",
+        "Maart": "March", "April": "April", "Mei": "May",
+        "Junie": "June", "Julie": "July", "Augustus": "August",
+        "September": "September", "Oktober": "October",
+        "November": "November", "Desember": "December",
+    }
+
+    @classmethod
+    def _normalize_afrikaans_date(cls, date_str: str) -> str:
+        """Translate Afrikaans month names to English for strptime."""
+        for afr, eng in cls._AFR_MONTHS.items():
+            if afr in date_str:
+                return date_str.replace(afr, eng)
+        return date_str
+
+    @classmethod
     def _parse_date_with_profile(
-        date_str: str, profile: BankProfile
+        cls, date_str: str, profile: BankProfile
     ) -> Optional[datetime]:
         """Try profile's date formats to parse a date string."""
         if not date_str:
             return None
         date_str = date_str.strip()
-        for fmt in profile.date_formats:
-            try:
-                return datetime.strptime(date_str, fmt).date()
-            except ValueError:
-                continue
+        # Try original first, then Afrikaans-normalized version
+        for candidate in (date_str, cls._normalize_afrikaans_date(date_str)):
+            for fmt in profile.date_formats:
+                try:
+                    return datetime.strptime(candidate, fmt).date()
+                except ValueError:
+                    continue
         return None
 
     # ------------------------------------------------------------------

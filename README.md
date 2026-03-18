@@ -203,6 +203,7 @@ The PDF extractor uses a **profile system** to handle the formatting differences
 | **Standard Bank** | `standard_bank` | R (ZAR) | Space | "Statement Period" label, "SBSA" detection |
 | **Capitec** | `capitec` | R (ZAR) | Space | Single "Amount" column (not separate debit/credit), "Global One" branding, "Branch" without "Code" |
 | **African Bank** | `african_bank` | R (ZAR) | Space | `YYYY/MM/DD` dates, negative amounts for debits, "Bank Charges" column, "Statement for:" personal info block, "MyWORLD Account" detection |
+| **ABSA Afrikaans** | `absa_afrikaans` | R (ZAR) | Space | Full Afrikaans terminology ("Tjekrekeningstaat", "Debietbedrag"), comma-decimal in headers, "tot" period separator, `Kt`/`Dt` credit/debit indicators, text-only extraction (no tables), Afrikaans month translation |
 
 All South African profiles handle:
 - **Rand amounts**: `R 1 234.56` (space thousands separator) and `R1,234.56` (comma fallback)

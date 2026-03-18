@@ -1,13 +1,13 @@
 {
   "rules": [
     {
-      "pattern": "(?i)checkers|pick.*pay|pnp\\b|woolworths.*food|shoprite|spar\\b|food.*lovers|fruit.*veg|cambridge food|ok foods|grocery|supermarket",
+      "pattern": "(?i)checkers|pick.*pay|(?i)takealo|pnp\\b|woolworths.*food|shoprite|spar\\b|food.*lovers|fruit.*veg|cambridge food|ok foods|grocery|supermarket",
       "category": "Groceries",
       "priority": 1,
       "source": "manual"
     },
     {
-      "pattern": "(?i)eskom|city power|rand water|tshwane|ekurhuleni|johannesburg water|vodacom|mtn\\b|cell c|telkom|electric|water\\b|energy|municipality|rates.*taxes",
+      "pattern": "(?i)eskom|city power|rand water|tshwane|ekurhuleni|johannesburg water|vodacom|mtn\\b|cell c|telkom|electric|water\\b|energy|municipality|rates.*taxes|lugtyd",
       "category": "Utilities",
       "priority": 2,
       "source": "manual"
@@ -25,7 +25,7 @@
       "source": "manual"
     },
     {
-      "pattern": "(?i)transfer|tfr|eft\\b|standing order|direct debit|dd\\b|so\\b|instant payment",
+      "pattern": "(?i)transfer|tfr|eft\\b|standing order|direct debit|dd\\b|so\\b|instant payment|oorpl\\b|oorplasing|oorbetaling",
       "category": "Transfer",
       "priority": 5,
       "source": "manual"
@@ -37,7 +37,7 @@
       "source": "manual"
     },
     {
-      "pattern": "(?i)uber\\b|bolt ride|bolt trip|bolt taxi|bolt driver|taxi|myciti|rea vaya|gautrain|intercape|greyhound|flixbus|engen|sasol|caltex|total\\b|bp\\b|astron|petrol|fuel|parking|e-toll|sanral",
+      "pattern": "(?i)uber\\b|bolt ride|bolt trip|bolt taxi|bolt driver|taxi|myciti|rea vaya|gautrain|intercape|greyhound|flixbus|engen|sasol|caltex|total\\b|bp\\b|astron|petrol|fuel|parking|e-toll|sanral|brandstof",
       "category": "Transport",
       "priority": 7,
       "source": "manual"
@@ -67,7 +67,7 @@
       "source": "manual"
     },
     {
-      "pattern": "(?i)atm|cash|withdrawal|cashpoint",
+      "pattern": "(?i)atm|cash|withdrawal|cashpoint|onttrekking",
       "category": "Cash Withdrawal",
       "priority": 12,
       "source": "manual"
@@ -151,22 +151,28 @@
       "source": "ai"
     },
     {
-      "pattern": "(?i)takealo",
-      "category": "Dining",
-      "priority": 27,
-      "source": "ai"
-    },
-    {
-      "pattern": "(?i)account\\s*fee",
-      "category": "Other",
+      "pattern": "(?i)account\\s*fee|transaksiefooi|maandelikse.*fooi|monthly.*fee",
+      "category": "Fees",
       "priority": 28,
       "source": "ai"
     },
     {
       "pattern": "(?i)^fees?$",
-      "category": "Other",
+      "category": "Fees",
       "priority": 29,
       "source": "ai"
+    },
+    {
+      "pattern": "(?i)pos\\s*aankope|pos\\s*purchase|kaart\\s*aankoop",
+      "category": "Shopping",
+      "priority": 30,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)payshap|onmiddllke\\s*dig\\s*bet|betaal\\s*bewys",
+      "category": "Transfer",
+      "priority": 31,
+      "source": "manual"
     }
   ]
 }

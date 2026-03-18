@@ -7,6 +7,7 @@ import pytest
 from src.profiles.base import BankProfile
 from src.profiles.factory import BankProfileFactory
 from src.profiles.south_africa import (
+    absa_afrikaans_profile,
     absa_profile,
     african_bank_profile,
     capitec_profile,
@@ -190,7 +191,8 @@ class TestBankProfileFactory:
         assert "standard_bank" in banks
         assert "capitec" in banks
         assert "african_bank" in banks
-        assert len(banks) == 6
+        assert "absa_afrikaans" in banks
+        assert len(banks) == 7
 
     def test_detect_absa(self):
         text = "ABSA Bank\nCheque Account\nAccount Number: 1234567890"
@@ -322,3 +324,82 @@ class TestAfricanBankProfile:
         """Column keywords should include bank_charges."""
         profile = african_bank_profile()
         assert "bank_charges" in profile.column_keywords
+
+
+class TestAbsaAfrikaansProfile:
+    """Tests for the ABSA Afrikaans profile."""
+
+    def test_profile_name(self):
+        profile = absa_afrikaans_profile()
+        assert profile.name == "ABSA Afrikaans"
+
+    def test_detection_keywords(self):
+        profile = absa_afrikaans_profile()
+        assert "tjekrekeningnommer" in profile.detection_keywords
+        assert "transaksiebeskrywing" in profile.detection_keywords
+
+    def test_detect_absa_afrikaans(self):
+        text = "Absa Bank Ltd\nTjekrekeningnommer: 7-1323-1819\nSaldo oorgedra\nTransaksiebeskrywing"
+        profile = BankProfileFactory.detect(text)
+        assert profile.name == "ABSA Afrikaans"
+
+    def test_account_number_extraction(self):
+        profile = absa_afrikaans_profile()
+        text = "Tjekrekeningnommer: 7-1323-1819"
+        m = profile.header_patterns["account_number"].search(text)
+        assert m is not None
+        assert m.group(1) == "7-1323-1819"
+
+    def test_period_extraction_afrikaans(self):
+        """Period uses 'tot' instead of 'to'."""
+        profile = absa_afrikaans_profile()
+        text = "17 Okt 2025 tot 16 Nov 2025"
+        m = profile.header_patterns["period_start"].search(text)
+        assert m is not None
+        assert m.group(1) == "17 Okt 2025"
+        m = profile.header_patterns["period_end"].search(text)
+        assert m is not None
+        assert m.group(1) == "16 Nov 2025"
+
+    def test_opening_balance_comma_decimal(self):
+        """Header uses comma as decimal separator: 16 270,50."""
+        profile = absa_afrikaans_profile()
+        m = profile.header_patterns["opening_balance"].search("Saldo oorgedra 16 270,50")
+        assert m is not None
+        amount = profile.parse_amount(m.group(1))
+        assert amount == Decimal("16270.50")
+
+    def test_account_holder_extraction(self):
+        profile = absa_afrikaans_profile()
+        text = "Lyttelton\nMEV L SENEKAL\nW B03 Lyttelton"
+        m = profile.header_patterns["account_holder"].search(text)
+        assert m is not None
+        assert m.group(1).strip() == "MEV L SENEKAL"
+
+    def test_account_type_extraction(self):
+        profile = absa_afrikaans_profile()
+        text = "Rekeningtipe: Flexi Rekening Uitgereik op: 16Nov2025"
+        m = profile.header_patterns["account_type"].search(text)
+        assert m is not None
+        assert m.group(1).strip() == "Flexi Rekening"
+
+    def test_parse_amount_dot_decimal(self):
+        """Transaction lines use dot decimal: 300.00."""
+        profile = absa_afrikaans_profile()
+        assert profile.parse_amount("300.00") == Decimal("300.00")
+
+    def test_parse_amount_space_thousands(self):
+        profile = absa_afrikaans_profile()
+        assert profile.parse_amount("16 263.00") == Decimal("16263.00")
+
+    def test_parse_amount_trailing_minus(self):
+        """Amounts with trailing minus: 280.00-."""
+        profile = absa_afrikaans_profile()
+        assert profile.parse_amount("280.00-") == Decimal("-280.00")
+
+    def test_afrikaans_column_keywords(self):
+        profile = absa_afrikaans_profile()
+        assert "transaksiebeskrywing" in profile.column_keywords["description"]
+        assert "debietbedrag" in profile.column_keywords["debit"]
+        assert "kredietbedrag" in profile.column_keywords["credit"]
+        assert "saldo" in profile.column_keywords["balance"]
