@@ -18,6 +18,7 @@ def register_all() -> None:
     from src.profiles.banks.standard_bank import standard_bank_profile
     from src.profiles.banks.capitec import capitec_profile
     from src.profiles.banks.african_bank import african_bank_profile
+    from src.profiles.banks.discovery_bank import discovery_bank_profile
 
     BankProfileFactory.register("absa", absa_profile)
     BankProfileFactory.register("absa_afrikaans", absa_afrikaans_profile)
@@ -26,3 +27,4 @@ def register_all() -> None:
     BankProfileFactory.register("standard_bank", standard_bank_profile)
     BankProfileFactory.register("capitec", capitec_profile)
     BankProfileFactory.register("african_bank", african_bank_profile)
+    BankProfileFactory.register("discovery_bank", discovery_bank_profile)
