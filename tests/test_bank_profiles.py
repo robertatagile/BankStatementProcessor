@@ -160,10 +160,12 @@ class TestSAProfiles:
         assert "%d/%m/%Y" in profile.date_formats
         assert "%d %B %Y" in profile.date_formats
 
-    def test_capitec_single_amount_column(self):
+    def test_capitec_money_in_out_columns(self):
         profile = capitec_profile()
-        assert "amount" in profile.default_column_map
-        assert "debit" not in profile.default_column_map
+        assert "credit" in profile.default_column_map  # Money In
+        assert "debit" in profile.default_column_map    # Money Out
+        assert "fee" in profile.default_column_map      # Fee column
+        assert "balance" in profile.default_column_map
 
     def test_absa_cheque_keyword(self):
         profile = absa_profile()

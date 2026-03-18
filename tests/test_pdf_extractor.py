@@ -118,13 +118,15 @@ class TestColumnIdentification:
         assert col_map["credit"] == 3
         assert col_map["balance"] == 4
 
-    def test_capitec_amount_column_defaults(self):
+    def test_capitec_column_defaults(self):
         stage = PDFExtractorStage()
         profile = capitec_profile()
-        headers = ["", "", "", ""]
+        headers = ["", "", "", "", "", "", "", "", ""]  # 9 empty cols → use defaults
         col_map = stage._identify_columns(headers, profile)
-        assert col_map["amount"] == 2
-        assert "debit" not in col_map
+        assert col_map["credit"] == 3    # Money In
+        assert col_map["debit"] == 5     # Money Out
+        assert col_map["fee"] == 7       # Fee*
+        assert col_map["balance"] == 8
 
 
 class TestMergeMultilineDescriptions:
