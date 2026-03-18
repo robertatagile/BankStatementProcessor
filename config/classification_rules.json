@@ -83,6 +83,96 @@
       "category": "Electronics/Home",
       "priority": 14,
       "source": "manual"
+    },
+    {
+      "pattern": "(?i)pos\\s*purchase\\s*kings\\s*meat",
+      "category": "Groceries",
+      "priority": 15,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)send\\s*money\\s*app",
+      "category": "Transfer",
+      "priority": 16,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)express\\s*pmt\\s*pending",
+      "category": "Transfer",
+      "priority": 17,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)internet\\s*pmt\\s*to\\s*robert\\s*mcmenamin",
+      "category": "Transfer",
+      "priority": 18,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)express\\s*pmt\\s*pending.*failed",
+      "category": "Transfer",
+      "priority": 19,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)express\\s*pmt\\s*failed",
+      "category": "Transfer",
+      "priority": 20,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)statement\\s*fee",
+      "category": "Other",
+      "priority": 21,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)van\\s*schaik\\s*bookstore",
+      "category": "Education",
+      "priority": 22,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)pos\\s*purchase\\s*van\\s*deijl\\s*jeweller",
+      "category": "Clothing/Apparel",
+      "priority": 23,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)payshap.*nwu",
+      "category": "Transfer",
+      "priority": 24,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)internet\\s*pmt\\s*to\\s*northerns\\s*blues\\s*hock",
+      "category": "Entertainment",
+      "priority": 25,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)pos\\s*purchase\\s*north\\s*west\\s*universit",
+      "category": "Education",
+      "priority": 26,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)takealo",
+      "category": "Dining",
+      "priority": 27,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)account\\s*fee",
+      "category": "Other",
+      "priority": 28,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)^fees?$",
+      "category": "Other",
+      "priority": 29,
+      "source": "ai"
     }
   ]
 }
