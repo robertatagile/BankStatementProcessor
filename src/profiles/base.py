@@ -142,6 +142,11 @@ class BankProfile:
         symbols = set(self.currency_symbol + "£$€R")
         cleaned = "".join(ch for ch in cleaned if ch not in symbols)
 
+        # Handle trailing minus (e.g. "27 212,96-")
+        if cleaned.endswith("-"):
+            cleaned = cleaned[:-1].strip()
+            negate = True
+
         # Remove thousands separators
         if self.thousands_separator == " ":
             # For space separator: remove spaces between digit groups

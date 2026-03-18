@@ -145,7 +145,7 @@ class DataCleanserStage(Stage):
             session.flush()  # Get the statement ID
 
             # Insert personal/address info if present
-            if header.get("account_holder") or header.get("address_line1"):
+            if header.get("account_holder") or header.get("address_line1") or header.get("account_number", "Unknown") != "Unknown":
                 info = StatementInfo(
                     statement_id=statement.id,
                     account_number=header.get("account_number"),

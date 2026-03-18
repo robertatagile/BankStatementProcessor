@@ -123,7 +123,7 @@ class PDFExtractorStage(Stage):
         self._apply_profile_header_fallbacks(text, header, profile)
 
         # Extract personal/address info (account holder, street, suburb, postal code, account type)
-        self._extract_personal_info(text, header)
+        self._extract_personal_info(text, header, profile)
 
         return header
 
@@ -248,54 +248,131 @@ class PDFExtractorStage(Stage):
                     if parsed is not None:
                         header["closing_balance"] = parsed
 
-    def _extract_personal_info(self, text: str, header: dict) -> None:
-        """Extract personal, address, and account info from FNB statement text.
+    def _extract_personal_info(self, text: str, header: dict, profile: Optional[BankProfile] = None) -> None:
+        """Extract personal, address, and account info from bank statement text.
 
-        FNB layout (spaces may be missing due to PDF rendering):
-            *MEERKATXINVESTMENTS(PTY)LTD  UniversalBranchCode 250655
-            9   fnb.co.za
-            72ELVERAMSTREET
-            LostCards 087-575-9406
-            LYNNWOODGLEN
-            AccountEnquiries 087-736-2247
-            LYNNWOODGLEN Fraud 087-575-9444
-            0081 RelationshipManager ...
-            ...
-            GoldBusinessAccount:63020159249
+        Supports multiple bank formats:
+        - FNB: ``*COMPANY_NAME (PTY) LTD`` followed by street address lines
+        - African Bank: ``Statement for: NAME`` followed by address block
+        - Generic: street address lines, suburb lines, postal codes
         """
-        # --- Street address: line starting with digits followed by alpha (no space needed) ---
-        street_match = re.search(r"(?:^|\n)(\d+\s*[A-Z][A-Z\s]*(?:STREET|STR|ROAD|RD|AVENUE|AVE|DRIVE|DR|LANE|LN|WAY|CRESCENT|CRES|CLOSE|CL|PLACE|PL|BOULEVARD|BLVD))\b", text, re.IGNORECASE)
-        if street_match:
-            header["address_line1"] = street_match.group(1).strip()
+        # --- 1. Account holder from profile header_patterns (if available) ---
+        if profile and "account_holder" in profile.header_patterns:
+            if "account_holder" not in header:
+                m = profile.header_patterns["account_holder"].search(text)
+                if m:
+                    header["account_holder"] = m.group(1).strip()
 
-        # --- Suburb: all-caps word(s) on a line by themselves (not noise lines) ---
-        # Look for lines that are pure suburb names (LYNNWOODGLEN, SANDTON, etc.)
-        suburb_pattern = re.compile(r"(?:^|\n)([A-Z]{4,}(?:\s+[A-Z]{3,})*)\s*$", re.MULTILINE)
-        suburbs = []
-        for m in suburb_pattern.finditer(text):
-            candidate = m.group(1).strip()
-            # Skip known non-suburb content
-            if re.search(r"(?:ACCOUNT|STATEMENT|BALANCE|TRANSACTION|DELIVERY|BRANCH|GOLD|PAGE|RAND|TURNOVER|CLOSING|OPENING|CHARGES)", candidate):
-                continue
-            if candidate not in suburbs:
-                suburbs.append(candidate)
-        if suburbs:
-            header["address_line2"] = suburbs[0]
-            if len(suburbs) > 1:
-                header["address_line3"] = suburbs[1]
+        # --- 2. Account type from profile header_patterns (if available) ---
+        if profile and "account_type" in profile.header_patterns:
+            if "account_type" not in header:
+                m = profile.header_patterns["account_type"].search(text)
+                if m:
+                    header["account_type"] = m.group(1).strip()
 
-        # --- Postal code: 4-digit number at start of a line ---
-        postal_match = re.search(r"(?:^|\n)(\d{4})\s", text)
-        if postal_match:
-            header["postal_code"] = postal_match.group(1)
-
-        # --- Account type: "Gold Business Account" etc. ---
-        acct_type_match = re.search(
-            r"(Gold\s*Business\s*Account|Cheque\s*Account|Savings\s*Account|Current\s*Account|Credit\s*Card)",
+        # --- 3. Try "Statement for: NAME" address block (African Bank style) ---
+        stmt_for_match = re.search(
+            r"Statement\s+for:\s*(.+?)\s*(?:Tax\s+Invoice|\n)",
             text, re.IGNORECASE,
         )
-        if acct_type_match:
-            header["account_type"] = acct_type_match.group(1)
+        if stmt_for_match:
+            name = stmt_for_match.group(1).strip()
+            if "account_holder" not in header:
+                header["account_holder"] = name
+
+            # Extract the address block after "Statement for: NAME"
+            # African Bank format: name\nline1\nline2\ncity\nprovince\npostal
+            # Note: pdfplumber may merge columns, e.g. "14 AVENUE Tax Invoice"
+            block_start = stmt_for_match.end()
+            address_lines = []
+            for line in text[block_start:block_start + 500].split("\n"):
+                line = line.strip()
+                if not line:
+                    continue
+                # Stop at known section headers
+                if re.match(r"(?:STATEMENT\s+FOR|ACCOUNT\s+SUMMARY|PRODUCT\s+INFO|NUMBER\s+OF)", line, re.IGNORECASE):
+                    break
+                # Strip right-column noise merged by pdfplumber
+                line = re.split(r"\s+(?:Tax\s+Invoice|VAT\s+registration|MyWORLD|Account\b)", line, maxsplit=1)[0].strip()
+                if not line:
+                    continue
+                # Skip noise lines
+                if re.search(r"(?:VAT|registration|fnb\.co\.za|Lost\s+Cards|Enquiries|Fraud|Relationship|087-|011\s)", line, re.IGNORECASE):
+                    continue
+                address_lines.append(line)
+                if len(address_lines) >= 5:
+                    break
+
+            if address_lines:
+                header.setdefault("address_line1", address_lines[0])
+            if len(address_lines) > 1:
+                header.setdefault("address_line2", address_lines[1])
+            if len(address_lines) > 2:
+                header.setdefault("address_line3", address_lines[2])
+            # Check last line(s) for postal code (3-4 digits)
+            for addr_line in reversed(address_lines):
+                postal_m = re.match(r"^(\d{3,5})$", addr_line.strip())
+                if postal_m:
+                    header.setdefault("postal_code", postal_m.group(1))
+                    break
+
+        # --- 4. FNB-style: street address starting with digits ---
+        if "address_line1" not in header:
+            street_match = re.search(
+                r"(?:^|\n)(\d+\s*[A-Z][A-Z\s]*(?:STREET|STR|STRAAT|ROAD|RD|WEG|AVENUE|AVE|LAAN|DRIVE|DR|RYLAAN|LANE|LN|WAY|CRESCENT|CRES|CLOSE|CL|PLACE|PL|PLEK|BOULEVARD|BLVD))\b",
+                text, re.IGNORECASE,
+            )
+            if street_match:
+                header["address_line1"] = street_match.group(1).strip()
+
+        # --- 5. Suburb: all-caps word(s) on a line by themselves, or at start of line ---
+        if "address_line2" not in header:
+            # First try: pure uppercase line by itself
+            suburb_pattern = re.compile(r"(?:^|\n)([A-Z]{4,}(?:\s+[A-Z]{3,})*)\s*$", re.MULTILINE)
+            suburbs = []
+            for m in suburb_pattern.finditer(text):
+                candidate = m.group(1).strip()
+                if re.search(r"(?:ACCOUNT|STATEMENT|BALANCE|TRANSACTION|DELIVERY|BRANCH|GOLD|PAGE|RAND|TURNOVER|CLOSING|OPENING|CHARGES|PRODUCT|SUMMARY)", candidate):
+                    continue
+                if candidate not in suburbs:
+                    suburbs.append(candidate)
+
+            # Second try: uppercase word(s) at start of line followed by non-alpha
+            # (handles "MONUMENTPARK UIT 8 Posbus 7263")
+            if not suburbs:
+                start_pattern = re.compile(r"(?:^|\n)([A-Z]{4,}(?:\s+[A-Z]{3,})*)\s+(?=[a-z0-9])", re.MULTILINE)
+                for m in start_pattern.finditer(text):
+                    candidate = m.group(1).strip()
+                    # Remove Afrikaans noise words
+                    candidate = re.sub(r"\s+(?:UIT|VAN|NA)\s*$", "", candidate)
+                    if re.search(r"(?:ACCOUNT|STATEMENT|BALANCE|TRANSACTION|DELIVERY|BRANCH|GOLD|PAGE|RAND|TURNOVER|CLOSING|OPENING|CHARGES|PRODUCT|SUMMARY)", candidate):
+                        continue
+                    if candidate not in suburbs and len(candidate) >= 4:
+                        suburbs.append(candidate)
+
+            if suburbs:
+                header.setdefault("address_line2", suburbs[0])
+                if len(suburbs) > 1:
+                    header.setdefault("address_line3", suburbs[1])
+
+        # --- 6. Postal code: 3-4 digit number at start of a line ---
+        # Match 4-digit code followed by space+letter (city name) to avoid phone numbers
+        if "postal_code" not in header:
+            postal_match = re.search(r"(?:^|\n)(\d{4})\s+[A-Za-z]", text)
+            if not postal_match:
+                # Fallback: 3-digit code on its own line
+                postal_match = re.search(r"(?:^|\n)(\d{3,4})\s*$", text, re.MULTILINE)
+            if postal_match:
+                header["postal_code"] = postal_match.group(1)
+
+        # --- 7. Account type fallback: common SA account types ---
+        if "account_type" not in header:
+            acct_type_match = re.search(
+                r"(Gold\s*Business\s*Account|Cheque\s*Account|Savings\s*Account|Current\s*Account|Credit\s*Card|Primary\s*Account|My\s*World\s*Account)",
+                text, re.IGNORECASE,
+            )
+            if acct_type_match:
+                header["account_type"] = acct_type_match.group(1)
 
     def _extract_lines(
         self, pdf: pdfplumber.PDF, profile: BankProfile
@@ -576,6 +653,12 @@ class PDFExtractorStage(Stage):
         if "amount" in col_map:
             amount_str = get_cell("amount")
             amount = profile.parse_amount(amount_str)
+
+            # If amount column is empty, try bank_charges column as fallback
+            if amount is None and "bank_charges" in col_map:
+                amount_str = get_cell("bank_charges")
+                amount = profile.parse_amount(amount_str)
+
             # Negative amount = debit, positive = credit
             amount_upper = (amount_str or "").strip().upper()
             if amount_upper.endswith(("CR", "KT")):
@@ -586,6 +669,8 @@ class PDFExtractorStage(Stage):
             elif amount is not None and amount < 0:
                 transaction_type = "debit"
                 amount = abs(amount)
+            elif profile.unsigned_is_debit:
+                transaction_type = "debit"
             else:
                 transaction_type = "credit"
         else:
@@ -634,8 +719,10 @@ class PDFExtractorStage(Stage):
                 amount = profile.parse_amount(amount_str)
 
                 if parsed_date and amount is not None:
-                    # Determine transaction type from Cr/Dr suffix or sign
+                    # Determine transaction type from Cr/Dr suffix, sign,
+                    # or Afrikaans Kt/Dt keywords in description
                     amount_upper = (amount_str or "").strip().upper()
+                    desc_upper = desc.upper()
                     if amount_upper.endswith(("CR", "KT")):
                         transaction_type = "credit"
                     elif amount_upper.endswith(("DR", "DT")):
@@ -643,6 +730,9 @@ class PDFExtractorStage(Stage):
                     elif amount < 0:
                         transaction_type = "debit"
                         amount = abs(amount)
+                    elif re.search(r"\bKT\b", desc_upper):
+                        # Afrikaans: "Kt" = Krediet (credit)
+                        transaction_type = "credit"
                     elif profile.unsigned_is_debit:
                         transaction_type = "debit"
                     else:
@@ -698,19 +788,43 @@ class PDFExtractorStage(Stage):
             if d is not None and hasattr(d, "year") and d.year == 1900:
                 line["date"] = d.replace(year=ref_year)
 
-    @staticmethod
+    # Afrikaans → English month name mapping for date parsing
+    _AFR_MONTHS = {
+        "Jan": "Jan", "Feb": "Feb", "Mrt": "Mar", "Maa": "Mar",
+        "Apr": "Apr", "Mei": "May", "Jun": "Jun", "Jul": "Jul",
+        "Aug": "Aug", "Sep": "Sep", "Okt": "Oct", "Nov": "Nov",
+        "Des": "Dec",
+        "Januarie": "January", "Februarie": "February",
+        "Maart": "March", "April": "April", "Mei": "May",
+        "Junie": "June", "Julie": "July", "Augustus": "August",
+        "September": "September", "Oktober": "October",
+        "November": "November", "Desember": "December",
+    }
+
+    @classmethod
+    def _normalize_afrikaans_date(cls, date_str: str) -> str:
+        """Translate Afrikaans month names to English for strptime."""
+        for afr, eng in cls._AFR_MONTHS.items():
+            if afr in date_str:
+                return date_str.replace(afr, eng)
+        return date_str
+
+    @classmethod
     def _parse_date_with_profile(
-        date_str: str, profile: BankProfile
+        cls, date_str: str, profile: BankProfile
     ) -> Optional[datetime]:
         """Try profile's date formats to parse a date string."""
         if not date_str:
             return None
-        date_str = PDFExtractorStage._normalize_date_text(date_str.strip())
-        for fmt in profile.date_formats:
-            try:
-                return datetime.strptime(date_str, fmt).date()
-            except ValueError:
-                continue
+        date_str = date_str.strip()
+        # Try original, then module-level Afrikaans normalization, then class-level normalization
+        candidates = {date_str, PDFExtractorStage._normalize_date_text(date_str), cls._normalize_afrikaans_date(date_str)}
+        for candidate in candidates:
+            for fmt in profile.date_formats:
+                try:
+                    return datetime.strptime(candidate, fmt).date()
+                except ValueError:
+                    continue
         return None
 
     @staticmethod

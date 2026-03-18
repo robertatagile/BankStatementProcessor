@@ -68,5 +68,5 @@ class BankProfileFactory:
     def _ensure_registered(cls) -> None:
         """Ensure SA profiles are registered (lazy import)."""
         if not cls._registry:
-            from src.profiles.south_africa import register_all
+            from src.profiles.banks import register_all
             register_all()

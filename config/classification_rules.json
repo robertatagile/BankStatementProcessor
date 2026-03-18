@@ -1,3 +1,178 @@
 {
-  "rules": []
+  "rules": [
+    {
+      "pattern": "(?i)checkers|pick.*pay|(?i)takealo|pnp\\b|woolworths.*food|shoprite|spar\\b|food.*lovers|fruit.*veg|cambridge food|ok foods|grocery|supermarket",
+      "category": "Groceries",
+      "priority": 1,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)eskom|city power|rand water|tshwane|ekurhuleni|johannesburg water|vodacom|mtn\\b|cell c|telkom|electric|water\\b|energy|municipality|rates.*taxes|lugtyd",
+      "category": "Utilities",
+      "priority": 2,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)rent|mortgage|letting|housing assoc|home loan|bond payment|body corporate|levy",
+      "category": "Rent/Mortgage",
+      "priority": 3,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)salary|wages|payroll|monthly pay|net pay|remuneration",
+      "category": "Salary",
+      "priority": 4,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)transfer|tfr|eft\\b|standing order|direct debit|dd\\b|so\\b|instant payment|oorpl\\b|oorplasing|oorbetaling",
+      "category": "Transfer",
+      "priority": 5,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)netflix|spotify|amazon prime|disney|apple\\.com|subscription|youtube premium|showmax|dstv|multichoice|xbox game pass|hulu",
+      "category": "Subscriptions",
+      "priority": 6,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)uber\\b|bolt ride|bolt trip|bolt taxi|bolt driver|taxi|myciti|rea vaya|gautrain|intercape|greyhound|flixbus|engen|sasol|caltex|total\\b|bp\\b|astron|petrol|fuel|parking|e-toll|sanral|brandstof",
+      "category": "Transport",
+      "priority": 7,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)nandos|nando.s|spur\\b|ocean basket|steers\\b|wimpy\\b|debonairs|roman.s pizza|fishaways|chicken licken|panarottis|mugg.*bean|tashas|vida.*caffe|doppio zero|hussar grill|seattle coffee|col.cacchio|kfc\\b|mcdonalds|mcdonald.s|burger king|subway\\b|pizza hut|restaurant|cafe|coffee|mr.*d.*food|deliveroo|uber eats|bolt food",
+      "category": "Dining",
+      "priority": 8,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)cinema|ster kinekor|nu metro|teatro|theatre|theater|pub|bar|club|entertainment|gaming|steam|playstation|xbox|computicket",
+      "category": "Entertainment",
+      "priority": 9,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)clicks\\b|dis.chem|dischem|medirite|alpha pharm|mediclinic|netcare|life healthcare|intercare|melomed|discovery health|momentum health|bonitas|fedhealth|medihelp|bestmed|spec.*saver|pharmacy|doctor|dentist|hospital|medical|optometrist|gym|virgin active|planet fitness",
+      "category": "Healthcare",
+      "priority": 10,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)discovery insur|momentum insur|sanlam|old mutual|santam|outsurance|king price|hollard|miway|first for women|budget insur|insurance|assurance",
+      "category": "Insurance",
+      "priority": 11,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)atm|cash|withdrawal|cashpoint|onttrekking",
+      "category": "Cash Withdrawal",
+      "priority": 12,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)edgars|jet\\b|truworths|mr price|mrp\\b|ackermans|pep stores|pepkor|foschini|totalsports|sportscene|cotton on|h&m|zara\\b|woolworths|identity\\b|queenspark|markham",
+      "category": "Clothing/Apparel",
+      "priority": 13,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)game\\b|makro\\b|builders warehouse|leroy merlin|hi.fi corp|incredible connection|istore|apple store|samsung store|musica|takealot",
+      "category": "Electronics/Home",
+      "priority": 14,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)pos\\s*purchase\\s*kings\\s*meat",
+      "category": "Groceries",
+      "priority": 15,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)send\\s*money\\s*app",
+      "category": "Transfer",
+      "priority": 16,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)express\\s*pmt\\s*pending",
+      "category": "Transfer",
+      "priority": 17,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)express\\s*pmt\\s*pending.*failed",
+      "category": "Transfer",
+      "priority": 19,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)express\\s*pmt\\s*failed",
+      "category": "Transfer",
+      "priority": 20,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)statement\\s*fee",
+      "category": "Other",
+      "priority": 21,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)van\\s*schaik\\s*bookstore",
+      "category": "Education",
+      "priority": 22,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)pos\\s*purchase\\s*van\\s*deijl\\s*jeweller",
+      "category": "Clothing/Apparel",
+      "priority": 23,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)payshap.*nwu",
+      "category": "Transfer",
+      "priority": 24,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)internet\\s*pmt\\s*to\\s*northerns\\s*blues\\s*hock",
+      "category": "Entertainment",
+      "priority": 25,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)pos\\s*purchase\\s*north\\s*west\\s*universit",
+      "category": "Education",
+      "priority": 26,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)account\\s*fee|transaksiefooi|maandelikse.*fooi|monthly.*fee",
+      "category": "Fees",
+      "priority": 28,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)^fees?$",
+      "category": "Fees",
+      "priority": 29,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)pos\\s*aankope|pos\\s*purchase|kaart\\s*aankoop",
+      "category": "Shopping",
+      "priority": 30,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)payshap|onmiddllke\\s*dig\\s*bet|betaal\\s*bewys",
+      "category": "Transfer",
+      "priority": 31,
+      "source": "manual"
+    }
+  ]
 }

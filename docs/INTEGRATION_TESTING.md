@@ -209,9 +209,9 @@ python3 -m pytest tests/test_integration.py::TestFileManagement::test_mixed_vali
 
 ---
 
-## Part 3 — Running Against Real FNB PDFs
+## Part 3 — Running Against Real Bank Statements
 
-Place real FNB bank statement PDFs in `teststatement/input/` and run:
+Place real bank statement PDFs in `teststatement/input/` and run:
 
 ```bash
 # Dry run (regex classification only, no API key needed)
@@ -222,11 +222,22 @@ export ANTHROPIC_API_KEY="sk-ant-..."
 python3 main.py --pdf-dir teststatement/input --db-path teststatement/tmp/test.db
 ```
 
+### Supported Banks
+
+| Bank | Auto-detected by | Key features |
+|------|------------------|--------------|
+| **FNB** | "FNB", "First National Bank", "FirstRand" | Merged-cell tables, `DDMon` dates, `Cr`/`Dr` suffixes, `*COMPANY` personal info |
+| **African Bank** | "African Bank", "MyWORLD" | `YYYY/MM/DD` dates, negative amounts for debits, Bank Charges column, "Statement for:" address block |
+| **ABSA** | "ABSA", "ABSA Bank" | "Cheque Account" label, period as "01 January 2024 to 31 January 2024" |
+| **Nedbank** | "Nedbank", "Nedbank Ltd" | "Account No" label, Greenbacks awareness |
+| **Standard Bank** | "Standard Bank", "SBSA" | "Statement Period" label |
+| **Capitec** | "Capitec", "Global One" | Single Amount column, "Branch" without "Code" |
+
 The pipeline will:
-1. Auto-detect the bank as FNB from PDF content
-2. Extract transactions using the merged-cell table parser
-3. Extract personal info (account holder, address, postal code, account type)
-4. Seed 14 classification rules into the DB on first run
+1. Auto-detect the bank from PDF content (or use `--bank` flag)
+2. Extract transactions using bank-specific table/text parsers
+3. Extract personal info (account holder, address, postal code, account type) into `statement_info`
+4. Seed classification rules into the DB on first run
 5. Classify transactions via regex, then AI for any remaining unclassified lines
 6. Move processed PDFs to `input/processed/`, failed ones to `input/failed/`
 
@@ -243,7 +254,7 @@ sqlite3 teststatement/tmp/test.db "SELECT count(*) as lines, sum(case when categ
 ## Full Validation (both approaches)
 
 ```bash
-# 1. Unit + automated integration tests (132 tests)
+# 1. Unit + automated integration tests (148 tests)
 python3 -m pytest tests/ -v
 
 # 2. Real PDF test (manually inspect DB results)

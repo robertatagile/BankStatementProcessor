@@ -20,5 +20,7 @@ uploads/
 teststatement/input/*.pdf
 teststatement/input/processed/
 teststatement/input/failed/
-teststatement/temp/
+teststatement/tmp/*
 teststatement/*.db
+.claude/settings.local.json
+.DS_Store
