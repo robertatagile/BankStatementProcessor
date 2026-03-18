@@ -108,6 +108,16 @@ class BankProfile:
         r"(?:\s+(-?[£$€R]?\s?[\d,]+\.\d{2}))?"
     )
 
+    # Optional pattern for dateless fee/sub-transaction lines.
+    # When set, lines matching this pattern inherit the date from the preceding
+    # transaction.  Groups: (description, amount, optional_balance).
+    fee_line_pattern: Optional[str] = None
+
+    # When True, skip table extraction and always use text-based extraction.
+    # Useful for banks where pdfplumber tables lose important data (e.g. FNB
+    # splits Cr/Dr suffixes across cells).
+    prefer_text_extraction: bool = False
+
     # Whether unsigned amounts (no Cr/Dr suffix, no minus sign) default to debit.
     # True for SA banks (which use Cr/Dr suffixes), False for generic (sign-based).
     unsigned_is_debit: bool = False
@@ -147,10 +157,24 @@ class BankProfile:
             cleaned = cleaned[:-1].strip()
             negate = True
 
+        # Handle leading minus with space (OCR: "- 300,00")
+        cleaned = re.sub(r"^-\s+", "-", cleaned.strip())
+
         # Remove thousands separators
         if self.thousands_separator == " ":
+            # OCR space-as-decimal: "22 347 86" → the last space before a
+            # 2-digit group is the decimal separator, not a thousands separator.
+            # Only applies when the preceding digits form valid thousands groups.
+            ocr_dec = re.match(
+                r"^(-?\d{1,3}(?:\s\d{3})*)\s(\d{2})$", cleaned
+            )
+            if ocr_dec:
+                cleaned = ocr_dec.group(1) + "." + ocr_dec.group(2)
             # For space separator: remove spaces between digit groups
             cleaned = re.sub(r"(?<=\d)\s+(?=\d)", "", cleaned)
+
+        # Remove spaces around decimal separators (OCR: "49 .99" or "300 , 00")
+        cleaned = re.sub(r"\s*([.,])\s*(?=\d{2}(?:\D|$))", r"\1", cleaned)
 
         # Handle decimal comma formats such as "4 940,60" used by some ABSA statements.
         if re.search(r",\d{2}$", cleaned):

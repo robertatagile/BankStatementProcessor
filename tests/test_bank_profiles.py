@@ -186,7 +186,8 @@ class TestSAProfiles:
     def test_absa_detection_afrikaans_statement(self):
         text = "Absa Bank Ltd\nTjekrekeningstaat\nTjekrekeningnommer: 7-1323-1819"
         profile = BankProfileFactory.detect(text)
-        assert profile.name == "ABSA"
+        # Text with Afrikaans keywords should detect as ABSA Afrikaans
+        assert profile.name == "ABSA Afrikaans"
 
 
 class TestBankProfileFactory:

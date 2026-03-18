@@ -499,37 +499,38 @@ class PDFExtractorStage(Stage):
         for page_num, page in enumerate(pdf.pages, 1):
             page_lines: list[dict] = []
 
-            # Try table extraction first
-            tables = page.extract_tables()
-            if tables:
-                for table in tables:
-                    lines = self._parse_table(table, page_num, profile)
-                    page_lines.extend(lines)
+            if not profile.prefer_text_extraction:
+                # Try table extraction first
+                tables = page.extract_tables()
+                if tables:
+                    for table in tables:
+                        lines = self._parse_table(table, page_num, profile)
+                        page_lines.extend(lines)
 
-            # Check quality: if most lines have None amounts, tables are broken
-            valid_amounts = sum(
-                1 for ln in page_lines
-                if ln.get("amount") is not None and not ln.get("_continuation")
-            )
-            total_lines = sum(
-                1 for ln in page_lines if not ln.get("_continuation")
-            )
+                # Check quality: if most lines have None amounts, tables are broken
+                valid_amounts = sum(
+                    1 for ln in page_lines
+                    if ln.get("amount") is not None and not ln.get("_continuation")
+                )
+                total_lines = sum(
+                    1 for ln in page_lines if not ln.get("_continuation")
+                )
 
-            if total_lines == 0 or valid_amounts < total_lines * 0.5:
-                # Tables produced bad data — fall back to text extraction
-                text = page.extract_text()
-                if text:
-                    text_lines = self._parse_text(text, page_num, profile)
-                    if text_lines:
-                        logger.debug(
-                            f"Page {page_num}: table extraction had "
-                            f"{valid_amounts}/{total_lines} valid amounts; "
-                            f"using text extraction ({len(text_lines)} lines)"
-                        )
-                        page_lines = text_lines
+                if total_lines == 0 or valid_amounts < total_lines * 0.5:
+                    # Tables produced bad data — fall back to text extraction
+                    text = page.extract_text()
+                    if text:
+                        text_lines = self._parse_text(text, page_num, profile)
+                        if text_lines:
+                            logger.debug(
+                                f"Page {page_num}: table extraction had "
+                                f"{valid_amounts}/{total_lines} valid amounts; "
+                                f"using text extraction ({len(text_lines)} lines)"
+                            )
+                            page_lines = text_lines
 
             if not page_lines:
-                # No tables at all — try text extraction
+                # No tables, or profile prefers text — use text extraction
                 text = page.extract_text()
                 if text:
                     page_lines = self._parse_text(text, page_num, profile)
@@ -554,7 +555,8 @@ class PDFExtractorStage(Stage):
             ln for ln in all_lines
             if not re.match(
                 r"(?:Opening\s*Balance|Closing\s*Balance|Available\s+Balance|"
-                r"Saldo\s+Oorgedra)\b",
+                r"Balance\s+(?:brought|as\s+at)|Saldo\s+[Oo]or(?:gedra|gebring)|"
+                r"Afsluitingsaldo|Openingsaldo)\b",
                 ln.get("description", ""), re.IGNORECASE,
             )
         ]
@@ -915,9 +917,14 @@ class PDFExtractorStage(Stage):
         """Fall back to line-by-line regex extraction from raw text."""
         lines = []
         pattern = profile.compile_text_pattern()
+        fee_pattern = (
+            re.compile(profile.fee_line_pattern) if profile.fee_line_pattern else None
+        )
+        last_date = None
 
         for line in text.split("\n"):
-            match = pattern.search(line.strip())
+            stripped = line.strip()
+            match = pattern.search(stripped)
             if match:
                 gd = match.groupdict()
                 groups = match.groups()
@@ -932,7 +939,17 @@ class PDFExtractorStage(Stage):
                     # Legacy 4-group positional path (all existing profiles)
                     result = self._parse_positional_text_match(groups, profile)
                 if result:
+                    last_date = result["date"]
                     lines.append(result)
+            elif fee_pattern and last_date:
+                # Try fee/sub-transaction pattern (dateless lines like "Transaksie Fooi 3,50-")
+                fee_match = fee_pattern.search(stripped)
+                if fee_match:
+                    fee_result = self._parse_fee_line(
+                        fee_match.groups(), last_date, profile
+                    )
+                    if fee_result:
+                        lines.append(fee_result)
 
         return lines
 
@@ -988,14 +1005,14 @@ class PDFExtractorStage(Stage):
 
         amount_upper = (amount_str or "").strip().upper()
         desc_upper = desc.upper()
-        if amount_upper.endswith("CR"):
+        if amount_upper.endswith("CR") or amount_upper.endswith("KT"):
             transaction_type = "credit"
-        elif amount_upper.endswith("DR"):
+        elif amount_upper.endswith("DR") or amount_upper.endswith("DT"):
             transaction_type = "debit"
         elif amount < 0:
             transaction_type = "debit"
             amount = abs(amount)
-        elif re.search(r"\bKT\b", desc_upper):
+        elif re.search(r"\bKT\b|\bKREDIET\b", desc_upper):
             transaction_type = "credit"
         elif profile.unsigned_is_debit:
             transaction_type = "debit"
@@ -1046,6 +1063,39 @@ class PDFExtractorStage(Stage):
             "transaction_type": transaction_type,
         }
 
+    def _parse_fee_line(
+        self, groups: tuple, date, profile: BankProfile
+    ) -> Optional[dict]:
+        """Parse a dateless fee/sub-transaction line.
+
+        Groups: (description, amount_str, optional_balance_str).
+        The date is inherited from the preceding transaction.
+        """
+        desc = groups[0].strip() if groups[0] else ""
+        amount_str = groups[1] if len(groups) > 1 else None
+        balance_str = groups[2] if len(groups) > 2 else None
+
+        amount = profile.parse_amount(amount_str)
+        if amount is None:
+            return None
+
+        # Trailing minus means debit
+        if amount < 0:
+            transaction_type = "debit"
+            amount = abs(amount)
+        elif profile.unsigned_is_debit:
+            transaction_type = "debit"
+        else:
+            transaction_type = "credit"
+
+        return {
+            "date": date,
+            "description": desc,
+            "amount": abs(amount),
+            "balance": profile.parse_amount(balance_str) if balance_str else None,
+            "transaction_type": transaction_type,
+        }
+
     def _merge_multiline_descriptions(self, lines: list[dict]) -> list[dict]:
         """Merge continuation lines into the previous transaction's description."""
         merged = []
@@ -1085,25 +1135,46 @@ class PDFExtractorStage(Stage):
     def _fix_yearless_dates(lines: list, header: dict) -> None:
         """Replace year=1900 dates with the year from the statement period.
 
-        When a date format like ``%d %b`` is used (FNB), ``strptime`` defaults
-        the year to 1900. This method infers the correct year from the
-        statement's ``period_end`` (or ``period_start``) date.
+        When a date format like ``%d %b`` or ``%m-%d`` is used, ``strptime``
+        defaults the year to 1900.  This method infers the correct year from
+        the statement period, handling cross-year statements (e.g. Oct 2023
+        to Jan 2024) by checking which year places the date within (or
+        closest to) the statement period.
         """
         period_end = header.get("period_end")
         period_start = header.get("period_start")
-        ref_date = period_end or period_start
-        if ref_date is None:
+        if period_end is None and period_start is None:
             return
 
-        # ref_date may be a date or datetime
-        ref_year = ref_date.year if hasattr(ref_date, "year") else None
+        end_year = period_end.year if period_end and hasattr(period_end, "year") else None
+        start_year = period_start.year if period_start and hasattr(period_start, "year") else None
+
+        # Need at least one valid year
+        ref_year = end_year or start_year
         if ref_year is None or ref_year < 1901:
             return
 
         for line in lines:
             d = line.get("date")
-            if d is not None and hasattr(d, "year") and d.year == 1900:
+            if d is None or not hasattr(d, "year") or d.year != 1900:
+                continue
+
+            # If the statement spans a single year, just use that year
+            if start_year == end_year or start_year is None or end_year is None:
                 line["date"] = d.replace(year=ref_year)
+            else:
+                # Cross-year statement: check which year is correct.
+                # Try both years and pick the one that falls within the period.
+                from datetime import date as _date
+                candidate_start = d.replace(year=start_year)
+                candidate_end = d.replace(year=end_year)
+                if period_start <= candidate_start <= period_end:
+                    line["date"] = candidate_start
+                elif period_start <= candidate_end <= period_end:
+                    line["date"] = candidate_end
+                else:
+                    # Fallback: use the year that's closest to the period
+                    line["date"] = candidate_end
 
     # Afrikaans → English month name mapping for date parsing
     _AFR_MONTHS = {
@@ -1135,7 +1206,12 @@ class PDFExtractorStage(Stage):
             return None
         date_str = date_str.strip()
         # Try original, then module-level Afrikaans normalization, then class-level normalization
-        candidates = {date_str, PDFExtractorStage._normalize_date_text(date_str), cls._normalize_afrikaans_date(date_str)}
+        # Also collapse internal spaces around separators (OCR: "10- 30" → "10-30")
+        compact = re.sub(r"\s*([/\-\.])\s*", r"\1", date_str)
+        # OCR digit normalization (I/i/l/L/t → 1, O/o → 0)
+        _ocr_map = str.maketrans("IilLtOo", "1111100")
+        ocr_fixed = compact.translate(_ocr_map)
+        candidates = {date_str, compact, ocr_fixed, PDFExtractorStage._normalize_date_text(date_str), cls._normalize_afrikaans_date(date_str)}
         for candidate in candidates:
             for fmt in profile.date_formats:
                 try:
