@@ -5,8 +5,11 @@ from __future__ import annotations
 
 import argparse
 import os
+import shutil
 import sys
+from datetime import datetime
 from pathlib import Path
+from typing import List
 
 from src.models.database import init_db
 from src.pipeline.ai_classifier import AIClassifierStage
@@ -77,6 +80,48 @@ def build_pipeline(
         )
 
     return Pipeline(stages)
+
+
+def _safe_move(src: Path, dest_dir: Path) -> Path:
+    """Move *src* into *dest_dir*, adding a timestamp suffix if a file with the same name already exists."""
+    dest = dest_dir / src.name
+    if dest.exists():
+        stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        dest = dest_dir / f"{src.stem}_{stamp}{src.suffix}"
+    shutil.move(str(src), str(dest))
+    return dest
+
+
+def process_files(
+    pdf_files: List[Path],
+    pipeline: Pipeline,
+    input_dir: Path,
+) -> List[PipelineContext]:
+    """Run the pipeline on each PDF, moving files to processed/ or failed/."""
+    processed_dir = input_dir / "processed"
+    failed_dir = input_dir / "failed"
+    os.makedirs(processed_dir, exist_ok=True)
+    os.makedirs(failed_dir, exist_ok=True)
+
+    results: List[PipelineContext] = []
+    for pdf_path in pdf_files:
+        logger.info(f"\n{'='*60}")
+        logger.info(f"Processing: {pdf_path}")
+        logger.info(f"{'='*60}")
+
+        ctx = PipelineContext(file_path=str(pdf_path))
+        try:
+            result = pipeline.run(ctx)
+            results.append(result)
+            _safe_move(pdf_path, processed_dir)
+            logger.info(f"Moved to processed: {pdf_path.name}")
+        except Exception as e:
+            logger.error(f"Failed to process {pdf_path}: {e}")
+            _safe_move(pdf_path, failed_dir)
+            logger.info(f"Moved to failed: {pdf_path.name}")
+            continue
+
+    return results
 
 
 def main() -> None:
@@ -157,20 +202,14 @@ def main() -> None:
 
     logger.info(f"Found {len(pdf_files)} PDF file(s) to process")
 
-    # Process each PDF
-    results = []
-    for pdf_path in pdf_files:
-        logger.info(f"\n{'='*60}")
-        logger.info(f"Processing: {pdf_path}")
-        logger.info(f"{'='*60}")
+    # Determine input directory for file management
+    if args.pdf_file:
+        input_dir = Path(args.pdf_file).parent
+    else:
+        input_dir = Path(args.pdf_dir)
 
-        ctx = PipelineContext(file_path=str(pdf_path))
-        try:
-            result = pipeline.run(ctx)
-            results.append(result)
-        except Exception as e:
-            logger.error(f"Failed to process {pdf_path}: {e}")
-            continue
+    # Process each PDF (moves to processed/ or failed/)
+    results = process_files(pdf_files, pipeline, input_dir)
 
     # Print summary
     logger.info(f"\n{'='*60}")
