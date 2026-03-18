@@ -66,6 +66,11 @@ class PDFExtractorStage(Stage):
             full_text = "\n".join(
                 page.extract_text() or "" for page in pdf.pages
             )
+
+            # OCR fallback: if pdfplumber yields no text (scanned PDF)
+            if len(full_text.strip()) < 20:
+                full_text = self._ocr_all_pages(pdf)
+
             context.raw_header = self._extract_header(full_text, profile)
             context.raw_lines = self._extract_lines(pdf, profile)
 
@@ -89,6 +94,9 @@ class PDFExtractorStage(Stage):
 
         if self._auto_detect and pdf.pages:
             page1_text = pdf.pages[0].extract_text() or ""
+            # OCR fallback for bank detection on scanned PDFs
+            if len(page1_text.strip()) < 20:
+                page1_text = self._ocr_page(pdf.pages[0])
             return BankProfileFactory.detect(page1_text)
 
         return BankProfile()
@@ -510,6 +518,16 @@ class PDFExtractorStage(Stage):
                 if text:
                     page_lines = self._parse_text(text, page_num, profile)
 
+            # OCR fallback: if no lines extracted (scanned PDF page)
+            if not page_lines:
+                ocr_text = self._ocr_page(page)
+                if ocr_text:
+                    page_lines = self._parse_text(ocr_text, page_num, profile)
+                    if page_lines:
+                        logger.info(
+                            f"Page {page_num}: OCR extracted {len(page_lines)} lines"
+                        )
+
             all_lines.extend(page_lines)
 
         # Handle multi-line descriptions (rows with description but no amount)
@@ -851,68 +869,132 @@ class PDFExtractorStage(Stage):
         for line in text.split("\n"):
             match = pattern.search(line.strip())
             if match:
+                gd = match.groupdict()
                 groups = match.groups()
-                if len(groups) == 6:
+                if gd.get("date") is not None:
+                    # Named-group path (Investec and future profiles)
+                    result = self._parse_named_text_match(gd, profile)
+                elif len(groups) == 6:
                     # Multi-column format (e.g. TymeBank):
                     # date, desc, fees, money_out, money_in, balance
-                    date_str, desc = groups[0], groups[1]
-                    fees_str, out_str, in_str, balance_str = (
-                        groups[2], groups[3], groups[4], groups[5],
-                    )
-                    # Pick the actual transaction amount from the right column
-                    if out_str and out_str != "-":
-                        amount_str = out_str
-                        transaction_type = "debit"
-                    elif in_str and in_str != "-":
-                        amount_str = in_str
-                        transaction_type = "credit"
-                    elif fees_str and fees_str != "-":
-                        amount_str = fees_str
-                        transaction_type = "debit"
-                    else:
-                        continue
+                    result = self._parse_6group_text_match(groups, profile)
                 else:
-                    date_str, desc, amount_str, balance_str = groups
-                    transaction_type = None  # determined below
-
-                parsed_date = self._parse_date_with_profile(date_str, profile)
-                amount = profile.parse_amount(amount_str)
-
-                if parsed_date and amount is not None:
-                    # Determine transaction type if not already set by column position
-                    if transaction_type is None:
-                        amount_upper = (amount_str or "").strip().upper()
-                        desc_upper = desc.upper()
-                        if amount_upper.endswith(("CR", "KT")):
-                            transaction_type = "credit"
-                        elif amount_upper.endswith(("DR", "DT")):
-                            transaction_type = "debit"
-                        elif amount < 0:
-                            transaction_type = "debit"
-                            amount = abs(amount)
-                        elif re.search(r"\bKT\b", desc_upper):
-                            # Afrikaans: "Kt" = Krediet (credit)
-                            transaction_type = "credit"
-                        elif profile.unsigned_is_debit:
-                            transaction_type = "debit"
-                        else:
-                            transaction_type = "credit"
-
-                    lines.append(
-                        {
-                            "date": parsed_date,
-                            "description": desc.strip(),
-                            "amount": abs(amount),
-                            "balance": (
-                                profile.parse_amount(balance_str)
-                                if balance_str
-                                else None
-                            ),
-                            "transaction_type": transaction_type,
-                        }
-                    )
+                    # Legacy 4-group positional path (all existing profiles)
+                    result = self._parse_positional_text_match(groups, profile)
+                if result:
+                    lines.append(result)
 
         return lines
+
+    def _parse_named_text_match(
+        self, gd: dict, profile: BankProfile
+    ) -> Optional[dict]:
+        """Parse a regex match with named groups (e.g. Investec pattern)."""
+        date_str = gd["date"]
+        desc = gd.get("description", "").strip()
+        parsed_date = self._parse_date_with_profile(date_str, profile)
+        if not parsed_date:
+            return None
+
+        # Determine amount: either a single "amount" field, or separate "debit"/"credit"
+        amount_str = gd.get("amount") or gd.get("debit") or gd.get("credit") or ""
+        amount = profile.parse_amount(amount_str)
+        if amount is None:
+            return None
+
+        # Determine transaction type from trailing -, Cr/Dr suffix, or field name
+        amount_upper = amount_str.strip().upper()
+        if amount_upper.endswith("CR") or gd.get("credit"):
+            transaction_type = "credit"
+        elif amount_upper.endswith("DR") or gd.get("debit"):
+            transaction_type = "debit"
+        elif amount < 0:
+            transaction_type = "debit"
+            amount = abs(amount)
+        elif profile.unsigned_is_debit:
+            transaction_type = "debit"
+        else:
+            transaction_type = "credit"
+
+        balance_str = gd.get("balance") or ""
+        return {
+            "date": parsed_date,
+            "description": desc,
+            "amount": abs(amount),
+            "balance": profile.parse_amount(balance_str) if balance_str else None,
+            "transaction_type": transaction_type,
+        }
+
+    def _parse_positional_text_match(
+        self, groups: tuple, profile: BankProfile
+    ) -> Optional[dict]:
+        """Parse a regex match with 4 positional groups (legacy path)."""
+        date_str, desc, amount_str, balance_str = groups
+        parsed_date = self._parse_date_with_profile(date_str, profile)
+        amount = profile.parse_amount(amount_str)
+
+        if not parsed_date or amount is None:
+            return None
+
+        amount_upper = (amount_str or "").strip().upper()
+        desc_upper = desc.upper()
+        if amount_upper.endswith("CR"):
+            transaction_type = "credit"
+        elif amount_upper.endswith("DR"):
+            transaction_type = "debit"
+        elif amount < 0:
+            transaction_type = "debit"
+            amount = abs(amount)
+        elif re.search(r"\bKT\b", desc_upper):
+            transaction_type = "credit"
+        elif profile.unsigned_is_debit:
+            transaction_type = "debit"
+        else:
+            transaction_type = "credit"
+
+        return {
+            "date": parsed_date,
+            "description": desc.strip(),
+            "amount": abs(amount),
+            "balance": profile.parse_amount(balance_str) if balance_str else None,
+            "transaction_type": transaction_type,
+        }
+
+    def _parse_6group_text_match(
+        self, groups: tuple, profile: BankProfile
+    ) -> Optional[dict]:
+        """Parse a regex match with 6 positional groups (TymeBank format).
+
+        Groups: date, description, fees, money_out, money_in, balance.
+        """
+        date_str, desc, fees_str, out_str, in_str, balance_str = groups
+        parsed_date = self._parse_date_with_profile(date_str, profile)
+        if not parsed_date:
+            return None
+
+        if out_str and out_str != "-":
+            amount_str = out_str
+            transaction_type = "debit"
+        elif in_str and in_str != "-":
+            amount_str = in_str
+            transaction_type = "credit"
+        elif fees_str and fees_str != "-":
+            amount_str = fees_str
+            transaction_type = "debit"
+        else:
+            return None
+
+        amount = profile.parse_amount(amount_str)
+        if amount is None:
+            return None
+
+        return {
+            "date": parsed_date,
+            "description": desc.strip(),
+            "amount": abs(amount),
+            "balance": profile.parse_amount(balance_str) if balance_str else None,
+            "transaction_type": transaction_type,
+        }
 
     def _merge_multiline_descriptions(self, lines: list[dict]) -> list[dict]:
         """Merge continuation lines into the previous transaction's description."""
@@ -923,6 +1005,31 @@ class PDFExtractorStage(Stage):
             elif not line.get("_continuation"):
                 merged.append(line)
         return merged
+
+    @staticmethod
+    def _ocr_page(page) -> str:
+        """Run OCR on a single pdfplumber page. Returns empty string on failure."""
+        try:
+            from src.utils.ocr import ocr_page_to_text
+            return ocr_page_to_text(page)
+        except ImportError:
+            return ""
+
+    @staticmethod
+    def _ocr_all_pages(pdf) -> str:
+        """Run OCR on all pages and return concatenated text."""
+        try:
+            from src.utils.ocr import ocr_page_to_text
+            texts = []
+            for page in pdf.pages:
+                texts.append(ocr_page_to_text(page) or "")
+            result = "\n".join(texts)
+            if result.strip():
+                logger.info(f"OCR extracted {len(result)} characters from {len(pdf.pages)} pages")
+            return result
+        except ImportError:
+            logger.warning("pytesseract not installed; cannot OCR scanned PDF")
+            return ""
 
     @staticmethod
     def _fix_yearless_dates(lines: list, header: dict) -> None:

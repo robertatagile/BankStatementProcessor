@@ -213,7 +213,9 @@ class TestBankProfileFactory:
         assert "absa_afrikaans" in banks
         assert "tymebank" in banks
         assert "discovery_bank" in banks
-        assert len(banks) == 9
+        assert "investec" in banks
+        assert "old_mutual" in banks
+        assert len(banks) == 11
 
     def test_detect_absa(self):
         text = "ABSA Bank\nCheque Account\nAccount Number: 1234567890"

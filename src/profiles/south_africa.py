@@ -25,6 +25,8 @@ from src.profiles.banks.standard_bank import standard_bank_profile  # noqa: F401
 from src.profiles.banks.capitec import capitec_profile  # noqa: F401
 from src.profiles.banks.african_bank import african_bank_profile  # noqa: F401
 from src.profiles.banks.discovery_bank import discovery_bank_profile  # noqa: F401
+from src.profiles.banks.investec import investec_profile  # noqa: F401
+from src.profiles.banks.old_mutual import old_mutual_profile  # noqa: F401
 
 
 
