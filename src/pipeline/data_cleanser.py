@@ -22,9 +22,16 @@ class DataCleanserStage(Stage):
     def process(self, context: PipelineContext) -> PipelineContext:
         original_count = len(context.raw_lines)
 
+        # Step 0: Filter out lines with missing essential fields
+        context.raw_lines = self._filter_incomplete(context.raw_lines)
+        filtered_count = original_count - len(context.raw_lines)
+        if filtered_count > 0:
+            logger.info(f"Filtered {filtered_count} incomplete records (missing date or amount)")
+
         # Step 1: Deduplicate
+        pre_dedup = len(context.raw_lines)
         context.raw_lines = self._deduplicate(context.raw_lines)
-        dedup_count = original_count - len(context.raw_lines)
+        dedup_count = pre_dedup - len(context.raw_lines)
         if dedup_count > 0:
             logger.info(f"Removed {dedup_count} duplicate records")
 
@@ -39,6 +46,18 @@ class DataCleanserStage(Stage):
             f"{len(context.unclassified_lines)} lines"
         )
         return context
+
+    def _filter_incomplete(self, lines: list[dict]) -> list[dict]:
+        """Remove lines that are missing a date or amount (cannot be stored)."""
+        valid = []
+        for line in lines:
+            if line.get("date") is None or line.get("amount") is None:
+                logger.debug(
+                    f"Skipping incomplete line: {line.get('description', '?')}"
+                )
+                continue
+            valid.append(line)
+        return valid
 
     def _deduplicate(self, lines: list[dict]) -> list[dict]:
         """Remove duplicate records based on (date, description, amount)."""
@@ -73,9 +92,14 @@ class DataCleanserStage(Stage):
         total_debits = Decimal("0.00")
 
         for line in context.raw_lines:
-            amount = line.get("amount", Decimal("0.00"))
+            amount = line.get("amount")
+            if amount is None:
+                continue
             if not isinstance(amount, Decimal):
-                amount = Decimal(str(amount))
+                try:
+                    amount = Decimal(str(amount))
+                except Exception:
+                    continue
 
             if line.get("transaction_type") == "credit":
                 total_credits += amount

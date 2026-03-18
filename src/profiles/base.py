@@ -108,12 +108,30 @@ class BankProfile:
         r"(?:\s+(-?[£$€R]?\s?[\d,]+\.\d{2}))?"
     )
 
+    # Whether unsigned amounts (no Cr/Dr suffix, no minus sign) default to debit.
+    # True for SA banks (which use Cr/Dr suffixes), False for generic (sign-based).
+    unsigned_is_debit: bool = False
+
     def parse_amount(self, amount_str: str) -> Optional[Decimal]:
-        """Parse an amount string into a Decimal, handling bank-specific formatting."""
+        """Parse an amount string into a Decimal, handling bank-specific formatting.
+
+        Handles Cr/Dr suffixes (common in South African bank statements):
+        - ``Cr`` suffix is stripped (credit indicator, amount stays positive)
+        - ``Dr`` suffix is stripped and the amount is negated
+        """
         if not amount_str:
             return None
 
         cleaned = amount_str.strip()
+
+        # Detect and strip Cr/Dr suffix (e.g. "22,865.96Cr" or "113.68Dr")
+        negate = False
+        upper = cleaned.upper()
+        if upper.endswith("CR"):
+            cleaned = cleaned[:-2].strip()
+        elif upper.endswith("DR"):
+            cleaned = cleaned[:-2].strip()
+            negate = True
 
         # Remove currency symbols (profile-specific + common ones)
         symbols = set(self.currency_symbol + "£$€R")
@@ -134,7 +152,8 @@ class BankProfile:
             return None
 
         try:
-            return Decimal(cleaned)
+            value = Decimal(cleaned)
+            return -value if negate else value
         except (InvalidOperation, ValueError):
             return None
 

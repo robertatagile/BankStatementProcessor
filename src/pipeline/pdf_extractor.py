@@ -43,6 +43,9 @@ class PDFExtractorStage(Stage):
             context.raw_header = self._extract_header(full_text, profile)
             context.raw_lines = self._extract_lines(pdf, profile)
 
+        # Fix year-less dates (e.g. DD Mon → year defaults to 1900)
+        self._fix_yearless_dates(context.raw_lines, context.raw_header)
+
         logger.info(
             f"Extracted header: {context.raw_header.get('bank_name', 'Unknown')} | "
             f"Profile: {profile.name} | Lines: {len(context.raw_lines)}"
@@ -86,22 +89,53 @@ class PDFExtractorStage(Stage):
     def _extract_lines(
         self, pdf: pdfplumber.PDF, profile: BankProfile
     ) -> list[dict]:
-        """Extract transaction lines from all pages."""
+        """Extract transaction lines from all pages.
+
+        Tries table extraction first; if a page's tables yield mostly empty
+        amounts (common with FNB's merged-cell layout), falls back to text
+        extraction for that page.
+        """
         all_lines = []
 
         for page_num, page in enumerate(pdf.pages, 1):
+            page_lines: list[dict] = []
+
             # Try table extraction first
             tables = page.extract_tables()
             if tables:
                 for table in tables:
                     lines = self._parse_table(table, page_num, profile)
-                    all_lines.extend(lines)
-            else:
-                # Fall back to text-based extraction
+                    page_lines.extend(lines)
+
+            # Check quality: if most lines have None amounts, tables are broken
+            valid_amounts = sum(
+                1 for ln in page_lines
+                if ln.get("amount") is not None and not ln.get("_continuation")
+            )
+            total_lines = sum(
+                1 for ln in page_lines if not ln.get("_continuation")
+            )
+
+            if total_lines == 0 or valid_amounts < total_lines * 0.5:
+                # Tables produced bad data — fall back to text extraction
                 text = page.extract_text()
                 if text:
-                    lines = self._parse_text(text, page_num, profile)
-                    all_lines.extend(lines)
+                    text_lines = self._parse_text(text, page_num, profile)
+                    if text_lines:
+                        logger.debug(
+                            f"Page {page_num}: table extraction had "
+                            f"{valid_amounts}/{total_lines} valid amounts; "
+                            f"using text extraction ({len(text_lines)} lines)"
+                        )
+                        page_lines = text_lines
+
+            if not page_lines:
+                # No tables at all — try text extraction
+                text = page.extract_text()
+                if text:
+                    page_lines = self._parse_text(text, page_num, profile)
+
+            all_lines.extend(page_lines)
 
         # Handle multi-line descriptions (rows with description but no amount)
         all_lines = self._merge_multiline_descriptions(all_lines)
@@ -243,9 +277,17 @@ class PDFExtractorStage(Stage):
                 amount = profile.parse_amount(amount_str)
 
                 if parsed_date and amount is not None:
-                    if amount < 0:
+                    # Determine transaction type from Cr/Dr suffix or sign
+                    amount_upper = (amount_str or "").strip().upper()
+                    if amount_upper.endswith("CR"):
+                        transaction_type = "credit"
+                    elif amount_upper.endswith("DR"):
+                        transaction_type = "debit"
+                    elif amount < 0:
                         transaction_type = "debit"
                         amount = abs(amount)
+                    elif profile.unsigned_is_debit:
+                        transaction_type = "debit"
                     else:
                         transaction_type = "credit"
 
@@ -253,7 +295,7 @@ class PDFExtractorStage(Stage):
                         {
                             "date": parsed_date,
                             "description": desc.strip(),
-                            "amount": amount,
+                            "amount": abs(amount),
                             "balance": (
                                 profile.parse_amount(balance_str)
                                 if balance_str
@@ -274,6 +316,30 @@ class PDFExtractorStage(Stage):
             elif not line.get("_continuation"):
                 merged.append(line)
         return merged
+
+    @staticmethod
+    def _fix_yearless_dates(lines: list, header: dict) -> None:
+        """Replace year=1900 dates with the year from the statement period.
+
+        When a date format like ``%d %b`` is used (FNB), ``strptime`` defaults
+        the year to 1900. This method infers the correct year from the
+        statement's ``period_end`` (or ``period_start``) date.
+        """
+        period_end = header.get("period_end")
+        period_start = header.get("period_start")
+        ref_date = period_end or period_start
+        if ref_date is None:
+            return
+
+        # ref_date may be a date or datetime
+        ref_year = ref_date.year if hasattr(ref_date, "year") else None
+        if ref_year is None or ref_year < 1901:
+            return
+
+        for line in lines:
+            d = line.get("date")
+            if d is not None and hasattr(d, "year") and d.year == 1900:
+                line["date"] = d.replace(year=ref_year)
 
     @staticmethod
     def _parse_date_with_profile(

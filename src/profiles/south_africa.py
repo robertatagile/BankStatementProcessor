@@ -7,7 +7,12 @@ from src.profiles.base import BankProfile
 
 
 def _sa_header_patterns() -> Dict[str, re.Pattern]:
-    """Shared South African bank header patterns."""
+    """Shared South African bank header patterns.
+
+    Handles both spaced (``Statement Period : 31 March 2025 to 30 April 2025``)
+    and no-space (``StatementPeriod:31January2025to28February2025``) layouts
+    that FNB PDFs produce depending on the rendering.
+    """
     return {
         "bank_name": re.compile(
             r"^(.+?(?:Bank|Capitec|ABSA|FNB|Nedbank))", re.IGNORECASE
@@ -20,13 +25,13 @@ def _sa_header_patterns() -> Dict[str, re.Pattern]:
             r"(?:Branch\s*(?:Code)?)\s*[:\-]?\s*(\d{4,6})", re.IGNORECASE
         ),
         "period_start": re.compile(
-            r"(?:Statement\s+(?:Period|Date|From))\s*[:\-]?\s*"
-            r"(\d{1,2}[\s\/\-](?:\w+|\d{1,2})[\s\/\-]\d{2,4})",
+            r"(?:Statement\s*Period|Statement\s*Date|Statement\s*From)\s*[:\-]?\s*"
+            r"(\d{1,2}\s*(?:[A-Za-z]+|\d{1,2})\s*[\s\/\-]?\s*\d{2,4})",
             re.IGNORECASE,
         ),
         "period_end": re.compile(
             r"(?:to|ending|through)\s*[:\-]?\s*"
-            r"(\d{1,2}[\s\/\-](?:\w+|\d{1,2})[\s\/\-]\d{2,4})",
+            r"(\d{1,2}\s*(?:[A-Za-z]+|\d{1,2})\s*[\s\/\-]?\s*\d{2,4})",
             re.IGNORECASE,
         ),
         "opening_balance": re.compile(
@@ -43,11 +48,16 @@ def _sa_header_patterns() -> Dict[str, re.Pattern]:
 
 
 def _sa_date_formats() -> List[str]:
-    """Date formats common to South African bank statements."""
+    """Date formats common to South African bank statements.
+
+    Includes no-space variants (e.g. ``31January2025``) produced by some
+    FNB PDF renderings where spaces between fields are missing.
+    """
     return [
         "%d/%m/%Y",
         "%d %B %Y",
         "%d %b %Y",
+        "%d%B%Y",       # no-space: 31January2025
         "%d-%m-%Y",
         "%Y-%m-%d",
         "%d/%m/%y",
@@ -93,6 +103,7 @@ def _sa_base_profile(**overrides: Any) -> BankProfile:
         column_keywords=_sa_column_keywords(),
         default_column_map={"date": 0, "description": 1, "debit": 2, "credit": 3, "balance": 4},
         text_line_pattern=_sa_text_line_pattern(),
+        unsigned_is_debit=True,
     )
     defaults.update(overrides)
     return BankProfile(**defaults)
@@ -131,6 +142,20 @@ def absa_profile() -> BankProfile:
     )
 
 
+def _fnb_text_line_pattern() -> str:
+    """FNB-specific text extraction pattern.
+
+    FNB uses ``DD Mon`` dates (no year), amounts with optional ``Cr``/``Dr``
+    suffix, and balances that always end with ``Cr`` or ``Dr``.
+    """
+    return (
+        r"(\d{2}\s+\w{3})\s+"                    # Date: DD Mon (e.g. "01 Apr")
+        r"(.*?)"                                   # Description (non-greedy, may be empty)
+        r"\s*([\d,]+\.\d{2}(?:Cr|Dr)?)"           # Amount (optional Cr/Dr)
+        r"\s+([\d,]+\.\d{2}(?:Cr|Dr))"            # Balance (must have Cr or Dr)
+    )
+
+
 def fnb_profile() -> BankProfile:
     """First National Bank (FirstRand) profile."""
     patterns = _sa_header_patterns()
@@ -140,10 +165,15 @@ def fnb_profile() -> BankProfile:
         re.IGNORECASE,
     )
 
+    # FNB date formats: DD Mon (no year) + standard SA formats
+    fnb_dates = ["%d %b"] + _sa_date_formats()
+
     return _sa_base_profile(
         name="FNB",
         detection_keywords=["fnb", "first national bank", "firstrand"],
         header_patterns=patterns,
+        text_line_pattern=_fnb_text_line_pattern(),
+        date_formats=fnb_dates,
     )
 
 
