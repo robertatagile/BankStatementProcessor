@@ -377,7 +377,7 @@ class PDFExtractorStage(Stage):
                         line = line.strip()
                         if not line:
                             continue
-                        if re.match(r"(?:Tax|Account|Statement|VAT|24hr|Capitec\s+Bank\s+is)", line, re.IGNORECASE):
+                        if re.match(r"(?:Tax|Account|Statement|VAT|24hr|Capitec\s+Bank\s+is|From:|To:|Date\b)", line, re.IGNORECASE):
                             break
                         # Strip bank address noise (may be at start or mid-line)
                         left = bank_noise.split(line, maxsplit=1)[0].strip()
@@ -407,7 +407,10 @@ class PDFExtractorStage(Stage):
                 text, re.IGNORECASE,
             )
             if street_match:
-                header["address_line1"] = street_match.group(1).strip()
+                candidate = street_match.group(1).strip()
+                # Skip bank/institutional footer addresses
+                if not re.search(r"(?:Discovery|Capitec|Absa|FNB|Nedbank|Standard\s+Bank|African\s+Bank)", candidate, re.IGNORECASE):
+                    header["address_line1"] = candidate
 
         # --- 5. Suburb: all-caps word(s) on a line by themselves, or at start of line ---
         if "address_line2" not in header:
@@ -743,7 +746,8 @@ class PDFExtractorStage(Stage):
         def get_cell(key: str) -> str:
             idx = col_map.get(key)
             if idx is not None and idx < len(row) and row[idx]:
-                return str(row[idx]).strip()
+                # Replace null bytes (PDF rendering artifacts) with empty string
+                return str(row[idx]).replace("\x00", "").strip()
             return ""
 
         date_str = get_cell("date")
