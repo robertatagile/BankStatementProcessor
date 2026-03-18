@@ -10,3 +10,7 @@ dist/
 build/
 .venv/
 venv/
+teststatement/input/*.pdf
+teststatement/input/processed/
+teststatement/input/failed/
+teststatement/*.db

@@ -1,176 +1,211 @@
 # Integration Testing Guide
 
-This document explains the integration testing strategy for the Bank Statement Processor, covering the full pipeline end-to-end and the file management system that moves documents to `processed/` or `failed/` after each run.
+This document explains the integration testing strategy for the Bank Statement Processor, covering both automated pytest tests and the manual test runner for real bank statement PDFs.
 
-## Overview
+---
 
-Integration tests validate the **entire pipeline** — from raw PDF input through to classified database records and post-processing file moves. Unlike the unit tests (which mock individual stages), integration tests exercise the real PDF extractor, data cleanser, and regex classifier working together.
+## Part 1 — Real Statement Test Runner (`teststatement/`)
+
+### Folder Structure
 
 ```
-input/
-├── statement.pdf           ← PDF dropped here for processing
-├── fake.pdf                ← Non-PDF file (negative test)
-├── processed/
-│   └── statement.pdf       ← Moved here on SUCCESS
-└── failed/
-    └── fake.pdf            ← Moved here on FAILURE
+teststatement/
+├── run_test.sh              ← launcher script
+├── test_statements.db       ← SQLite DB (created per run, deleted on reset)
+└── input/
+    ├── April2025.pdf        ← PDFs to process (you add these)
+    ├── Feb2025.pdf
+    ├── ...
+    ├── processed/           ← successfully processed PDFs land here
+    │   └── April2025.pdf
+    └── failed/              ← PDFs that error out land here
+        └── corrupt.pdf
 ```
 
-## File Management Flow
+### Quick Start
+
+```bash
+# 1. Place PDF bank statements in the input folder
+cp ~/statements/*.pdf teststatement/input/
+
+# 2. Run the test (from project root OR inside teststatement/)
+bash teststatement/run_test.sh
+```
+
+### What the Script Does
+
+1. **Resets** the previous run — moves any files in `processed/` and `failed/` back to `input/`
+2. **Deletes** the previous test database (`test_statements.db`) for a clean run
+3. **Counts** PDF files and prints a pre-flight summary
+4. **Runs the pipeline** in `--dry-run` mode (skips AI classification, no API key needed)
+5. **Reports results** — counts of processed vs failed, with file lists
+6. **Prints a DB summary** — statement count, line count, classification percentage, and top categories
+
+### File Movement
+
+| Outcome | Destination |
+|---------|-------------|
+| Pipeline completes successfully | `input/processed/` |
+| Pipeline throws an exception | `input/failed/` |
+| Duplicate filename in destination | Timestamp suffix added (e.g. `April2025_20260318_094512.pdf`) |
+
+### Adding Test Files
+
+**Positive tests (should succeed):** Place real bank statement PDFs in `teststatement/input/`. The pipeline will extract headers, parse transactions, and classify them using regex rules.
+
+**Negative tests (should fail gracefully):** Add files that will fail parsing:
+- Text files renamed to `.pdf`
+- Empty `.pdf` files (zero bytes)
+- Corrupted PDFs (partial or garbled content)
+- Non-statement PDFs (invoices, receipts, documents with no transaction data)
+
+These files should end up in `input/failed/`.
+
+### Interpreting Results
+
+The script prints a colour-coded summary:
+
+```
+  Processed : 12       (green)
+  Failed    : 1        (red)
+
+Database summary:
+  Statements      : 12
+  Total lines     : 487
+  Classified      : 423
+  Unclassified    : 64
+  Classification% : 86.9%
+
+  Top categories:
+    Transfer                  98
+    Groceries                 67
+    Utilities                 54
+```
+
+### Database Inspection
+
+The test database is saved at `teststatement/test_statements.db`. Query it directly:
+
+```bash
+sqlite3 teststatement/test_statements.db
+
+-- View all statements
+SELECT id, account_holder, account_number, statement_date FROM statements;
+
+-- View unclassified lines (candidates for new regex rules)
+SELECT description, amount FROM statement_lines WHERE category IS NULL;
+
+-- Category breakdown
+SELECT category, COUNT(*), SUM(amount)
+FROM statement_lines GROUP BY category ORDER BY COUNT(*) DESC;
+```
+
+### Running with AI Classification
+
+To enable the AI classification stage (Stage 4), set your API key and run directly:
+
+```bash
+export ANTHROPIC_API_KEY="sk-ant-..."
+python3 main.py \
+    --pdf-dir teststatement/input \
+    --db-path teststatement/test_statements.db \
+    --rules-path config/classification_rules.json
+```
+
+---
+
+## Part 2 — Automated Integration Tests (`tests/test_integration.py`)
+
+These tests use programmatically generated PDFs (via `fpdf2`) and run entirely inside pytest with `tmp_path` fixtures. No real bank statements or API keys are needed.
+
+### File Management Flow
 
 The `process_files()` function in `main.py` handles post-processing file management:
 
-1. **Before processing** — `processed/` and `failed/` subdirectories are created inside the input directory if they don't already exist.
+1. **Before processing** — `processed/` and `failed/` subdirectories are created if they don't exist.
 2. **On success** — The PDF is moved from `input/` to `input/processed/`.
 3. **On failure** — The PDF is moved from `input/` to `input/failed/`.
-4. **Duplicate filenames** — If a file with the same name already exists in the target directory, a timestamp suffix is appended (e.g., `statement_20260318_143022.pdf`).
+4. **Duplicate filenames** — A timestamp suffix is appended (e.g., `statement_20260318_143022.pdf`).
 
-## Test Fixtures
+### Test Fixtures
 
-All test fixtures are generated **programmatically** — no sample PDFs are committed to the repository. The `fpdf2` library generates minimal valid PDFs at test time.
+All fixtures are generated programmatically — no sample PDFs are committed.
 
-### Valid Statement PDF
+**Valid Statement PDF** — Generated by `_create_statement_pdf()` with:
+- Header: Test Bank, account 12345678, period 01/01/2024–31/01/2024
+- 4 SA transaction lines: SALARY, CHECKERS, NETFLIX, ESKOM
 
-Generated by `_create_statement_pdf()` using `fpdf2`. Produces a PDF containing:
+**Negative Fixtures:**
 
-- **Header block** matching the Generic `BankProfile` header patterns:
-  - Bank name: `Test Bank`
-  - Account number: `12345678`
-  - Statement period: `01/01/2024` to `31/01/2024`
-  - Opening balance: `1000.00`, Closing balance: `1200.00`
-
-- **Transaction lines** in the text-based extraction format (`DD/MM/YYYY  DESCRIPTION  AMOUNT  BALANCE`):
-
-  | Date | Description | Amount | Balance |
-  |---|---|---|---|
-  | 05/01/2024 | SALARY PAYMENT JAN | 500.00 | 1500.00 |
-  | 10/01/2024 | CHECKERS SANDTON | -100.00 | 1400.00 |
-  | 15/01/2024 | NETFLIX SUBSCRIPTION | -15.00 | 1385.00 |
-  | 20/01/2024 | ESKOM PREPAID | -185.00 | 1200.00 |
-
-The transaction descriptions are deliberately South African merchants that match the built-in classification rules (Salary, Groceries, Subscriptions, Utilities).
-
-### Negative Test Fixtures
-
-| Fixture | File contents | Expected behaviour |
+| Fixture | Contents | Expected behaviour |
 |---|---|---|
-| **Plain text as PDF** | `This is not a PDF file at all.` | `pdfplumber.open()` raises an exception → file moved to `failed/` |
-| **Empty file** | Zero bytes | `pdfplumber.open()` raises an exception → file moved to `failed/` |
-| **Corrupted PDF** | `%PDF-1.4` header + garbage | Has PDF magic bytes but no valid structure → file moved to `failed/` |
+| Plain text as PDF | `This is not a PDF file at all.` | Fails → moved to `failed/` |
+| Empty file | Zero bytes | Fails → moved to `failed/` |
+| Corrupted PDF | `%PDF-1.4` header + garbage | Fails → moved to `failed/` |
 
-### Custom Transaction Lines
+### Test Structure
 
-Tests that need non-standard transactions (e.g., unrecognisable merchants) pass custom line data to `_create_statement_pdf()`:
+#### TestFileManagement (7 tests)
 
-```python
-_create_statement_pdf(pdf_path, extra_lines=[
-    {"date": "05/01/2024", "desc": "SALARY PAYMENT JAN",         "amount": "500.00",  "balance": "1500.00"},
-    {"date": "10/01/2024", "desc": "XYZZY UNKNOWN MERCHANT 999", "amount": "-100.00", "balance": "1400.00"},
-])
-```
-
-## Test Structure
-
-All integration tests live in `tests/test_integration.py` and are organised into three classes:
-
-### TestFileManagement (7 tests)
-
-Validates that files are correctly routed to `processed/` or `failed/` after pipeline execution.
-
-| Test | What it verifies |
+| Test | Verifies |
 |---|---|
-| `test_valid_pdf_moved_to_processed` | Valid PDF ends up in `input/processed/`, no longer in `input/` |
-| `test_invalid_file_moved_to_failed` | Plain text `.pdf` ends up in `input/failed/` |
-| `test_empty_file_moved_to_failed` | Zero-byte `.pdf` ends up in `input/failed/` |
-| `test_corrupted_pdf_moved_to_failed` | Corrupted `.pdf` ends up in `input/failed/` |
-| `test_mixed_valid_and_invalid` | Batch of 1 valid + 1 invalid → valid in `processed/`, invalid in `failed/`, results list has exactly 1 entry |
-| `test_dirs_created_automatically` | `processed/` and `failed/` directories are created automatically if they don't exist |
-| `test_duplicate_filename_gets_timestamp_suffix` | Processing two files with the same name produces two distinct files in `processed/` (second gets a timestamp suffix) |
+| `test_valid_pdf_moved_to_processed` | Valid PDF ends up in `processed/` |
+| `test_invalid_file_moved_to_failed` | Plain text `.pdf` ends up in `failed/` |
+| `test_empty_file_moved_to_failed` | Zero-byte `.pdf` ends up in `failed/` |
+| `test_corrupted_pdf_moved_to_failed` | Corrupted `.pdf` ends up in `failed/` |
+| `test_mixed_valid_and_invalid` | 1 valid + 1 invalid → correct routing, results list has 1 entry |
+| `test_dirs_created_automatically` | Directories are created if they don't exist |
+| `test_duplicate_filename_gets_timestamp_suffix` | Second file with same name gets timestamp suffix |
 
-### TestPipelineEndToEnd (4 tests)
+#### TestPipelineEndToEnd (4 tests)
 
-Validates that the full pipeline produces correct database records and classifications.
-
-| Test | What it verifies |
+| Test | Verifies |
 |---|---|
-| `test_database_populated` | After processing, `statements` table has 1 row with an account number; `statement_lines` table has 4 rows linked to that statement |
-| `test_regex_classification_applied` | SA merchants are classified correctly: `CHECKERS SANDTON` → Groceries, `NETFLIX SUBSCRIPTION` → Subscriptions, `ESKOM PREPAID` → Utilities, `SALARY PAYMENT JAN` → Salary |
+| `test_database_populated` | `statements` has 1 row, `statement_lines` has 4 rows |
+| `test_regex_classification_applied` | CHECKERS→Groceries, NETFLIX→Subscriptions, ESKOM→Utilities, SALARY→Salary |
 | `test_classification_method_is_regex` | All classified lines have `classification_method = "regex"` |
-| `test_unclassified_line_remains_without_ai` | Unrecognisable merchants (`XYZZY UNKNOWN MERCHANT 999`, `BLORP MYSTERY PAYMENT`) remain unclassified when the AI stage is not included |
+| `test_unclassified_line_remains_without_ai` | Unrecognisable merchants remain unclassified without AI stage |
 
-### TestSafeMove (2 tests)
+#### TestSafeMove (2 tests)
 
-Unit tests for the `_safe_move()` helper function.
-
-| Test | What it verifies |
+| Test | Verifies |
 |---|---|
-| `test_moves_file` | File is moved to destination, source no longer exists |
-| `test_adds_timestamp_on_conflict` | When the destination already contains a file with the same name, the new file gets a timestamp suffix and both files coexist |
+| `test_moves_file` | File moved to destination, source removed |
+| `test_adds_timestamp_on_conflict` | Timestamp suffix added when destination file exists |
 
-## Running the Tests
-
-### Run all tests (unit + integration)
+### Running the Tests
 
 ```bash
+# All tests (unit + integration)
 python3 -m pytest tests/ -v
-```
 
-### Run only integration tests
-
-```bash
+# Integration tests only
 python3 -m pytest tests/test_integration.py -v
-```
 
-### Run a specific test class
-
-```bash
+# Specific class
 python3 -m pytest tests/test_integration.py::TestFileManagement -v
-python3 -m pytest tests/test_integration.py::TestPipelineEndToEnd -v
-```
 
-### Run a single test
-
-```bash
+# Single test
 python3 -m pytest tests/test_integration.py::TestFileManagement::test_mixed_valid_and_invalid -v
 ```
 
-## Dependencies
+---
 
-Integration tests require one additional package beyond the main application:
-
-| Package | Version | Purpose |
-|---|---|---|
-| [fpdf2](https://py-pdf.github.io/fpdf2/) | >= 2.7.0 | Generates valid PDF fixtures programmatically at test time |
-
-Install with:
+## Full Validation (both approaches)
 
 ```bash
-pip3 install -r requirements.txt
+# 1. Unit + automated integration tests
+python3 -m pytest tests/ -v
+
+# 2. Real PDF test runner
+bash teststatement/run_test.sh
 ```
 
-## Manual Smoke Test
+## Troubleshooting
 
-To validate the file management flow manually outside of pytest:
-
-```bash
-# Create an input directory with a sample PDF
-mkdir -p input
-# (copy or generate a PDF into input/)
-
-# Run the pipeline in dry-run mode (skips AI classification)
-python3 main.py --pdf-dir input/ --dry-run
-
-# Check the results
-ls input/processed/   # Successfully processed PDFs
-ls input/failed/      # Failed PDFs
-```
-
-## Adding New Integration Tests
-
-When adding tests, follow these conventions:
-
-1. **Use the `input_dir` fixture** — it creates an isolated temporary directory for each test.
-2. **Use `_create_statement_pdf()`** — generates valid PDFs with custom transaction data. Pass `extra_lines` to control the transaction content.
-3. **Use `_build_pipeline()`** — creates a 3-stage pipeline (PDF extraction → data cleansing → regex classification) without the AI stage, so no API key is needed.
-4. **Query the database directly** — use `session_factory()` as a context manager to verify database state after processing.
-5. **Keep tests isolated** — each test gets its own `tmp_path`, database, and input directory via pytest fixtures. No test depends on another.
+| Problem | Solution |
+|---------|----------|
+| `No PDF files in input` | Place PDF files in `teststatement/input/` |
+| All files go to `failed/` | Check `logs/pipeline.log` — PDFs may not match any bank profile |
+| Low classification % | Expected on first run; run with AI enabled to auto-generate regex rules |
+| `ModuleNotFoundError` | Run `pip3 install -r requirements.txt` from project root |

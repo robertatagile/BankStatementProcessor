@@ -1,0 +1,4 @@
+input/*.pdf
+input/processed/
+input/failed/
+*.db
