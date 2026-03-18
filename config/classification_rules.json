@@ -103,12 +103,6 @@
       "source": "ai"
     },
     {
-      "pattern": "(?i)internet\\s*pmt\\s*to\\s*robert\\s*mcmenamin",
-      "category": "Transfer",
-      "priority": 18,
-      "source": "ai"
-    },
-    {
       "pattern": "(?i)express\\s*pmt\\s*pending.*failed",
       "category": "Transfer",
       "priority": 19,

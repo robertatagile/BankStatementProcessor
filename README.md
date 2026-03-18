@@ -202,6 +202,7 @@ The PDF extractor uses a **profile system** to handle the formatting differences
 | **Nedbank** | `nedbank` | R (ZAR) | Space | "Account No" label, Greenbacks awareness, "Nedbank Ltd" detection |
 | **Standard Bank** | `standard_bank` | R (ZAR) | Space | "Statement Period" label, "SBSA" detection |
 | **Capitec** | `capitec` | R (ZAR) | Space | Single "Amount" column (not separate debit/credit), "Global One" branding, "Branch" without "Code" |
+| **African Bank** | `african_bank` | R (ZAR) | Space | `YYYY/MM/DD` dates, negative amounts for debits, "Bank Charges" column, "Statement for:" personal info block, "MyWORLD Account" detection |
 
 All South African profiles handle:
 - **Rand amounts**: `R 1 234.56` (space thousands separator) and `R1,234.56` (comma fallback)
