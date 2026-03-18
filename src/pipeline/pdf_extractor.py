@@ -355,7 +355,52 @@ class PDFExtractorStage(Stage):
                     header.setdefault("postal_code", postal_m.group(1))
                     break
 
-        # --- 4. FNB-style: street address starting with digits ---
+        # --- 4a. Address block between account holder and "Tax Invoice" ---
+        # Handles Capitec's two-column layout where customer address is merged
+        # with the bank's address (e.g. "152 wilde amandel 5 Neutron Road").
+        if "address_line1" not in header:
+            holder_name = header.get("account_holder", "")
+            if holder_name:
+                holder_idx = text.find(holder_name)
+                if holder_idx >= 0:
+                    after_holder = text[holder_idx + len(holder_name):]
+                    stop_m = re.search(r"(?:Tax\s+Invoice|Account\s+\d)", after_holder, re.IGNORECASE)
+                    block = after_holder[:stop_m.start()] if stop_m else after_holder[:500]
+                    addr_lines = []
+                    # Known bank-side address fragments to strip from merged lines
+                    bank_noise = re.compile(
+                        r"(?:^|\s+)(?:Capitec\s+Bank|Stellenbosch|Techno\s+Park|\d+\s+Neutron\s+Road|"
+                        r"Privaatsak|Private\s+Bag|fnb\.co\.za|Braampark|Forum\s+\d)",
+                        re.IGNORECASE,
+                    )
+                    for line in block.split("\n"):
+                        line = line.strip()
+                        if not line:
+                            continue
+                        if re.match(r"(?:Tax|Account|Statement|VAT|24hr|Capitec\s+Bank\s+is)", line, re.IGNORECASE):
+                            break
+                        # Strip bank address noise (may be at start or mid-line)
+                        left = bank_noise.split(line, maxsplit=1)[0].strip()
+                        # Skip lines that are entirely bank address content
+                        if not left or len(left) < 3:
+                            continue
+                        addr_lines.append(left)
+                        if len(addr_lines) >= 4:
+                            break
+                    if addr_lines:
+                        header.setdefault("address_line1", addr_lines[0])
+                    if len(addr_lines) > 1:
+                        header.setdefault("address_line2", addr_lines[1])
+                    if len(addr_lines) > 2:
+                        header.setdefault("address_line3", addr_lines[2])
+                    # Postal code: 4-digit code (standalone or at start of merged line)
+                    for addr_line in reversed(addr_lines):
+                        postal_m = re.match(r"^(\d{4})\b", addr_line.strip())
+                        if postal_m:
+                            header.setdefault("postal_code", postal_m.group(1))
+                            break
+
+        # --- 4b. FNB-style: street address starting with digits ---
         if "address_line1" not in header:
             street_match = re.search(
                 r"(?:^|\n)(\d+\s*[A-Z][A-Z\s]*(?:STREET|STR|STRAAT|ROAD|RD|WEG|AVENUE|AVE|LAAN|DRIVE|DR|RYLAAN|LANE|LN|WAY|CRESCENT|CRES|CLOSE|CL|PLACE|PL|PLEK|BOULEVARD|BLVD))\b",
@@ -467,6 +512,16 @@ class PDFExtractorStage(Stage):
         # Handle multi-line descriptions (rows with description but no amount)
         all_lines = self._merge_multiline_descriptions(all_lines)
 
+        # Filter out non-transaction lines (summary/header artifacts)
+        all_lines = [
+            ln for ln in all_lines
+            if not re.match(
+                r"(?:Opening\s+Balance|Closing\s+Balance|Available\s+Balance|"
+                r"Saldo\s+Oorgedra)\b",
+                ln.get("description", ""), re.IGNORECASE,
+            )
+        ]
+
         logger.debug(f"Total transaction lines extracted: {len(all_lines)}")
         return all_lines
 
@@ -475,7 +530,27 @@ class PDFExtractorStage(Stage):
     ) -> list[dict]:
         """Parse a pdfplumber extracted table into transaction dicts."""
         lines = []
-        if not table or len(table) < 2:
+        if not table:
+            return lines
+
+        # Handle 1-row tables (Capitec style: each transaction is its own table)
+        if len(table) == 1:
+            row = table[0]
+            if row and len(row) >= 3:
+                # Check if this is the header row (Date, Description, ...)
+                first_cell = str(row[0]).strip().lower() if row[0] else ""
+                if first_cell in ("date", "datum"):
+                    return lines  # skip header-only tables
+                # Check if this is a footer/noise row
+                if row[0] and str(row[0]).strip().startswith("*"):
+                    return lines
+                # Try to parse as a data row using the profile's default column map
+                line = self._parse_row(row, profile.default_column_map, page_num, 1, profile)
+                if line:
+                    lines.append(line)
+            return lines
+
+        if len(table) < 2:
             return lines
 
         # Try to identify column positions from the header row
@@ -718,11 +793,11 @@ class PDFExtractorStage(Stage):
             debit = profile.parse_amount(debit_str)
             credit = profile.parse_amount(credit_str)
 
-            if debit and debit > 0:
-                amount = debit
+            if debit and abs(debit) > 0:
+                amount = abs(debit)
                 transaction_type = "debit"
-            elif credit and credit > 0:
-                amount = credit
+            elif credit and abs(credit) > 0:
+                amount = abs(credit)
                 transaction_type = "credit"
             elif "bank_charges" in col_map:
                 charges_str = get_cell("bank_charges")
@@ -737,12 +812,19 @@ class PDFExtractorStage(Stage):
                         )
                     return None
             else:
-                # No amount found — skip or treat as continuation
-                if parsed_date:
-                    logger.debug(
-                        f"Page {page_num}, row {row_idx}: no amount found, skipping"
-                    )
-                return None
+                # Try fee column as fallback (Capitec puts fees in a separate column)
+                fee_str = get_cell("fee")
+                fee = profile.parse_amount(fee_str)
+                if fee and abs(fee) > 0:
+                    amount = abs(fee)
+                    transaction_type = "debit"
+                else:
+                    # No amount found — skip or treat as continuation
+                    if parsed_date:
+                        logger.debug(
+                            f"Page {page_num}, row {row_idx}: no amount found, skipping"
+                        )
+                    return None
 
         balance_str = get_cell("balance")
         balance = profile.parse_amount(balance_str)
