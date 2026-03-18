@@ -135,6 +135,10 @@ class PDFExtractorStage(Stage):
             self._apply_absa_header_fallbacks(text, header, profile)
             return
 
+        if profile.name == "TymeBank":
+            self._apply_tymebank_header_fallbacks(text, header, profile)
+            return
+
         if profile.name != "FNB":
             return
 
@@ -247,6 +251,41 @@ class PDFExtractorStage(Stage):
                     parsed = profile.parse_amount(summary_balance_match.group(1))
                     if parsed is not None:
                         header["closing_balance"] = parsed
+
+    def _apply_tymebank_header_fallbacks(
+        self, text: str, header: dict, profile: BankProfile
+    ) -> None:
+        """Apply TymeBank-specific fallbacks."""
+        # Bank name is in the footer, not the header area
+        if header.get("bank_name") == "Unknown Bank":
+            header["bank_name"] = profile.name
+
+        # Account type: "EveryDay Business account" or "EveryDay account"
+        if "account_type" not in header:
+            acct_match = re.search(
+                r"(EveryDay(?:\s+Business)?\s+account)", text, re.IGNORECASE
+            )
+            if acct_match:
+                header["account_type"] = acct_match.group(1)
+
+        # Opening/Closing balance from transaction pages
+        if header.get("opening_balance") == Decimal("0.00"):
+            opening_match = re.search(
+                r"Opening\s+Balance\s+([\d ]+\.\d{2})", text
+            )
+            if opening_match:
+                parsed = profile.parse_amount(opening_match.group(1))
+                if parsed is not None:
+                    header["opening_balance"] = parsed
+
+        if header.get("closing_balance") in (Decimal("0.00"), None):
+            closing_match = re.search(
+                r"Closing\s+Balance\s+([\d ]+\.\d{2})", text
+            )
+            if closing_match:
+                parsed = profile.parse_amount(closing_match.group(1))
+                if parsed is not None:
+                    header["closing_balance"] = parsed
 
     def _extract_personal_info(self, text: str, header: dict, profile: Optional[BankProfile] = None) -> None:
         """Extract personal, address, and account info from bank statement text.
@@ -685,6 +724,18 @@ class PDFExtractorStage(Stage):
             elif credit and credit > 0:
                 amount = credit
                 transaction_type = "credit"
+            elif "bank_charges" in col_map:
+                charges_str = get_cell("bank_charges")
+                charges = profile.parse_amount(charges_str)
+                if charges and charges > 0:
+                    amount = charges
+                    transaction_type = "debit"
+                else:
+                    if parsed_date:
+                        logger.debug(
+                            f"Page {page_num}, row {row_idx}: no amount found, skipping"
+                        )
+                    return None
             else:
                 # No amount found — skip or treat as continuation
                 if parsed_date:
@@ -714,29 +765,52 @@ class PDFExtractorStage(Stage):
         for line in text.split("\n"):
             match = pattern.search(line.strip())
             if match:
-                date_str, desc, amount_str, balance_str = match.groups()
+                groups = match.groups()
+                if len(groups) == 6:
+                    # Multi-column format (e.g. TymeBank):
+                    # date, desc, fees, money_out, money_in, balance
+                    date_str, desc = groups[0], groups[1]
+                    fees_str, out_str, in_str, balance_str = (
+                        groups[2], groups[3], groups[4], groups[5],
+                    )
+                    # Pick the actual transaction amount from the right column
+                    if out_str and out_str != "-":
+                        amount_str = out_str
+                        transaction_type = "debit"
+                    elif in_str and in_str != "-":
+                        amount_str = in_str
+                        transaction_type = "credit"
+                    elif fees_str and fees_str != "-":
+                        amount_str = fees_str
+                        transaction_type = "debit"
+                    else:
+                        continue
+                else:
+                    date_str, desc, amount_str, balance_str = groups
+                    transaction_type = None  # determined below
+
                 parsed_date = self._parse_date_with_profile(date_str, profile)
                 amount = profile.parse_amount(amount_str)
 
                 if parsed_date and amount is not None:
-                    # Determine transaction type from Cr/Dr suffix, sign,
-                    # or Afrikaans Kt/Dt keywords in description
-                    amount_upper = (amount_str or "").strip().upper()
-                    desc_upper = desc.upper()
-                    if amount_upper.endswith(("CR", "KT")):
-                        transaction_type = "credit"
-                    elif amount_upper.endswith(("DR", "DT")):
-                        transaction_type = "debit"
-                    elif amount < 0:
-                        transaction_type = "debit"
-                        amount = abs(amount)
-                    elif re.search(r"\bKT\b", desc_upper):
-                        # Afrikaans: "Kt" = Krediet (credit)
-                        transaction_type = "credit"
-                    elif profile.unsigned_is_debit:
-                        transaction_type = "debit"
-                    else:
-                        transaction_type = "credit"
+                    # Determine transaction type if not already set by column position
+                    if transaction_type is None:
+                        amount_upper = (amount_str or "").strip().upper()
+                        desc_upper = desc.upper()
+                        if amount_upper.endswith(("CR", "KT")):
+                            transaction_type = "credit"
+                        elif amount_upper.endswith(("DR", "DT")):
+                            transaction_type = "debit"
+                        elif amount < 0:
+                            transaction_type = "debit"
+                            amount = abs(amount)
+                        elif re.search(r"\bKT\b", desc_upper):
+                            # Afrikaans: "Kt" = Krediet (credit)
+                            transaction_type = "credit"
+                        elif profile.unsigned_is_debit:
+                            transaction_type = "debit"
+                        else:
+                            transaction_type = "credit"
 
                     lines.append(
                         {
