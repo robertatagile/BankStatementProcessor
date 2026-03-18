@@ -1,67 +1,67 @@
 {
   "rules": [
     {
-      "pattern": "(?i)tesco|sainsbury|lidl|aldi|asda|waitrose|morrisons|co-op food|marks.*spencer.*food|grocery|supermarket",
+      "pattern": "(?i)checkers|pick.*pay|pnp\\b|woolworths.*food|shoprite|spar\\b|food.*lovers|fruit.*veg|cambridge food|ok foods|grocery|supermarket",
       "category": "Groceries",
       "priority": 1,
       "source": "manual"
     },
     {
-      "pattern": "(?i)electric|gas|water|energy|thames|british gas|edf|eon|scottish power|bulb|octopus energy",
+      "pattern": "(?i)eskom|city power|rand water|tshwane|ekurhuleni|johannesburg water|vodacom|mtn\\b|cell c|telkom|electric|water\\b|energy|municipality|rates.*taxes",
       "category": "Utilities",
       "priority": 2,
       "source": "manual"
     },
     {
-      "pattern": "(?i)rent|mortgage|letting|housing assoc|home loan",
+      "pattern": "(?i)rent|mortgage|letting|housing assoc|home loan|bond payment|body corporate|levy",
       "category": "Rent/Mortgage",
       "priority": 3,
       "source": "manual"
     },
     {
-      "pattern": "(?i)salary|wages|payroll|monthly pay|net pay",
+      "pattern": "(?i)salary|wages|payroll|monthly pay|net pay|remuneration",
       "category": "Salary",
       "priority": 4,
       "source": "manual"
     },
     {
-      "pattern": "(?i)transfer|tfr|standing order|direct debit|dd\\b|so\\b",
+      "pattern": "(?i)transfer|tfr|eft\\b|standing order|direct debit|dd\\b|so\\b|instant payment",
       "category": "Transfer",
       "priority": 5,
       "source": "manual"
     },
     {
-      "pattern": "(?i)netflix|spotify|amazon prime|disney|apple\\.com|subscription|youtube premium|hulu",
+      "pattern": "(?i)netflix|spotify|amazon prime|disney|apple\\.com|subscription|youtube premium|showmax|dstv|multichoice|xbox game pass|hulu",
       "category": "Subscriptions",
       "priority": 6,
       "source": "manual"
     },
     {
-      "pattern": "(?i)uber|lyft|taxi|bus|train|rail|tube|tfl|transport|parking|petrol|fuel|shell|bp\\b|esso",
+      "pattern": "(?i)uber\\b|bolt ride|bolt trip|bolt taxi|bolt driver|taxi|myciti|rea vaya|gautrain|intercape|greyhound|flixbus|engen|sasol|caltex|total\\b|bp\\b|astron|petrol|fuel|parking|e-toll|sanral",
       "category": "Transport",
       "priority": 7,
       "source": "manual"
     },
     {
-      "pattern": "(?i)restaurant|cafe|coffee|starbucks|costa|mcdonald|burger|pizza|nandos|deliveroo|just eat|uber eats",
+      "pattern": "(?i)nandos|nando.s|spur\\b|ocean basket|steers\\b|wimpy\\b|debonairs|roman.s pizza|fishaways|chicken licken|panarottis|mugg.*bean|tashas|vida.*caffe|doppio zero|hussar grill|seattle coffee|col.cacchio|kfc\\b|mcdonalds|mcdonald.s|burger king|subway\\b|pizza hut|restaurant|cafe|coffee|mr.*d.*food|deliveroo|uber eats|bolt food",
       "category": "Dining",
       "priority": 8,
       "source": "manual"
     },
     {
-      "pattern": "(?i)cinema|theatre|theater|pub|bar|club|entertainment|gaming|steam|playstation|xbox",
+      "pattern": "(?i)cinema|ster kinekor|nu metro|teatro|theatre|theater|pub|bar|club|entertainment|gaming|steam|playstation|xbox|computicket",
       "category": "Entertainment",
       "priority": 9,
       "source": "manual"
     },
     {
-      "pattern": "(?i)pharmacy|doctor|dentist|hospital|health|medical|nhs|bupa|vitality|gym|fitness",
+      "pattern": "(?i)clicks\\b|dis.chem|dischem|medirite|alpha pharm|mediclinic|netcare|life healthcare|intercare|melomed|discovery health|momentum health|bonitas|fedhealth|medihelp|bestmed|spec.*saver|pharmacy|doctor|dentist|hospital|medical|optometrist|gym|virgin active|planet fitness",
       "category": "Healthcare",
       "priority": 10,
       "source": "manual"
     },
     {
-      "pattern": "(?i)insurance|aviva|admiral|direct line|axa|zurich|legal.*general",
+      "pattern": "(?i)discovery insur|momentum insur|sanlam|old mutual|santam|outsurance|king price|hollard|miway|first for women|budget insur|insurance|assurance",
       "category": "Insurance",
       "priority": 11,
       "source": "manual"
@@ -70,6 +70,18 @@
       "pattern": "(?i)atm|cash|withdrawal|cashpoint",
       "category": "Cash Withdrawal",
       "priority": 12,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)edgars|jet\\b|truworths|mr price|mrp\\b|ackermans|pep stores|pepkor|foschini|totalsports|sportscene|cotton on|h&m|zara\\b|woolworths|identity\\b|queenspark|markham",
+      "category": "Clothing/Apparel",
+      "priority": 13,
+      "source": "manual"
+    },
+    {
+      "pattern": "(?i)game\\b|makro\\b|builders warehouse|leroy merlin|hi.fi corp|incredible connection|istore|apple store|samsung store|musica|takealot",
+      "category": "Electronics/Home",
+      "priority": 14,
       "source": "manual"
     }
   ]
