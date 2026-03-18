@@ -13,4 +13,5 @@ venv/
 teststatement/input/*.pdf
 teststatement/input/processed/
 teststatement/input/failed/
+teststatement/temp/
 teststatement/*.db

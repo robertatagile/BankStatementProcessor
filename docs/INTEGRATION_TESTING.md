@@ -87,10 +87,13 @@ Database summary:
 The test database is saved at `teststatement/test_statements.db`. Query it directly:
 
 ```bash
-sqlite3 teststatement/test_statements.db
+sqlite3 teststatement/tmp/test.db
 
 -- View all statements
-SELECT id, account_holder, account_number, statement_date FROM statements;
+SELECT bank_name, account_number, statement_date, opening_balance, closing_balance FROM statements;
+
+-- View personal/address info
+SELECT account_holder, address_line1, address_line2, postal_code, account_type, branch_code FROM statement_info;
 
 -- View unclassified lines (candidates for new regex rules)
 SELECT description, amount FROM statement_lines WHERE category IS NULL;
@@ -98,6 +101,9 @@ SELECT description, amount FROM statement_lines WHERE category IS NULL;
 -- Category breakdown
 SELECT category, COUNT(*), SUM(amount)
 FROM statement_lines GROUP BY category ORDER BY COUNT(*) DESC;
+
+-- Check seeded classification rules
+SELECT category, priority, source FROM classification_rules ORDER BY priority;
 ```
 
 ### Running with AI Classification
@@ -176,7 +182,7 @@ All fixtures are generated programmatically — no sample PDFs are committed.
 ### Running the Tests
 
 ```bash
-# All tests (unit + integration)
+# All 132 tests (unit + integration)
 python3 -m pytest tests/ -v
 
 # Integration tests only
@@ -191,14 +197,45 @@ python3 -m pytest tests/test_integration.py::TestFileManagement::test_mixed_vali
 
 ---
 
+## Part 3 — Running Against Real FNB PDFs
+
+Place real FNB bank statement PDFs in `teststatement/input/` and run:
+
+```bash
+# Dry run (regex classification only, no API key needed)
+python3 main.py --pdf-dir teststatement/input --db-path teststatement/tmp/test.db --dry-run
+
+# Full run with AI classification
+export ANTHROPIC_API_KEY="sk-ant-..."
+python3 main.py --pdf-dir teststatement/input --db-path teststatement/tmp/test.db
+```
+
+The pipeline will:
+1. Auto-detect the bank as FNB from PDF content
+2. Extract transactions using the merged-cell table parser
+3. Extract personal info (account holder, address, postal code, account type)
+4. Seed 14 classification rules into the DB on first run
+5. Classify transactions via regex, then AI for any remaining unclassified lines
+6. Move processed PDFs to `input/processed/`, failed ones to `input/failed/`
+
+Verify results:
+
+```bash
+sqlite3 teststatement/tmp/test.db "SELECT bank_name, account_number FROM statements;"
+sqlite3 teststatement/tmp/test.db "SELECT account_holder, address_line1, postal_code FROM statement_info;"
+sqlite3 teststatement/tmp/test.db "SELECT count(*) as lines, sum(case when category is not null then 1 else 0 end) as classified FROM statement_lines;"
+```
+
+---
+
 ## Full Validation (both approaches)
 
 ```bash
-# 1. Unit + automated integration tests
+# 1. Unit + automated integration tests (132 tests)
 python3 -m pytest tests/ -v
 
-# 2. Real PDF test runner
-bash teststatement/run_test.sh
+# 2. Real PDF test (manually inspect DB results)
+python3 main.py --pdf-dir teststatement/input --db-path teststatement/tmp/test.db --dry-run
 ```
 
 ## Troubleshooting

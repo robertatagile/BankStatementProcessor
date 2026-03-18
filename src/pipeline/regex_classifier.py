@@ -5,7 +5,7 @@ import re
 
 from sqlalchemy.orm import sessionmaker
 
-from src.models.database import StatementLine
+from src.models.database import ClassificationRule, StatementLine
 from src.pipeline.queue import PipelineContext, Stage
 from src.utils.logger import get_logger
 
@@ -98,3 +98,33 @@ class RegexClassifierStage(Stage):
                     stmt_line.category = line["category"]
                     stmt_line.classification_method = "regex"
             session.commit()
+
+
+def seed_classification_rules(session_factory: sessionmaker, rules_path: str) -> None:
+    """Seed the classification_rules table from the JSON config file.
+
+    Only inserts if the table is empty (avoids duplicating on re-runs).
+    """
+    with session_factory() as session:
+        count = session.query(ClassificationRule).count()
+        if count > 0:
+            logger.debug(f"Classification rules table already has {count} rows — skipping seed")
+            return
+
+        try:
+            with open(rules_path, "r") as f:
+                data = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            logger.error(f"Cannot seed rules from {rules_path}: {e}")
+            return
+
+        rules = data.get("rules", [])
+        for rule in rules:
+            session.add(ClassificationRule(
+                pattern=rule["pattern"],
+                category=rule["category"],
+                priority=rule.get("priority", 999),
+                source=rule.get("source", "manual"),
+            ))
+        session.commit()
+        logger.info(f"Seeded {len(rules)} classification rules into database")

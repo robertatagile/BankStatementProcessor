@@ -37,8 +37,8 @@ class Statement(Base):
     lines: Mapped[List["StatementLine"]] = relationship(
         back_populates="statement", cascade="all, delete-orphan"
     )
-    job: Mapped[Optional["ProcessingJob"]] = relationship(
-        back_populates="statement"
+    info: Mapped[Optional["StatementInfo"]] = relationship(
+        back_populates="statement", uselist=False, cascade="all, delete-orphan"
     )
 
     def __repr__(self) -> str:
@@ -74,6 +74,31 @@ class StatementLine(Base):
         return (
             f"<StatementLine(id={self.id}, date={self.date}, "
             f"desc={self.description[:30]}, amount={self.amount})>"
+        )
+
+
+class StatementInfo(Base):
+    """Personal and address information extracted from a bank statement."""
+    __tablename__ = "statement_info"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    statement_id: Mapped[int] = mapped_column(ForeignKey("statements.id"))
+    account_number: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    account_holder: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
+    address_line1: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
+    address_line2: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
+    address_line3: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
+    postal_code: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    account_type: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    branch_code: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
+
+    statement: Mapped["Statement"] = relationship(back_populates="info")
+
+    def __repr__(self) -> str:
+        return (
+            f"<StatementInfo(id={self.id}, holder={self.account_holder}, "
+            f"postal_code={self.postal_code})>"
         )
 
 

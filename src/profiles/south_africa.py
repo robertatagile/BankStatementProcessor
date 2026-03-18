@@ -145,13 +145,15 @@ def absa_profile() -> BankProfile:
 def _fnb_text_line_pattern() -> str:
     """FNB-specific text extraction pattern.
 
-    FNB uses ``DD Mon`` dates (no year), amounts with optional ``Cr``/``Dr``
-    suffix, and balances that always end with ``Cr`` or ``Dr``.
+    FNB uses ``DD Mon`` or ``DDMon`` dates (no year), amounts with optional
+    ``Cr``/``Dr`` suffix, and balances that always end with ``Cr`` or ``Dr``.
+    The space between day and month is optional because some FNB PDF renderings
+    concatenate them (e.g. ``01Feb`` instead of ``01 Feb``).
     """
     return (
-        r"(\d{2}\s+\w{3})\s+"                    # Date: DD Mon (e.g. "01 Apr")
-        r"(.*?)"                                   # Description (non-greedy, may be empty)
-        r"\s*([\d,]+\.\d{2}(?:Cr|Dr)?)"           # Amount (optional Cr/Dr)
+        r"(\d{2}\s*\w{3})\s+"                     # Date: DD[space?]Mon (e.g. "01Feb" or "01 Feb")
+        r"(.+?)"                                   # Description (non-greedy, at least 1 char)
+        r"\s+([\d,]+\.\d{2}(?:Cr|Dr)?)"           # Amount (optional Cr/Dr)
         r"\s+([\d,]+\.\d{2}(?:Cr|Dr))"            # Balance (must have Cr or Dr)
     )
 
@@ -159,14 +161,20 @@ def _fnb_text_line_pattern() -> str:
 def fnb_profile() -> BankProfile:
     """First National Bank (FirstRand) profile."""
     patterns = _sa_header_patterns()
-    # FNB uses clean "Account Number" and "Branch Code" labels
+    # FNB: match "Account Number: 12345" or "Gold Business Account : 12345"
     patterns["account_number"] = re.compile(
-        r"(?:Account\s*(?:Number|No\.?))\s*[:\-]?\s*(\d{10,12})",
+        r"(?:Account\s*(?:Number|No\.?)|Gold\s*Business\s*Account)\s*[:\-]?\s*(\d{10,12})",
         re.IGNORECASE,
     )
 
-    # FNB date formats: DD Mon (no year) + standard SA formats
-    fnb_dates = ["%d %b"] + _sa_date_formats()
+    # FNB personal info: account holder marked with leading asterisk
+    patterns["account_holder"] = re.compile(
+        r"\*\s*(.+?(?:PTY|LTD|CC|INC|TRUST).*?)(?:\s*Universal|\n|$)",
+        re.IGNORECASE,
+    )
+
+    # FNB date formats: DD Mon / DDMon (no year) + standard SA formats
+    fnb_dates = ["%d%b", "%d %b"] + _sa_date_formats()
 
     return _sa_base_profile(
         name="FNB",

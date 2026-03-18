@@ -16,7 +16,7 @@ from src.pipeline.ai_classifier import AIClassifierStage
 from src.pipeline.data_cleanser import DataCleanserStage
 from src.pipeline.pdf_extractor import PDFExtractorStage
 from src.pipeline.queue import Pipeline, PipelineContext
-from src.pipeline.regex_classifier import RegexClassifierStage
+from src.pipeline.regex_classifier import RegexClassifierStage, seed_classification_rules
 from src.profiles import BankProfileFactory
 from src.utils.logger import get_logger
 
@@ -35,7 +35,8 @@ DEFAULT_CATEGORIES = [
     "Healthcare",
     "Insurance",
     "Cash Withdrawal",
-    "Shopping",
+    "Clothing/Apparel",
+    "Electronics/Home",
     "Education",
     "Charity",
     "Other",
@@ -180,6 +181,9 @@ def main() -> None:
     # Initialize database
     session_factory = init_db(db_path)
     logger.info(f"Database initialized at: {db_path}")
+
+    # Seed classification rules into database (no-op if already populated)
+    seed_classification_rules(session_factory, rules_path)
 
     # Get API key
     api_key = os.environ.get("ANTHROPIC_API_KEY")

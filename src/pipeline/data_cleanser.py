@@ -4,7 +4,7 @@ from decimal import Decimal
 
 from sqlalchemy.orm import sessionmaker
 
-from src.models.database import Statement, StatementLine
+from src.models.database import Statement, StatementInfo, StatementLine
 from src.pipeline.queue import PipelineContext, Stage
 from src.utils.logger import get_logger
 
@@ -143,6 +143,21 @@ class DataCleanserStage(Stage):
         with self._session_factory() as session:
             session.add(statement)
             session.flush()  # Get the statement ID
+
+            # Insert personal/address info if present
+            if header.get("account_holder") or header.get("address_line1"):
+                info = StatementInfo(
+                    statement_id=statement.id,
+                    account_number=header.get("account_number"),
+                    account_holder=header.get("account_holder"),
+                    address_line1=header.get("address_line1"),
+                    address_line2=header.get("address_line2"),
+                    address_line3=header.get("address_line3"),
+                    postal_code=header.get("postal_code"),
+                    account_type=header.get("account_type"),
+                    branch_code=header.get("branch_code"),
+                )
+                session.add(info)
 
             for line_data in context.raw_lines:
                 stmt_line = StatementLine(

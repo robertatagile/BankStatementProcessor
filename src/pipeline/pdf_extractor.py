@@ -43,6 +43,10 @@ class PDFExtractorStage(Stage):
             context.raw_header = self._extract_header(full_text, profile)
             context.raw_lines = self._extract_lines(pdf, profile)
 
+        # Use profile name if bank_name couldn't be parsed from the text
+        if context.raw_header.get("bank_name") == "Unknown Bank" and profile.name != "Generic":
+            context.raw_header["bank_name"] = profile.name
+
         # Fix year-less dates (e.g. DD Mon → year defaults to 1900)
         self._fix_yearless_dates(context.raw_lines, context.raw_header)
 
@@ -84,7 +88,59 @@ class PDFExtractorStage(Stage):
         header.setdefault("opening_balance", Decimal("0.00"))
         header.setdefault("closing_balance", Decimal("0.00"))
 
+        # Extract personal/address info (account holder, street, suburb, postal code, account type)
+        self._extract_personal_info(text, header)
+
         return header
+
+    def _extract_personal_info(self, text: str, header: dict) -> None:
+        """Extract personal, address, and account info from FNB statement text.
+
+        FNB layout (spaces may be missing due to PDF rendering):
+            *MEERKATXINVESTMENTS(PTY)LTD  UniversalBranchCode 250655
+            9   fnb.co.za
+            72ELVERAMSTREET
+            LostCards 087-575-9406
+            LYNNWOODGLEN
+            AccountEnquiries 087-736-2247
+            LYNNWOODGLEN Fraud 087-575-9444
+            0081 RelationshipManager ...
+            ...
+            GoldBusinessAccount:63020159249
+        """
+        # --- Street address: line starting with digits followed by alpha (no space needed) ---
+        street_match = re.search(r"(?:^|\n)(\d+\s*[A-Z][A-Z\s]*(?:STREET|STR|ROAD|RD|AVENUE|AVE|DRIVE|DR|LANE|LN|WAY|CRESCENT|CRES|CLOSE|CL|PLACE|PL|BOULEVARD|BLVD))\b", text, re.IGNORECASE)
+        if street_match:
+            header["address_line1"] = street_match.group(1).strip()
+
+        # --- Suburb: all-caps word(s) on a line by themselves (not noise lines) ---
+        # Look for lines that are pure suburb names (LYNNWOODGLEN, SANDTON, etc.)
+        suburb_pattern = re.compile(r"(?:^|\n)([A-Z]{4,}(?:\s+[A-Z]{3,})*)\s*$", re.MULTILINE)
+        suburbs = []
+        for m in suburb_pattern.finditer(text):
+            candidate = m.group(1).strip()
+            # Skip known non-suburb content
+            if re.search(r"(?:ACCOUNT|STATEMENT|BALANCE|TRANSACTION|DELIVERY|BRANCH|GOLD|PAGE|RAND|TURNOVER|CLOSING|OPENING|CHARGES)", candidate):
+                continue
+            if candidate not in suburbs:
+                suburbs.append(candidate)
+        if suburbs:
+            header["address_line2"] = suburbs[0]
+            if len(suburbs) > 1:
+                header["address_line3"] = suburbs[1]
+
+        # --- Postal code: 4-digit number at start of a line ---
+        postal_match = re.search(r"(?:^|\n)(\d{4})\s", text)
+        if postal_match:
+            header["postal_code"] = postal_match.group(1)
+
+        # --- Account type: "Gold Business Account" etc. ---
+        acct_type_match = re.search(
+            r"(Gold\s*Business\s*Account|Cheque\s*Account|Savings\s*Account|Current\s*Account|Credit\s*Card)",
+            text, re.IGNORECASE,
+        )
+        if acct_type_match:
+            header["account_type"] = acct_type_match.group(1)
 
     def _extract_lines(
         self, pdf: pdfplumber.PDF, profile: BankProfile
@@ -157,6 +213,18 @@ class PDFExtractorStage(Stage):
         ]
         col_map = self._identify_columns(header_row, profile)
 
+        # Detect FNB-style merged-cell layout where amounts/balances are
+        # packed into a single cell as newline-separated values in row[1],
+        # while rows 2+ have the date/description but None for amount/balance.
+        if len(table) >= 3:
+            merged = self._extract_merged_cells(table, col_map)
+            if merged is not None:
+                merged_amounts, merged_balances = merged
+                return self._parse_merged_table(
+                    table, col_map, merged_amounts, merged_balances,
+                    page_num, profile,
+                )
+
         for row_idx, row in enumerate(table[1:], 2):
             if not row or all(
                 cell is None or str(cell).strip() == "" for cell in row
@@ -166,6 +234,134 @@ class PDFExtractorStage(Stage):
             line = self._parse_row(row, col_map, page_num, row_idx, profile)
             if line:
                 lines.append(line)
+
+        return lines
+
+    def _extract_merged_cells(
+        self, table: list[list], col_map: dict
+    ) -> Optional[tuple]:
+        """Detect FNB merged-cell layout and return split amounts/balances.
+
+        Returns ``(amounts_list, balances_list)`` if the layout is detected,
+        or ``None`` if the table uses a normal layout.
+        """
+        if len(table) < 3:
+            return None
+
+        row1 = table[1]
+
+        # Find the amount column index — try "amount", then "debit"
+        amt_idx = col_map.get("amount", col_map.get("debit"))
+        bal_idx = col_map.get("balance")
+
+        if amt_idx is None:
+            return None
+
+        # Check if the amount cell in row[1] contains newline-separated values
+        amt_cell = row1[amt_idx] if amt_idx < len(row1) and row1[amt_idx] else ""
+        amt_cell = str(amt_cell).strip()
+        if "\n" not in amt_cell:
+            return None
+
+        amounts = [v.strip() for v in amt_cell.split("\n") if v.strip()]
+        if len(amounts) < 2:
+            return None
+
+        balances = []
+        if bal_idx is not None and bal_idx < len(row1) and row1[bal_idx]:
+            bal_cell = str(row1[bal_idx]).strip()
+            balances = [v.strip() for v in bal_cell.split("\n") if v.strip()]
+
+        # The "Cr"/"Dr" suffix may be split into an adjacent column
+        # (e.g. col[5] has "r\nr\nr..." when the balance col has "1,234.56C")
+        if balances:
+            # Check the column after the balance for suffix fragments
+            suffix_idx = bal_idx + 1 if bal_idx is not None else None
+            if suffix_idx and suffix_idx < len(row1) and row1[suffix_idx]:
+                suffix_cell = str(row1[suffix_idx]).strip()
+                suffixes = [s.strip() for s in suffix_cell.split("\n") if s.strip()]
+                if len(suffixes) == len(balances):
+                    balances = [b + s for b, s in zip(balances, suffixes)]
+
+        logger.debug(
+            f"Detected merged-cell layout: {len(amounts)} amounts, "
+            f"{len(balances)} balances"
+        )
+        return amounts, balances
+
+    def _parse_merged_table(
+        self,
+        table: list[list],
+        col_map: dict,
+        amounts: list[str],
+        balances: list[str],
+        page_num: int,
+        profile: BankProfile,
+    ) -> list[dict]:
+        """Parse a table with FNB-style merged amount/balance cells."""
+        lines = []
+        data_rows = table[2:]  # Skip header (row 0) and merged-values row (row 1)
+
+        date_idx = col_map.get("date")
+        desc_idx = col_map.get("description")
+
+        for i, row in enumerate(data_rows):
+            if not row or all(
+                cell is None or str(cell).strip() == "" for cell in row
+            ):
+                continue
+
+            date_str = ""
+            if date_idx is not None and date_idx < len(row) and row[date_idx]:
+                date_str = str(row[date_idx]).strip()
+
+            description = ""
+            if desc_idx is not None and desc_idx < len(row) and row[desc_idx]:
+                description = str(row[desc_idx]).strip()
+
+            if not description:
+                continue
+
+            parsed_date = (
+                self._parse_date_with_profile(date_str, profile)
+                if date_str else None
+            )
+            if not parsed_date and not date_str:
+                lines.append({"_continuation": True, "description": description})
+                continue
+
+            amount_str = amounts[i] if i < len(amounts) else ""
+            balance_str = balances[i] if i < len(balances) else ""
+
+            amount = profile.parse_amount(amount_str)
+            if amount is None:
+                logger.debug(
+                    f"Page {page_num}, row {i+2}: could not parse amount "
+                    f"'{amount_str}', skipping"
+                )
+                continue
+
+            # Determine transaction type from Cr/Dr suffix or sign
+            amount_upper = amount_str.strip().upper()
+            if amount_upper.endswith("CR"):
+                transaction_type = "credit"
+            elif amount_upper.endswith("DR"):
+                transaction_type = "debit"
+            elif amount < 0:
+                transaction_type = "debit"
+                amount = abs(amount)
+            elif profile.unsigned_is_debit:
+                transaction_type = "debit"
+            else:
+                transaction_type = "credit"
+
+            lines.append({
+                "date": parsed_date,
+                "description": description,
+                "amount": abs(amount),
+                "balance": profile.parse_amount(balance_str) if balance_str else None,
+                "transaction_type": transaction_type,
+            })
 
         return lines
 
