@@ -46,22 +46,26 @@ The extractor uses a **bank profile system** to handle bank-specific PDF formats
 
 Matches each transaction description against an ordered list of regex patterns from `config/classification_rules.json`. Rules are sorted by priority (lower number = higher priority). **First match wins.**
 
-The rules file ships with 12 built-in categories:
+The rules file ships with 14 built-in categories tuned for South African bank statements:
 
-| Category | Example matches |
-|---|---|
-| Groceries | Tesco, Sainsbury, Lidl, Aldi, Asda, Waitrose |
-| Utilities | Electric, Gas, Water, British Gas, EDF, Octopus Energy |
-| Rent/Mortgage | Rent, Mortgage, Letting |
-| Salary | Salary, Wages, Payroll |
-| Transfer | Transfer, Standing Order, Direct Debit |
-| Subscriptions | Netflix, Spotify, Amazon Prime, Disney |
-| Transport | Uber, Taxi, Train, TfL, Petrol, Shell, BP |
-| Dining | Restaurant, Starbucks, Costa, McDonald's, Deliveroo |
-| Entertainment | Cinema, Theatre, Pub, Steam, PlayStation |
-| Healthcare | Pharmacy, Doctor, Dentist, NHS, Gym |
-| Insurance | Aviva, Admiral, Direct Line, AXA |
-| Cash Withdrawal | ATM, Cash, Withdrawal |
+| Priority | Category | Example matches |
+|---|---|---|
+| 1 | Groceries | Checkers, Pick n Pay, Shoprite, Spar, Woolworths Food, Food Lovers Market |
+| 2 | Utilities | Eskom, City Power, Rand Water, Vodacom, MTN, Cell C, Telkom, municipalities |
+| 3 | Rent/Mortgage | Rent, Mortgage, Bond Payment, Body Corporate, Levy |
+| 4 | Salary | Salary, Wages, Payroll, Remuneration |
+| 5 | Transfer | Transfer, EFT, Standing Order, Direct Debit, Instant Payment |
+| 6 | Subscriptions | Netflix, Showmax, DStv, MultiChoice, Spotify, YouTube Premium |
+| 7 | Transport | Engen, Sasol, Caltex, Total, Gautrain, e-toll, Bolt Ride/Trip/Taxi, Uber |
+| 8 | Dining | Nando's, Spur, Steers, Wimpy, Ocean Basket, Debonairs, Chicken Licken, Mugg & Bean, KFC, Mr D Food, Bolt Food |
+| 9 | Entertainment | Ster-Kinekor, Nu Metro, Computicket, Cinema, Theatre, Steam, PlayStation |
+| 10 | Healthcare | Clicks, Dis-Chem, Mediclinic, Netcare, Life Healthcare, Discovery Health, Bonitas, Fedhealth, Medihelp, Virgin Active, Planet Fitness |
+| 11 | Insurance | Sanlam, Old Mutual, Santam, Outsurance, King Price, Hollard, MiWay, Discovery Insure |
+| 12 | Cash Withdrawal | ATM, Cash, Withdrawal |
+| 13 | Clothing/Apparel | Mr Price, Truworths, Edgars, Jet, Ackermans, Pep Stores, Foschini, Totalsports, Markham |
+| 14 | Electronics/Home | Game, Makro, Builders Warehouse, Hi-Fi Corp, Incredible Connection, iStore, Takealot |
+
+Rules are evaluated in priority order — lower number wins. The first matching rule is applied and no further rules are checked.
 
 ### Stage 4: AI Classification
 
@@ -293,7 +297,7 @@ Edit `config/classification_rules.json` to add your own regex patterns:
     {
       "pattern": "(?i)my-custom-merchant",
       "category": "Shopping",
-      "priority": 13,
+      "priority": 15,
       "source": "manual"
     }
   ]
