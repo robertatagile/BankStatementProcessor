@@ -29,10 +29,11 @@ PDF File
 
 Parses bank statement PDFs using [pdfplumber](https://github.com/jsvine/pdfplumber). Extracts:
 
-- **Statement headers**: bank name, account number, statement period, branch/sort code, opening/closing balance
+- **Statement headers**: bank name, account number, statement period, branch code, opening/closing balance
 - **Transaction lines**: date, description, amount, balance, transaction type (debit/credit)
+- **Personal/address info**: account holder name, street address, suburb, postal code, account type (stored in the `statement_info` table)
 
-Supports both table-based and text-based PDF layouts. Handles multi-line descriptions, multiple date formats (`DD/MM/YYYY`, `DD-MM-YYYY`, `DD Mon YYYY`, `YYYY-MM-DD`, etc.), and various currency symbols (`£`, `$`, `€`, `R`).
+Supports both table-based and text-based PDF layouts, including FNB's merged-cell table format where amounts and balances are packed into a single cell. Handles multi-line descriptions, multiple date formats (`DD/MM/YYYY`, `DD-MM-YYYY`, `DD Mon YYYY`, `DDMon`, `YYYY-MM-DD`, etc.), and various currency symbols (`£`, `$`, `€`, `R`).
 
 The extractor uses a **bank profile system** to handle bank-specific PDF formats. See [Bank Profiles](#bank-profiles) below.
 
@@ -40,7 +41,8 @@ The extractor uses a **bank profile system** to handle bank-specific PDF formats
 
 - **Deduplication**: Removes duplicate records based on the `(date, description, amount)` tuple, keeping the first occurrence
 - **Total validation**: Verifies that `sum(credits) - sum(debits)` matches `closing_balance - opening_balance` (with a tolerance of `£0.01`). Mismatches are logged as warnings but do not halt processing
-- **Database insertion**: Inserts the cleaned statement and its lines into SQLite via SQLAlchemy
+- **Database insertion**: Inserts the cleaned statement, its lines, and personal/address info into SQLite via SQLAlchemy
+- **Classification rules seeding**: On first run, populates the `classification_rules` DB table from the JSON config file
 
 ### Stage 3: Regex Classification
 
@@ -100,6 +102,8 @@ pip install -r requirements.txt
 export ANTHROPIC_API_KEY=your-api-key-here
 python3 main.py --pdf-dir data/
 ```
+
+Successfully processed PDFs are moved to `input/processed/`, failed ones to `input/failed/`.
 
 ### Process a single PDF
 
@@ -162,14 +166,21 @@ BankStatementProcessor/
 │   └── utils/
 │       └── logger.py                # Logging configuration
 ├── data/                            # Place PDF files here (also stores SQLite DB)
+├── docs/
+│   └── INTEGRATION_TESTING.md       # Integration testing guide
 ├── logs/                            # Pipeline log files (auto-created)
-└── tests/                           # Test suite (119 tests)
+├── teststatement/                   # Real PDF test runner (not committed to git)
+│   └── input/                       # Drop real PDFs here
+│       ├── processed/               # Successfully processed PDFs
+│       └── failed/                  # PDFs that failed processing
+└── tests/                           # Test suite (132 tests)
     ├── test_pipeline.py
     ├── test_pdf_extractor.py
     ├── test_data_cleanser.py
     ├── test_regex_classifier.py
     ├── test_ai_classifier.py
-    └── test_bank_profiles.py
+    ├── test_bank_profiles.py
+    └── test_integration.py          # Integration tests (file management + end-to-end)
 ```
 
 ## Bank Profiles
@@ -187,7 +198,7 @@ The PDF extractor uses a **profile system** to handle the formatting differences
 | Bank | Profile key | Currency | Thousands separator | Key features |
 |---|---|---|---|---|
 | **ABSA** | `absa` | R (ZAR) | Space | "Cheque Account" label, period as "01 January 2024 to 31 January 2024", branch code |
-| **FNB** | `fnb` | R (ZAR) | Space | Clean table layouts, 10–12 digit account numbers, "First National Bank" detection |
+| **FNB** | `fnb` | R (ZAR) | Space | Merged-cell table parsing, `DDMon` dates (no space), `Cr`/`Dr` suffixes, personal info extraction, "First National Bank" detection |
 | **Nedbank** | `nedbank` | R (ZAR) | Space | "Account No" label, Greenbacks awareness, "Nedbank Ltd" detection |
 | **Standard Bank** | `standard_bank` | R (ZAR) | Space | "Statement Period" label, "SBSA" detection |
 | **Capitec** | `capitec` | R (ZAR) | Space | Single "Amount" column (not separate debit/credit), "Global One" branding, "Branch" without "Code" |
@@ -246,7 +257,7 @@ def my_uk_bank_profile() -> BankProfile:
 
 ## Database Schema
 
-The SQLite database (`data/statements.db`) contains three tables:
+The SQLite database (`data/statements.db`) contains four tables:
 
 ### `statements`
 
@@ -259,6 +270,21 @@ The SQLite database (`data/statements.db`) contains three tables:
 | opening_balance | NUMERIC(12,2) | Opening balance |
 | closing_balance | NUMERIC(12,2) | Closing balance |
 | file_path | VARCHAR(500) | Source PDF file path |
+| created_at | DATETIME | Record creation timestamp |
+
+### `statement_info`
+
+| Column | Type | Description |
+|---|---|---|
+| id | INTEGER | Primary key |
+| statement_id | INTEGER | Foreign key → `statements.id` (one-to-one) |
+| account_holder | VARCHAR(300) | Account holder name (e.g. company or individual) |
+| address_line1 | VARCHAR(300) | Street address |
+| address_line2 | VARCHAR(300) | Suburb/city |
+| address_line3 | VARCHAR(300) | Additional address line |
+| postal_code | VARCHAR(20) | Postal code |
+| account_type | VARCHAR(100) | Account type (e.g. "Gold Business Account") |
+| branch_code | VARCHAR(20) | Branch code |
 | created_at | DATETIME | Record creation timestamp |
 
 ### `statement_lines`
@@ -316,10 +342,16 @@ Logs are written to both the console (INFO level) and `logs/pipeline.log` (DEBUG
 ## Running Tests
 
 ```bash
+# All 132 unit + integration tests
 python3 -m pytest tests/ -v
+
+# Integration tests only
+python3 -m pytest tests/test_integration.py -v
 ```
 
 All tests use temporary databases and mock external dependencies (Anthropic API), so no API key or network access is needed to run the test suite.
+
+For testing with real bank statement PDFs, see [docs/INTEGRATION_TESTING.md](docs/INTEGRATION_TESTING.md).
 
 ## Dependencies
 
