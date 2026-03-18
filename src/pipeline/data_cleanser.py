@@ -148,6 +148,7 @@ class DataCleanserStage(Stage):
             if header.get("account_holder") or header.get("address_line1"):
                 info = StatementInfo(
                     statement_id=statement.id,
+                    account_number=header.get("account_number"),
                     account_holder=header.get("account_holder"),
                     address_line1=header.get("address_line1"),
                     address_line2=header.get("address_line2"),

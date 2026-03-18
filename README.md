@@ -278,6 +278,7 @@ The SQLite database (`data/statements.db`) contains four tables:
 |---|---|---|
 | id | INTEGER | Primary key |
 | statement_id | INTEGER | Foreign key → `statements.id` (one-to-one) |
+| account_number | VARCHAR(50) | Bank account number |
 | account_holder | VARCHAR(300) | Account holder name (e.g. company or individual) |
 | address_line1 | VARCHAR(300) | Street address |
 | address_line2 | VARCHAR(300) | Suburb/city |

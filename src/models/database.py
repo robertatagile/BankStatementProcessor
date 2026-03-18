@@ -83,6 +83,7 @@ class StatementInfo(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     statement_id: Mapped[int] = mapped_column(ForeignKey("statements.id"))
+    account_number: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     account_holder: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
     address_line1: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
     address_line2: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
