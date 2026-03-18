@@ -159,7 +159,7 @@ db = sqlite3.connect(sys.argv[1])
 cur = db.cursor()
 stmts = cur.execute('SELECT COUNT(*) FROM statements').fetchone()[0]
 lines = cur.execute('SELECT COUNT(*) FROM statement_lines').fetchone()[0]
-classified = cur.execute("SELECT COUNT(*) FROM statement_lines WHERE category IS NOT NULL").fetchone()[0]
+classified = cur.execute('SELECT COUNT(*) FROM statement_lines WHERE category IS NOT NULL').fetchone()[0]
 unclassified = lines - classified
 print(f'  Statements      : {stmts}')
 print(f'  Total lines     : {lines}')
@@ -169,10 +169,10 @@ if lines > 0:
     print(f'  Classification% : {classified/lines*100:.1f}%')
 print()
 print('  Top categories:')
-for cat, cnt in cur.execute("""
+for cat, cnt in cur.execute('''
     SELECT COALESCE(category, 'Unclassified'), COUNT(*)
     FROM statement_lines GROUP BY category ORDER BY COUNT(*) DESC LIMIT 10
-""").fetchall():
+''').fetchall():
     print(f'    {cat:<25} {cnt}')
 db.close()
 "@

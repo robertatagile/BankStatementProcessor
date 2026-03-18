@@ -15,7 +15,10 @@ def _sa_header_patterns() -> Dict[str, re.Pattern]:
     """
     return {
         "bank_name": re.compile(
-            r"^(.+?(?:Bank|Capitec|ABSA|FNB|Nedbank))", re.IGNORECASE
+            r"(?im)^\s*((?:ABSA(?:\s+Bank)?|Capitec(?:\s+Bank)?|"
+            r"First\s+National\s+Bank|FNB|Nedbank(?:\s+Ltd)?|"
+            r"Standard\s+Bank(?:\s+of\s+South\s+Africa)?))\b",
+            re.IGNORECASE,
         ),
         "account_number": re.compile(
             r"(?:Account\s*(?:Number|No\.?|#)?)\s*[:\-]?\s*(\d[\d\s\-]{6,})",
@@ -117,28 +120,62 @@ def _sa_base_profile(**overrides: Any) -> BankProfile:
 def absa_profile() -> BankProfile:
     """ABSA Bank (formerly Barclays Africa) profile."""
     patterns = _sa_header_patterns()
+    patterns["bank_name"] = re.compile(
+        r"(?im)^\s*(ABSA(?:\s+Bank(?:\s+Ltd)?)?)\b",
+        re.IGNORECASE,
+    )
+    patterns["account_number"] = re.compile(
+        r"(?:Account\s*Number|Tjekrekeningnommer|Savings\s*Account|Cheque\s*Account)\s*[:\-]?\s*([\d\-\s]{8,})",
+        re.IGNORECASE,
+    )
     # ABSA uses "Cheque Account" and period format "01 January 2024 to 31 January 2024"
     patterns["account_type"] = re.compile(
-        r"(Cheque\s+Account|Savings\s+Account|Credit\s+Card)", re.IGNORECASE
+        r"(Cheque\s+Account|Savings\s+Account|Credit\s+Card|Tjekrekeningstaat|Flexi\s+Rekening|TJEKREK)",
+        re.IGNORECASE,
     )
     patterns["period_start"] = re.compile(
-        r"(?:Statement\s+(?:Period|Date|From)|Period)\s*[:\-]?\s*"
-        r"(\d{1,2}\s+\w+\s+\d{4})",
+        r"(?:Statement\s+(?:Period|Date|From)|Period|Staat\s+vir\s+die\s+Periode|Tjekrekeningstaat)\s*[:\-]?\s*"
+        r"(\d{1,4}(?:[\-/]\d{1,2}[\-/]\d{1,4}|\s+\w+\s+\d{4}))",
         re.IGNORECASE,
     )
     patterns["period_end"] = re.compile(
-        r"(?:to|ending|through|-)\s*(\d{1,2}\s+\w+\s+\d{4})",
+        r"(?:to|tot|ending|through|-)\s*(\d{1,4}(?:[\-/]\d{1,2}[\-/]\d{1,4}|\s+\w+\s+\d{4}))",
+        re.IGNORECASE,
+    )
+    patterns["opening_balance"] = re.compile(
+        r"(?:Opening\s+Balance|Openingsaldo|Saldo\s+oorgedra)\s*:?[ \t]*(-?R?[\d\s,.]+)",
+        re.IGNORECASE,
+    )
+    patterns["closing_balance"] = re.compile(
+        r"(?:Closing\s+Balance|Afsluitingsaldo|Huidige\s+Saldo|Saldo)\s*:?[ \t]*(-?R?[\d\s,.]+)",
         re.IGNORECASE,
     )
 
     keywords = _sa_column_keywords()
     keywords["description"].append("cheque")
+    keywords["description"].append("transaksiebeskrywing")
+    keywords["debit"].append("debietbedrag")
+    keywords["credit"].append("kredietbedrag")
+    keywords["balance"].append("saldo")
+    keywords["amount"].append("bedrag")
 
     return _sa_base_profile(
         name="ABSA",
-        detection_keywords=["absa", "absa bank", "cheque account"],
+        detection_keywords=[
+            "absa",
+            "absa bank",
+            "absa bank ltd",
+            "cheque account",
+            "tjekrekeningstaat",
+            "tjekrekeningnommer",
+            "transaksiegeskiedenis",
+            "rekeningopsomming",
+        ],
         header_patterns=patterns,
         column_keywords=keywords,
+        default_column_map={"date": 0, "description": 1, "debit": 3, "credit": 4, "balance": 5},
+        unsigned_is_debit=False,
+        date_formats=_sa_date_formats() + ["%d%b%Y", "%Y/%m/%d"],
     )
 
 
@@ -153,17 +190,42 @@ def _fnb_text_line_pattern() -> str:
     return (
         r"(\d{2}\s*\w{3})\s+"                     # Date: DD[space?]Mon (e.g. "01Feb" or "01 Feb")
         r"(.+?)"                                   # Description (non-greedy, at least 1 char)
-        r"\s+([\d,]+\.\d{2}(?:Cr|Dr)?)"           # Amount (optional Cr/Dr)
-        r"\s+([\d,]+\.\d{2}(?:Cr|Dr))"            # Balance (must have Cr or Dr)
+        r"\s+([\d,]+\.\d{2}(?:Cr|Dr|Kt|Dt)?)"     # Amount (optional Cr/Dr/Kt/Dt)
+        r"\s+([\d,]+\.\d{2}(?:Cr|Dr|Kt|Dt)?)"     # Balance (suffix optional in some FNB layouts)
     )
 
 
 def fnb_profile() -> BankProfile:
     """First National Bank (FirstRand) profile."""
     patterns = _sa_header_patterns()
-    # FNB: match "Account Number: 12345" or "Gold Business Account : 12345"
+    patterns["bank_name"] = re.compile(
+        r"(?im)^\s*((?:First\s+National\s+Bank|FNB))\b",
+        re.IGNORECASE,
+    )
+    # FNB: English and Afrikaans account-number labels / product lines.
     patterns["account_number"] = re.compile(
-        r"(?:Account\s*(?:Number|No\.?)|Gold\s*Business\s*Account)\s*[:\-]?\s*(\d{10,12})",
+        r"(?:Account\s*(?:Number|No\.?)|Rekeningnommer|"
+        r"Gold\s*Business\s*Account|"
+        r"(?:FNB\s+)?(?:Aspire|Fusion\s+Aspire|Private\s+Clients\s+Current|Savings)\s+"
+        r"(?:Account|Acc))\s*[:\-]?\s*(\d{10,12})",
+        re.IGNORECASE,
+    )
+    patterns["period_start"] = re.compile(
+        r"(?:Statement\s*Period|Staat\s*Periode|Statement\s*Date|Staatdatum|Statement\s*From)\s*[:\-]?\s*"
+        r"(\d{1,2}\s*(?:[A-Za-z]+|\d{1,2})\s*[\s\/\-]?\s*\d{2,4})",
+        re.IGNORECASE,
+    )
+    patterns["period_end"] = re.compile(
+        r"(?:to|tot|ending|through)\s*[:\-]?\s*"
+        r"(\d{1,2}\s*(?:[A-Za-z]+|\d{1,2})\s*[\s\/\-]?\s*\d{2,4})",
+        re.IGNORECASE,
+    )
+    patterns["opening_balance"] = re.compile(
+        r"(?:Opening\s*Balance|Openingsaldo)\s*[:\-]?\s*R?\s*([\d ,]+\.\d{2}(?:Cr|Dr|Kt|Dt)?)",
+        re.IGNORECASE,
+    )
+    patterns["closing_balance"] = re.compile(
+        r"(?:Closing\s*Balance|Afsluitingsaldo)\s*[:\-]?\s*R?\s*([\d ,]+\.\d{2}(?:Cr|Dr|Kt|Dt)?)",
         re.IGNORECASE,
     )
 
@@ -173,12 +235,20 @@ def fnb_profile() -> BankProfile:
         re.IGNORECASE,
     )
 
-    # FNB date formats: DD Mon / DDMon (no year) + standard SA formats
-    fnb_dates = ["%d%b", "%d %b"] + _sa_date_formats()
+    # FNB date formats: DD Mon / DDMon (no year) + Online Banking header
+    # dates (MM/DD/YY) + standard SA formats.
+    fnb_dates = ["%d%b", "%d %b", "%m/%d/%y", "%m/%d/%Y"] + _sa_date_formats()
 
     return _sa_base_profile(
         name="FNB",
-        detection_keywords=["fnb", "first national bank", "firstrand"],
+        detection_keywords=[
+            "fnb",
+            "first national bank",
+            "firstrand",
+            "fnby transact account",
+            "fnb fusion aspire account",
+            "online.fnb.co.za",
+        ],
         header_patterns=patterns,
         text_line_pattern=_fnb_text_line_pattern(),
         date_formats=fnb_dates,

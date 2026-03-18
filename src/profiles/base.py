@@ -132,6 +132,11 @@ class BankProfile:
         elif upper.endswith("DR"):
             cleaned = cleaned[:-2].strip()
             negate = True
+        elif upper.endswith("KT"):
+            cleaned = cleaned[:-2].strip()
+        elif upper.endswith("DT"):
+            cleaned = cleaned[:-2].strip()
+            negate = True
 
         # Remove currency symbols (profile-specific + common ones)
         symbols = set(self.currency_symbol + "£$€R")
@@ -141,8 +146,15 @@ class BankProfile:
         if self.thousands_separator == " ":
             # For space separator: remove spaces between digit groups
             cleaned = re.sub(r"(?<=\d)\s+(?=\d)", "", cleaned)
-        # Always remove commas as a universal thousands separator fallback
-        cleaned = cleaned.replace(",", "")
+
+        # Handle decimal comma formats such as "4 940,60" used by some ABSA statements.
+        if re.search(r",\d{2}$", cleaned):
+            if "." in cleaned and cleaned.rfind(",") > cleaned.rfind("."):
+                cleaned = cleaned.replace(".", "")
+            cleaned = cleaned.replace(",", ".")
+        else:
+            # Commas are thousands separators in dot-decimal amounts.
+            cleaned = cleaned.replace(",", "")
         # Remove any other configured separator
         if self.thousands_separator not in (" ", ","):
             cleaned = cleaned.replace(self.thousands_separator, "")

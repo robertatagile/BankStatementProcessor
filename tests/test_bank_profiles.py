@@ -149,6 +149,14 @@ class TestSAProfiles:
         profile = factory_fn()
         assert profile.parse_amount("R45.99") == Decimal("45.99")
 
+    def test_fnb_parse_amount_with_kt_suffix(self):
+        profile = fnb_profile()
+        assert profile.parse_amount("45,916.26Kt") == Decimal("45916.26")
+
+    def test_fnb_parse_amount_with_dt_suffix(self):
+        profile = fnb_profile()
+        assert profile.parse_amount("45,916.26Dt") == Decimal("-45916.26")
+
     @pytest.mark.parametrize(
         "factory_fn",
         [absa_profile, fnb_profile, nedbank_profile, standard_bank_profile, capitec_profile],
@@ -166,6 +174,15 @@ class TestSAProfiles:
     def test_absa_cheque_keyword(self):
         profile = absa_profile()
         assert "cheque" in profile.column_keywords["description"]
+
+    def test_absa_parse_decimal_comma_amount(self):
+        profile = absa_profile()
+        assert profile.parse_amount("4 940,60") == Decimal("4940.60")
+
+    def test_absa_detection_afrikaans_statement(self):
+        text = "Absa Bank Ltd\nTjekrekeningstaat\nTjekrekeningnommer: 7-1323-1819"
+        profile = BankProfileFactory.detect(text)
+        assert profile.name == "ABSA"
 
 
 class TestBankProfileFactory:
@@ -197,6 +214,16 @@ class TestBankProfileFactory:
 
     def test_detect_fnb(self):
         text = "First National Bank\nFNB Statement\nAccount: 9876543210"
+        profile = BankProfileFactory.detect(text)
+        assert profile.name == "FNB"
+
+    def test_detect_fnb_from_account_type_indicators(self):
+        text = (
+            "Name FNBy Transact Account\n"
+            "Account Number 62384104940\n"
+            "Type FNB Fusion Aspire Account\n"
+            "https://www.online.fnb.co.za/banking/main.jsp"
+        )
         profile = BankProfileFactory.detect(text)
         assert profile.name == "FNB"
 

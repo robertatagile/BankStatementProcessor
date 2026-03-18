@@ -14,6 +14,32 @@ from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
+AFRIKAANS_MONTH_ALIASES = {
+    "januarie": "January",
+    "jan": "Jan",
+    "februarie": "February",
+    "feb": "Feb",
+    "maart": "March",
+    "mrt": "Mar",
+    "april": "April",
+    "apr": "Apr",
+    "mei": "May",
+    "junie": "June",
+    "jun": "Jun",
+    "julie": "July",
+    "jul": "Jul",
+    "augustus": "August",
+    "aug": "Aug",
+    "september": "September",
+    "sep": "Sep",
+    "oktober": "October",
+    "okt": "Oct",
+    "november": "November",
+    "nov": "Nov",
+    "desember": "December",
+    "des": "Dec",
+}
+
 # Keep module-level constants for backward compatibility
 DATE_FORMATS = BankProfile().date_formats
 HEADER_PATTERNS = BankProfile().header_patterns
@@ -74,7 +100,13 @@ class PDFExtractorStage(Stage):
             match = pattern.search(text)
             if match:
                 value = match.group(1).strip()
-                if field_name in ("opening_balance", "closing_balance"):
+                if field_name == "account_number":
+                    first_numeric_line = next(
+                        (line.strip() for line in value.splitlines() if re.search(r"\d", line)),
+                        value,
+                    )
+                    value = re.sub(r"\s+", " ", first_numeric_line).strip()
+                elif field_name in ("opening_balance", "closing_balance"):
                     value = profile.parse_amount(value)
                 elif field_name in ("period_start", "period_end"):
                     value = self._parse_date_with_profile(value, profile)
@@ -88,10 +120,133 @@ class PDFExtractorStage(Stage):
         header.setdefault("opening_balance", Decimal("0.00"))
         header.setdefault("closing_balance", Decimal("0.00"))
 
+        self._apply_profile_header_fallbacks(text, header, profile)
+
         # Extract personal/address info (account holder, street, suburb, postal code, account type)
         self._extract_personal_info(text, header)
 
         return header
+
+    def _apply_profile_header_fallbacks(
+        self, text: str, header: dict, profile: BankProfile
+    ) -> None:
+        """Apply bank-specific header fallbacks for noisy PDF renderings."""
+        if profile.name == "ABSA":
+            self._apply_absa_header_fallbacks(text, header, profile)
+            return
+
+        if profile.name != "FNB":
+            return
+
+        bank_name = (header.get("bank_name") or "").strip()
+        if (
+            not bank_name
+            or bank_name == "Unknown Bank"
+            or "online bank" in bank_name.lower()
+        ):
+            header["bank_name"] = profile.name
+
+        if header.get("account_number") == "Unknown":
+            afrikaans_account_match = re.search(
+                r"(?im)^\s*Rekeningnommer\s*$.*?^\s*(\d{10,12})\b",
+                text,
+                re.DOTALL,
+            )
+            if afrikaans_account_match:
+                header["account_number"] = afrikaans_account_match.group(1)
+
+        if header.get("period_end") or header.get("period_start"):
+            return
+
+        online_bank_match = re.search(
+            r"(?im)^\s*(\d{1,2}/\d{1,2}/\d{2,4})"
+            r"(?:,\s*\d{1,2}:\d{2}\s*(?:AM|PM))?\s+Online\s+Bank(?:ing)?\b",
+            text,
+        )
+        if not online_bank_match:
+            return
+
+        statement_date = self._parse_date_with_profile(
+            online_bank_match.group(1), profile
+        )
+        if statement_date is not None:
+            header["period_end"] = statement_date
+
+    def _apply_absa_header_fallbacks(
+        self, text: str, header: dict, profile: BankProfile
+    ) -> None:
+        """Apply ABSA-specific fallbacks for Afrikaans and eStamp layouts."""
+        bank_name_match = re.search(
+            r"(?im)\b(Absa\s+Bank\s+Ltd|Absa\s+Bank|ABSA\s+BANK)\b",
+            text,
+        )
+        if bank_name_match:
+            header["bank_name"] = bank_name_match.group(1)
+        elif header.get("bank_name") == "Unknown Bank":
+            header["bank_name"] = profile.name
+
+        if header.get("account_number") == "Unknown":
+            account_match = re.search(
+                r"(?im)Tjekrekeningnommer\s*:\s*([\d\-\s]{8,})",
+                text,
+            )
+            if not account_match:
+                account_match = re.search(
+                    r"(?im)\bABSA\b.*?\n.*?\b(\d{10})\b\s*$",
+                    text,
+                    re.DOTALL,
+                )
+            if account_match:
+                header["account_number"] = re.sub(r"\D", "", account_match.group(1))
+
+        if header.get("period_start") is None or header.get("period_end") is None:
+            period_match = re.search(
+                r"(?im)(?:Staat\s+vir\s+die\s+Periode|Tjekrekeningstaat)\s*[:\-]?\s*"
+                r"([^\n]+?)\s+(?:tot|to|-)\s+([^\n]+)",
+                text,
+            )
+            if period_match:
+                header["period_start"] = header.get("period_start") or self._parse_date_with_profile(period_match.group(1).strip(), profile)
+                header["period_end"] = header.get("period_end") or self._parse_date_with_profile(period_match.group(2).strip(), profile)
+
+        if header.get("period_end") is None:
+            issued_match = re.search(
+                r"(?im)Uitgereik\s+op\s*:\s*([0-9A-Za-z/\-]+)",
+                text,
+            )
+            if issued_match:
+                header["period_end"] = self._parse_date_with_profile(issued_match.group(1), profile)
+
+        if header.get("period_end") is None:
+            estamp_match = re.search(r"(?im)^\s*(\d{4}-\d{2}-\d{2}|\d{2}/\d{2}/\d{4})\s*$", text)
+            if estamp_match:
+                header["period_end"] = self._parse_date_with_profile(estamp_match.group(1), profile)
+
+        if header.get("period_start") is None and header.get("period_end") is not None:
+            header["period_start"] = header["period_end"]
+
+        if header.get("opening_balance") == Decimal("0.00"):
+            opening_match = re.search(r"(?im)Saldo\s+oorgedra\s+(-?R?[\d\s,.]+)", text)
+            if opening_match:
+                parsed = profile.parse_amount(opening_match.group(1))
+                if parsed is not None:
+                    header["opening_balance"] = parsed
+
+        if header.get("closing_balance") in (Decimal("0.00"), None):
+            closing_match = re.search(r"(?im)(?:Huidige\s+Saldo|Saldo)\s+(-?R?[\d\s,.]+)", text)
+            if closing_match:
+                parsed = profile.parse_amount(closing_match.group(1))
+                if parsed is not None:
+                    header["closing_balance"] = parsed
+            if header.get("closing_balance") in (Decimal("0.00"), None):
+                summary_balance_match = re.search(
+                    r"(?im)^\s*Saldo\s+(-?R?[\d\s,.]+)\s*$",
+                    text,
+                )
+                if summary_balance_match:
+                    parsed = profile.parse_amount(summary_balance_match.group(1))
+                    if parsed is not None:
+                        header["closing_balance"] = parsed
 
     def _extract_personal_info(self, text: str, header: dict) -> None:
         """Extract personal, address, and account info from FNB statement text.
@@ -343,9 +498,9 @@ class PDFExtractorStage(Stage):
 
             # Determine transaction type from Cr/Dr suffix or sign
             amount_upper = amount_str.strip().upper()
-            if amount_upper.endswith("CR"):
+            if amount_upper.endswith(("CR", "KT")):
                 transaction_type = "credit"
-            elif amount_upper.endswith("DR"):
+            elif amount_upper.endswith(("DR", "DT")):
                 transaction_type = "debit"
             elif amount < 0:
                 transaction_type = "debit"
@@ -422,7 +577,13 @@ class PDFExtractorStage(Stage):
             amount_str = get_cell("amount")
             amount = profile.parse_amount(amount_str)
             # Negative amount = debit, positive = credit
-            if amount is not None and amount < 0:
+            amount_upper = (amount_str or "").strip().upper()
+            if amount_upper.endswith(("CR", "KT")):
+                transaction_type = "credit"
+            elif amount_upper.endswith(("DR", "DT")):
+                transaction_type = "debit"
+                amount = abs(amount) if amount is not None else amount
+            elif amount is not None and amount < 0:
                 transaction_type = "debit"
                 amount = abs(amount)
             else:
@@ -475,9 +636,9 @@ class PDFExtractorStage(Stage):
                 if parsed_date and amount is not None:
                     # Determine transaction type from Cr/Dr suffix or sign
                     amount_upper = (amount_str or "").strip().upper()
-                    if amount_upper.endswith("CR"):
+                    if amount_upper.endswith(("CR", "KT")):
                         transaction_type = "credit"
-                    elif amount_upper.endswith("DR"):
+                    elif amount_upper.endswith(("DR", "DT")):
                         transaction_type = "debit"
                     elif amount < 0:
                         transaction_type = "debit"
@@ -544,13 +705,26 @@ class PDFExtractorStage(Stage):
         """Try profile's date formats to parse a date string."""
         if not date_str:
             return None
-        date_str = date_str.strip()
+        date_str = PDFExtractorStage._normalize_date_text(date_str.strip())
         for fmt in profile.date_formats:
             try:
                 return datetime.strptime(date_str, fmt).date()
             except ValueError:
                 continue
         return None
+
+    @staticmethod
+    def _normalize_date_text(date_str: str) -> str:
+        """Normalize month names from FNB Afrikaans renderings to English."""
+        normalized = date_str
+        for source, target in AFRIKAANS_MONTH_ALIASES.items():
+            normalized = re.sub(
+                rf"\b{source}\b",
+                target,
+                normalized,
+                flags=re.IGNORECASE,
+            )
+        return normalized
 
     # ------------------------------------------------------------------
     # Backward-compatible static methods (used by existing tests)

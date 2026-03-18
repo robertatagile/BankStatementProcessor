@@ -200,6 +200,61 @@ class TestHeaderExtraction:
         assert header["opening_balance"] == Decimal("10000.00")
         assert header["closing_balance"] == Decimal("12500.00")
 
+    def test_absa_afrikaans_header_extraction(self):
+        stage = PDFExtractorStage()
+        profile = absa_profile()
+        text = """
+        Stuur terug na: Absa Bank Ltd
+        Tjekrekeningnommer: 7-1323-1819
+        Tjekrekeningstaat
+        17 Des 2025 tot 16 Jan 2026
+        Rekeningopsomming:
+        Saldo oorgedra 4 940,60
+        Saldo 1 807,39
+        """
+        header = stage._extract_header(text, profile)
+
+        assert header["bank_name"] == "Absa Bank Ltd"
+        assert header["account_number"] == "7-1323-1819"
+        assert header["period_start"] == date(2025, 12, 17)
+        assert header["period_end"] == date(2026, 1, 16)
+        assert header["opening_balance"] == Decimal("4940.60")
+        assert header["closing_balance"] == Decimal("1807.39")
+
+    def test_absa_estamp_header_fallbacks(self):
+        stage = PDFExtractorStage()
+        profile = absa_profile()
+        text = """
+        eStempel
+        2026-02-23
+        Transaksiegeskiedenis (2026-02-23 07:42:52)
+        MELISSA ANNE BRAND ABSA
+        VLAMBOOMSTRAAT 35, PO BOX 1641 4065399361
+        KATHU SILVER TJEKREK
+        Huidige Saldo -R1 158.44
+        Staat vir die Periode 2025-11-23 - 2026-02-23
+        """
+        header = stage._extract_header(text, profile)
+
+        assert header["bank_name"] == "ABSA"
+        assert header["account_number"] == "4065399361"
+        assert header["period_start"] == date(2025, 11, 23)
+        assert header["period_end"] == date(2026, 2, 23)
+        assert header["closing_balance"] == Decimal("-1158.44")
+
+    def test_fnb_online_bank_header_uses_profile_name_and_statement_date(self):
+        stage = PDFExtractorStage()
+        profile = fnb_profile()
+        text = """
+        1/15/24, 9:07 PM Online Banking
+        Gold Business Account: 62384104940
+        """
+        header = stage._extract_header(text, profile)
+
+        assert header["bank_name"] == "FNB"
+        assert header["account_number"] == "62384104940"
+        assert header["period_end"] == date(2024, 1, 15)
+
 
 class TestProfileDateParsing:
     """Test date parsing with bank-specific profile formats."""
@@ -224,6 +279,59 @@ class TestProfileDateParsing:
             "15/01/2024", profile
         )
         assert result == date(2024, 1, 15)
+
+    def test_fnb_online_banking_date_mm_dd_yy(self):
+        profile = fnb_profile()
+        result = PDFExtractorStage._parse_date_with_profile(
+            "1/15/24", profile
+        )
+        assert result == date(2024, 1, 15)
+
+    def test_fnb_afrikaans_date_parsing(self):
+        profile = fnb_profile()
+        result = PDFExtractorStage._parse_date_with_profile(
+            "18 Desember 2023", profile
+        )
+        assert result == date(2023, 12, 18)
+
+    def test_fnb_afrikaans_date_abbreviation_parsing(self):
+        profile = fnb_profile()
+        result = PDFExtractorStage._parse_date_with_profile(
+            "18 Okt 2023", profile
+        )
+        assert result == date(2023, 10, 18)
+
+    def test_fnb_afrikaans_header_extraction(self):
+        stage = PDFExtractorStage()
+        profile = fnb_profile()
+        text = """
+        Rekeningnommer
+        62020354255
+        Staat Periode : 18 September 2023 tot 18 Oktober 2023
+        Staatdatum : 18 Oktober 2023
+        Openingsaldo 44,809.60Dt
+        Afsluitingsaldo 45,916.26Dt
+        """
+        header = stage._extract_header(text, profile)
+
+        assert header["account_number"] == "62020354255"
+        assert header["period_start"] == date(2023, 9, 18)
+        assert header["period_end"] == date(2023, 10, 18)
+        assert header["opening_balance"] == Decimal("-44809.60")
+        assert header["closing_balance"] == Decimal("-45916.26")
+
+    def test_fnb_afrikaans_text_line_extraction(self):
+        stage = PDFExtractorStage()
+        profile = fnb_profile()
+        text = "18 Sep FNB OB Betaling Salaris 2,000.00Kt 2,742.29Kt"
+
+        lines = stage._parse_text(text, 1, profile)
+
+        assert len(lines) == 1
+        assert lines[0]["date"] == date(1900, 9, 18)
+        assert lines[0]["transaction_type"] == "credit"
+        assert lines[0]["amount"] == Decimal("2000.00")
+        assert lines[0]["balance"] == Decimal("2742.29")
 
 
 class TestPDFExtractorWithProfile:
