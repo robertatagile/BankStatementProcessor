@@ -129,6 +129,7 @@ def _run_pipeline(
                 rules_path=rules_path,
                 session_factory=session_factory,
                 categories=DEFAULT_CATEGORIES,
+                job_id=job_id,
             )
             ctx = ai.process(ctx)
 

@@ -4,7 +4,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import List, Optional
 
-from sqlalchemy import ForeignKey, Integer, Numeric, String, create_engine
+from sqlalchemy import Boolean, ForeignKey, Float, Integer, Numeric, String, Text, create_engine
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -68,10 +68,21 @@ class StatementLine(Base):
     category: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     classification_method: Mapped[Optional[str]] = mapped_column(
         String(20), nullable=True
-    )  # "regex", "ai", or null
+    )  # "regex", "ai", "manual", or null
+    matched_rule_id: Mapped[Optional[int]] = mapped_column(
+        Integer, ForeignKey("classification_rules.id"), nullable=True
+    )
+    matched_pattern: Mapped[Optional[str]] = mapped_column(
+        String(500), nullable=True
+    )
+    confidence: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    classification_reason: Mapped[Optional[str]] = mapped_column(
+        String(500), nullable=True
+    )
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
 
     statement: Mapped["Statement"] = relationship(back_populates="lines")
+    matched_rule: Mapped[Optional["ClassificationRule"]] = relationship()
 
     def __repr__(self) -> str:
         return (
@@ -113,12 +124,51 @@ class ClassificationRule(Base):
     category: Mapped[str] = mapped_column(String(100))
     priority: Mapped[int]
     source: Mapped[str] = mapped_column(String(20))  # "manual" or "ai"
+    enabled: Mapped[bool] = mapped_column(Boolean, default=True)
+    description: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    match_count: Mapped[int] = mapped_column(Integer, default=0)
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
 
     def __repr__(self) -> str:
         return (
             f"<ClassificationRule(id={self.id}, category={self.category}, "
-            f"source={self.source})>"
+            f"source={self.source}, enabled={self.enabled})>"
+        )
+
+
+class RefinementProposal(Base):
+    """AI-suggested classification rule awaiting human approval."""
+
+    __tablename__ = "refinement_proposals"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    pattern: Mapped[str] = mapped_column(String(500))
+    category: Mapped[str] = mapped_column(String(100))
+    confidence: Mapped[float] = mapped_column(Float)
+    source_description: Mapped[Optional[str]] = mapped_column(
+        String(500), nullable=True
+    )  # The transaction description that triggered this
+    source_job_id: Mapped[Optional[str]] = mapped_column(
+        String(36), nullable=True
+    )
+    status: Mapped[str] = mapped_column(
+        String(20), default="pending"
+    )  # pending, approved, rejected
+    reviewed_at: Mapped[Optional[datetime]] = mapped_column(nullable=True)
+    reviewer_note: Mapped[Optional[str]] = mapped_column(
+        String(500), nullable=True
+    )
+    created_rule_id: Mapped[Optional[int]] = mapped_column(
+        Integer, ForeignKey("classification_rules.id"), nullable=True
+    )
+    created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
+
+    created_rule: Mapped[Optional["ClassificationRule"]] = relationship()
+
+    def __repr__(self) -> str:
+        return (
+            f"<RefinementProposal(id={self.id}, pattern={self.pattern}, "
+            f"category={self.category}, status={self.status})>"
         )
 
 
@@ -160,8 +210,66 @@ class ProcessingJob(Base):
         )
 
 
+def _migrate(engine):
+    """Apply schema migrations for columns/tables added after initial release."""
+    import sqlite3
+
+    raw = engine.raw_connection()
+    cur = raw.cursor()
+
+    def _has_column(table, column):
+        cur.execute(f"PRAGMA table_info({table})")
+        return any(row[1] == column for row in cur.fetchall())
+
+    def _has_table(table):
+        cur.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
+            (table,),
+        )
+        return cur.fetchone() is not None
+
+    # StatementLine provenance columns
+    if _has_table("statement_lines"):
+        if not _has_column("statement_lines", "matched_rule_id"):
+            cur.execute(
+                "ALTER TABLE statement_lines ADD COLUMN matched_rule_id INTEGER"
+            )
+        if not _has_column("statement_lines", "matched_pattern"):
+            cur.execute(
+                "ALTER TABLE statement_lines ADD COLUMN matched_pattern VARCHAR(500)"
+            )
+        if not _has_column("statement_lines", "confidence"):
+            cur.execute(
+                "ALTER TABLE statement_lines ADD COLUMN confidence FLOAT"
+            )
+        if not _has_column("statement_lines", "classification_reason"):
+            cur.execute(
+                "ALTER TABLE statement_lines ADD COLUMN classification_reason VARCHAR(500)"
+            )
+
+    # ClassificationRule new columns
+    if _has_table("classification_rules"):
+        if not _has_column("classification_rules", "enabled"):
+            cur.execute(
+                "ALTER TABLE classification_rules ADD COLUMN enabled BOOLEAN DEFAULT 1"
+            )
+        if not _has_column("classification_rules", "description"):
+            cur.execute(
+                "ALTER TABLE classification_rules ADD COLUMN description VARCHAR(500)"
+            )
+        if not _has_column("classification_rules", "match_count"):
+            cur.execute(
+                "ALTER TABLE classification_rules ADD COLUMN match_count INTEGER DEFAULT 0"
+            )
+
+    raw.commit()
+    cur.close()
+    raw.close()
+
+
 def init_db(db_path: str) -> sessionmaker:
     """Initialize the database and return a session factory."""
     engine = create_engine(f"sqlite:///{db_path}", echo=False)
+    _migrate(engine)
     Base.metadata.create_all(engine)
     return sessionmaker(bind=engine)

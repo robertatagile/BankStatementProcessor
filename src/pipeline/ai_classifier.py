@@ -7,7 +7,7 @@ from anthropic import Anthropic
 from pydantic import BaseModel
 from sqlalchemy.orm import sessionmaker
 
-from src.models.database import ClassificationRule, StatementLine
+from src.models.database import ClassificationRule, RefinementProposal, StatementLine
 from src.pipeline.queue import PipelineContext, Stage
 from src.utils.logger import get_logger
 
@@ -52,11 +52,13 @@ class AIClassifierStage(Stage):
         rules_path: str,
         session_factory: sessionmaker,
         categories: list[str],
+        job_id: str | None = None,
     ):
         self._client = Anthropic(api_key=api_key)
         self._rules_path = rules_path
         self._session_factory = session_factory
         self._categories = categories
+        self._job_id = job_id
 
     def process(self, context: PipelineContext) -> PipelineContext:
         if not context.unclassified_lines:
@@ -78,18 +80,25 @@ class AIClassifierStage(Stage):
         newly_classified = []
         with self._session_factory() as session:
             for line, result in zip(context.unclassified_lines, all_results):
-                # Update the DB record
+                # Update the DB record with provenance
                 stmt_line = session.get(StatementLine, line["id"])
                 if stmt_line:
                     stmt_line.category = result.category
                     stmt_line.classification_method = "ai"
+                    stmt_line.confidence = result.confidence
+                    stmt_line.matched_pattern = result.regex_pattern or None
+                    stmt_line.classification_reason = (
+                        f"AI classified as '{result.category}' "
+                        f"with {result.confidence:.0%} confidence"
+                    )
 
                 newly_classified.append({**line, "category": result.category})
 
-                # Append rule if confidence is high enough
-                if result.confidence >= CONFIDENCE_THRESHOLD:
-                    self._append_rule(
-                        session, result.regex_pattern, result.category
+                # Route high-confidence rules to refinement queue for approval
+                if result.confidence >= CONFIDENCE_THRESHOLD and result.regex_pattern:
+                    self._propose_refinement(
+                        session, result.regex_pattern, result.category,
+                        result.confidence, line.get("description", ""),
                     )
 
             session.commit()
@@ -174,52 +183,34 @@ class AIClassifierStage(Stage):
             return text[start:end]
         return text
 
-    def _append_rule(
-        self, session, regex_pattern: str, category: str
+    def _propose_refinement(
+        self, session, regex_pattern: str, category: str,
+        confidence: float, source_description: str,
     ) -> None:
-        """Append a new AI-generated rule to the JSON config and database."""
+        """Create a refinement proposal for human review instead of auto-activating."""
         if not regex_pattern:
             return
 
-        # Load existing rules
-        try:
-            with open(self._rules_path, "r") as f:
-                data = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
-            data = {"rules": []}
+        # Check for duplicate pending proposals with the same pattern
+        existing = (
+            session.query(RefinementProposal)
+            .filter_by(pattern=regex_pattern, status="pending")
+            .first()
+        )
+        if existing:
+            logger.debug(f"Refinement already pending: {regex_pattern}")
+            return
 
-        rules = data.get("rules", [])
-
-        # Check if a similar pattern already exists
-        for existing in rules:
-            if existing["pattern"] == regex_pattern:
-                logger.debug(f"Rule already exists: {regex_pattern}")
-                return
-
-        # Compute next priority
-        max_priority = max((r.get("priority", 0) for r in rules), default=0)
-        new_priority = max_priority + 1
-
-        # Append to JSON file
-        new_rule = {
-            "pattern": regex_pattern,
-            "category": category,
-            "priority": new_priority,
-            "source": "ai",
-        }
-        rules.append(new_rule)
-        data["rules"] = rules
-
-        with open(self._rules_path, "w") as f:
-            json.dump(data, f, indent=2)
-
-        logger.info(f"New AI rule added: '{regex_pattern}' → {category}")
-
-        # Also insert into the database
-        db_rule = ClassificationRule(
+        proposal = RefinementProposal(
             pattern=regex_pattern,
             category=category,
-            priority=new_priority,
-            source="ai",
+            confidence=confidence,
+            source_description=source_description[:500] if source_description else None,
+            source_job_id=self._job_id,
+            status="pending",
         )
-        session.add(db_rule)
+        session.add(proposal)
+        logger.info(
+            f"Refinement proposed: '{regex_pattern}' → {category} "
+            f"(confidence={confidence:.2f})"
+        )
