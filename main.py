@@ -49,14 +49,15 @@ def build_pipeline(
     api_key: str | None,
     dry_run: bool,
     bank: str | None = None,
+    enable_ocr: bool = True,
 ) -> Pipeline:
     """Build the processing pipeline with all stages."""
     if bank:
         profile = BankProfileFactory.get(bank)
-        extractor = PDFExtractorStage(profile=profile, auto_detect=False)
+        extractor = PDFExtractorStage(profile=profile, auto_detect=False, enable_ocr=enable_ocr)
         logger.info(f"Using bank profile: {profile.name}")
     else:
-        extractor = PDFExtractorStage()  # auto-detect from PDF
+        extractor = PDFExtractorStage(enable_ocr=enable_ocr)
 
     stages = [
         extractor,
@@ -168,6 +169,11 @@ def main() -> None:
             "If not specified, the bank is auto-detected from the PDF."
         ),
     )
+    parser.add_argument(
+        "--no-ocr",
+        action="store_true",
+        help="Disable OCR fallback for scanned PDFs (faster processing)",
+    )
 
     args = parser.parse_args()
 
@@ -190,7 +196,8 @@ def main() -> None:
 
     # Build pipeline
     pipeline = build_pipeline(
-        session_factory, rules_path, api_key, args.dry_run, args.bank
+        session_factory, rules_path, api_key, args.dry_run, args.bank,
+        enable_ocr=not args.no_ocr,
     )
 
     # Collect PDF files

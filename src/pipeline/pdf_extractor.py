@@ -52,9 +52,11 @@ class PDFExtractorStage(Stage):
         self,
         profile: Optional[BankProfile] = None,
         auto_detect: bool = True,
+        enable_ocr: bool = True,
     ):
         self._profile = profile
         self._auto_detect = auto_detect
+        self._enable_ocr = enable_ocr
 
     def process(self, context: PipelineContext) -> PipelineContext:
         logger.info(f"Extracting data from: {context.file_path}")
@@ -68,7 +70,7 @@ class PDFExtractorStage(Stage):
             )
 
             # OCR fallback: if pdfplumber yields no text (scanned PDF)
-            if len(full_text.strip()) < 20:
+            if len(full_text.strip()) < 20 and self._enable_ocr:
                 full_text = self._ocr_all_pages(pdf)
 
             context.raw_header = self._extract_header(full_text, profile)
@@ -95,7 +97,7 @@ class PDFExtractorStage(Stage):
         if self._auto_detect and pdf.pages:
             page1_text = pdf.pages[0].extract_text() or ""
             # OCR fallback for bank detection on scanned PDFs
-            if len(page1_text.strip()) < 20:
+            if len(page1_text.strip()) < 20 and self._enable_ocr:
                 page1_text = self._ocr_page(pdf.pages[0])
             return BankProfileFactory.detect(page1_text)
 
@@ -533,7 +535,7 @@ class PDFExtractorStage(Stage):
                     page_lines = self._parse_text(text, page_num, profile)
 
             # OCR fallback: if no lines extracted (scanned PDF page)
-            if not page_lines:
+            if not page_lines and self._enable_ocr:
                 ocr_text = self._ocr_page(page)
                 if ocr_text:
                     page_lines = self._parse_text(ocr_text, page_num, profile)

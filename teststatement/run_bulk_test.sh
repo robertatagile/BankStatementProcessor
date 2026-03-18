@@ -104,7 +104,7 @@ done
 echo ""
 
 # ---- Parallel execution ----
-echo -e "${CYAN}Running $WORKERS pipeline workers (dry-run — no AI stage)...${NC}"
+echo -e "${CYAN}Running $WORKERS pipeline workers (dry-run, no AI, no OCR)...${NC}"
 echo ""
 
 START_TIME=$SECONDS
@@ -124,6 +124,7 @@ for d in "$TMP_DIR"/batch_*; do
         --db-path "$TMP_DIR/${batch_name}.db" \
         --rules-path "$RULES_PATH" \
         --dry-run \
+        --no-ocr \
         > "$TMP_DIR/${batch_name}.log" 2>&1 &
     PIDS+=($!)
 done
@@ -131,16 +132,37 @@ done
 echo -e "  Launched ${YELLOW}${#PIDS[@]}${NC} background workers (PIDs: ${PIDS[*]})"
 echo -e "  Waiting for completion..."
 
-# Wait for all workers and collect exit codes
+# Show progress while waiting (disable set -e for the progress loop)
+set +e
+while true; do
+    # Count how many workers are still running
+    ALIVE=0
+    for pid in "${PIDS[@]}"; do
+        if kill -0 "$pid" 2>/dev/null; then
+            ALIVE=$((ALIVE + 1))
+        fi
+    done
+    [ "$ALIVE" -eq 0 ] && break
+
+    # Count processed + failed across all batches
+    DONE=$(find "$TMP_DIR"/batch_*/processed "$TMP_DIR"/batch_*/failed -name "*.pdf" 2>/dev/null | wc -l | tr -d ' ')
+    ELAPSED_SO_FAR=$(( SECONDS - START_TIME ))
+    printf "\r  Progress: %d/%d PDFs | %d workers active | %ds elapsed" \
+        "$DONE" "$PDF_COUNT" "$ALIVE" "$ELAPSED_SO_FAR"
+    sleep 2
+done
+
+# Collect exit codes
 FAILURES=0
 for pid in "${PIDS[@]}"; do
     if ! wait "$pid"; then
         FAILURES=$((FAILURES + 1))
     fi
 done
+set -e
 
 ELAPSED=$(( SECONDS - START_TIME ))
-echo ""
+printf "\r%-80s\n" ""  # clear progress line
 echo -e "  All workers finished in ${YELLOW}${ELAPSED}s${NC} (${FAILURES} worker failures)"
 echo ""
 
