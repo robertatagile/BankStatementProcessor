@@ -88,60 +88,59 @@ class PDFExtractorStage(Stage):
         header.setdefault("opening_balance", Decimal("0.00"))
         header.setdefault("closing_balance", Decimal("0.00"))
 
-        # Extract address block (lines between account holder and postal code)
-        if "account_holder" in header:
-            self._extract_address(text, header)
+        # Extract personal/address info (account holder, street, suburb, postal code, account type)
+        self._extract_personal_info(text, header)
 
         return header
 
-    def _extract_address(self, text: str, header: dict) -> None:
-        """Extract address lines following the account holder name.
+    def _extract_personal_info(self, text: str, header: dict) -> None:
+        """Extract personal, address, and account info from FNB statement text.
 
-        For FNB the layout is:
-            *COMPANY NAME (PTY) LTD   UniversalBranchCode 250655
+        FNB layout (spaces may be missing due to PDF rendering):
+            *MEERKATXINVESTMENTS(PTY)LTD  UniversalBranchCode 250655
             9   fnb.co.za
-            72 ELVERAM STREET
+            72ELVERAMSTREET
+            LostCards 087-575-9406
+            LYNNWOODGLEN
+            AccountEnquiries 087-736-2247
+            LYNNWOODGLEN Fraud 087-575-9444
+            0081 RelationshipManager ...
             ...
-            0081
-        We look for lines that look like street addresses or suburbs,
-        ending with a 4-digit postal code.
+            GoldBusinessAccount:63020159249
         """
-        # Find the account holder line and search below it for address
-        holder = header.get("account_holder", "")
-        holder_pos = text.find(holder[:20]) if holder else -1
-        if holder_pos < 0:
-            return
+        # --- Street address: line starting with digits followed by alpha (no space needed) ---
+        street_match = re.search(r"(?:^|\n)(\d+\s*[A-Z][A-Z\s]*(?:STREET|STR|ROAD|RD|AVENUE|AVE|DRIVE|DR|LANE|LN|WAY|CRESCENT|CRES|CLOSE|CL|PLACE|PL|BOULEVARD|BLVD))\b", text, re.IGNORECASE)
+        if street_match:
+            header["address_line1"] = street_match.group(1).strip()
 
-        remaining = text[holder_pos + len(holder):]
-        lines = remaining.split("\n")
-
-        address_lines = []
-        postal_code = None
-        for line in lines:
-            stripped = line.strip()
-            if not stripped:
+        # --- Suburb: all-caps word(s) on a line by themselves (not noise lines) ---
+        # Look for lines that are pure suburb names (LYNNWOODGLEN, SANDTON, etc.)
+        suburb_pattern = re.compile(r"(?:^|\n)([A-Z]{4,}(?:\s+[A-Z]{3,})*)\s*$", re.MULTILINE)
+        suburbs = []
+        for m in suburb_pattern.finditer(text):
+            candidate = m.group(1).strip()
+            # Skip known non-suburb content
+            if re.search(r"(?:ACCOUNT|STATEMENT|BALANCE|TRANSACTION|DELIVERY|BRANCH|GOLD|PAGE|RAND|TURNOVER|CLOSING|OPENING|CHARGES)", candidate):
                 continue
-            # Stop at known non-address content
-            if re.search(r"(?:Statement|VAT|Tax|Opening|Closing|Transaction|Date|Turnover)", stripped, re.IGNORECASE):
-                break
-            # Skip known FNB noise lines
-            if re.search(r"(?:fnb\.co\.za|Lost\s*Cards|Account\s*Enquir|Fraud|Relationship|087[\-\s]|Branch\s*Code)", stripped, re.IGNORECASE):
-                continue
-            # Postal code: standalone 4-digit number
-            postal_match = re.match(r"^(\d{4})$", stripped)
-            if postal_match:
-                postal_code = postal_match.group(1)
-                break
-            # Address line: contains a number + street name, or all-caps suburb name
-            if re.search(r"\d+\s+\w+|^[A-Z\s]{3,}$", stripped):
-                address_lines.append(stripped)
+            if candidate not in suburbs:
+                suburbs.append(candidate)
+        if suburbs:
+            header["address_line2"] = suburbs[0]
+            if len(suburbs) > 1:
+                header["address_line3"] = suburbs[1]
 
-        if address_lines:
-            header["address_line1"] = address_lines[0] if len(address_lines) > 0 else None
-            header["address_line2"] = address_lines[1] if len(address_lines) > 1 else None
-            header["address_line3"] = address_lines[2] if len(address_lines) > 2 else None
-        if postal_code:
-            header["postal_code"] = postal_code
+        # --- Postal code: 4-digit number at start of a line ---
+        postal_match = re.search(r"(?:^|\n)(\d{4})\s", text)
+        if postal_match:
+            header["postal_code"] = postal_match.group(1)
+
+        # --- Account type: "Gold Business Account" etc. ---
+        acct_type_match = re.search(
+            r"(Gold\s*Business\s*Account|Cheque\s*Account|Savings\s*Account|Current\s*Account|Credit\s*Card)",
+            text, re.IGNORECASE,
+        )
+        if acct_type_match:
+            header["account_type"] = acct_type_match.group(1)
 
     def _extract_lines(
         self, pdf: pdfplumber.PDF, profile: BankProfile
