@@ -4,7 +4,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import List, Optional
 
-from sqlalchemy import ForeignKey, Numeric, String, create_engine
+from sqlalchemy import ForeignKey, Integer, Numeric, String, create_engine
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -36,6 +36,9 @@ class Statement(Base):
 
     lines: Mapped[List["StatementLine"]] = relationship(
         back_populates="statement", cascade="all, delete-orphan"
+    )
+    job: Mapped[Optional["ProcessingJob"]] = relationship(
+        back_populates="statement"
     )
 
     def __repr__(self) -> str:
@@ -88,6 +91,44 @@ class ClassificationRule(Base):
         return (
             f"<ClassificationRule(id={self.id}, category={self.category}, "
             f"source={self.source})>"
+        )
+
+
+class ProcessingJob(Base):
+    """Tracks a single upload‑and‑process lifecycle for the web UI."""
+
+    __tablename__ = "processing_jobs"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    job_id: Mapped[str] = mapped_column(String(36), unique=True, index=True)
+    original_filename: Mapped[str] = mapped_column(String(500))
+    stored_pdf_path: Mapped[str] = mapped_column(String(500))
+    requested_bank: Mapped[Optional[str]] = mapped_column(
+        String(50), nullable=True
+    )
+    status: Mapped[str] = mapped_column(
+        String(20), default="queued"
+    )  # queued, processing, completed, failed
+    current_stage: Mapped[Optional[str]] = mapped_column(
+        String(50), nullable=True
+    )
+    error_message: Mapped[Optional[str]] = mapped_column(
+        String(2000), nullable=True
+    )
+    statement_id: Mapped[Optional[int]] = mapped_column(
+        Integer, ForeignKey("statements.id"), nullable=True
+    )
+    created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
+    completed_at: Mapped[Optional[datetime]] = mapped_column(nullable=True)
+
+    statement: Mapped[Optional["Statement"]] = relationship(
+        back_populates="job"
+    )
+
+    def __repr__(self) -> str:
+        return (
+            f"<ProcessingJob(job_id={self.job_id}, status={self.status}, "
+            f"file={self.original_filename})>"
         )
 
 

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bank Statement Processor</title>
+<style>
+/* ── Reset & Variables ───────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f7fa;--surface:#fff;--border:#dce1e8;
+  --primary:#2563eb;--primary-hover:#1d4ed8;
+  --text:#1e293b;--muted:#64748b;
+  --success:#16a34a;--error:#dc2626;--warn:#ca8a04;
+  --radius:8px;
+}
+html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text)}
+
+/* ── Layout ──────────────────────────────────────────────── */
+#app{display:flex;height:100vh}
+
+/* sidebar */
+#sidebar{width:280px;min-width:280px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+#sidebar h2{padding:16px 16px 8px;font-size:14px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+#history-list{flex:1;overflow-y:auto;padding:0 8px 8px}
+.history-item{padding:10px 12px;border-radius:var(--radius);cursor:pointer;margin-bottom:4px;border:1px solid transparent;transition:background .15s}
+.history-item:hover{background:#f1f5f9}
+.history-item.active{border-color:var(--primary);background:#eff6ff}
+.history-item .hi-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.history-item .hi-meta{font-size:11px;color:var(--muted);margin-top:2px;display:flex;gap:8px;align-items:center}
+.badge{display:inline-block;padding:1px 6px;border-radius:10px;font-size:10px;font-weight:600;text-transform:uppercase}
+.badge-queued,.badge-processing{background:#fef9c3;color:var(--warn)}
+.badge-completed{background:#dcfce7;color:var(--success)}
+.badge-failed{background:#fee2e2;color:var(--error)}
+
+/* main area */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* top bar */
+#topbar{display:flex;align-items:center;gap:12px;padding:12px 20px;background:var(--surface);border-bottom:1px solid var(--border)}
+#topbar h1{font-size:18px;flex:1}
+#bank-select{padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px}
+#upload-btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;transition:background .15s}
+#upload-btn:hover{background:var(--primary-hover)}
+#upload-btn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+
+/* content split */
+#content{flex:1;display:flex;overflow:hidden}
+
+/* panels */
+#pdf-panel,#data-panel{flex:1;overflow:auto;padding:16px}
+#pdf-panel{background:#e2e8f0;display:flex;align-items:center;justify-content:center;position:relative}
+#pdf-panel iframe,#pdf-panel embed{width:100%;height:100%;border:none;border-radius:var(--radius)}
+#data-panel{background:var(--bg)}
+
+/* placeholder */
+.placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--muted);text-align:center;gap:12px}
+.placeholder svg{width:64px;height:64px;opacity:.4}
+
+/* processing overlay */
+#processing-overlay{position:absolute;inset:0;background:rgba(255,255,255,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:10}
+#processing-overlay.hidden{display:none}
+.spinner{width:40px;height:40px;border:4px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* header card */
+.header-card{background:var(--surface);border-radius:var(--radius);padding:16px 20px;margin-bottom:16px;border:1px solid var(--border)}
+.header-card h3{font-size:15px;margin-bottom:10px}
+.hc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 24px}
+.hc-grid dt{font-size:12px;color:var(--muted)}
+.hc-grid dd{font-size:14px;font-weight:500}
+
+/* table */
+.lines-table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);font-size:13px}
+.lines-table th{background:#f8fafc;text-align:left;padding:10px 12px;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.3px;color:var(--muted);border-bottom:1px solid var(--border)}
+.lines-table td{padding:8px 12px;border-bottom:1px solid #f1f5f9}
+.lines-table tr:last-child td{border-bottom:none}
+.lines-table .amount{text-align:right;font-variant-numeric:tabular-nums}
+.debit{color:var(--error)}
+.credit{color:var(--success)}
+.cat-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;background:#f1f5f9;color:var(--text)}
+
+/* error banner */
+.error-banner{background:#fef2f2;border:1px solid #fecaca;color:var(--error);padding:12px 16px;border-radius:var(--radius);margin-bottom:12px;font-size:13px}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Sidebar: history -->
+  <div id="sidebar">
+    <h2>Upload History</h2>
+    <div id="history-list"></div>
+  </div>
+
+  <!-- Main area -->
+  <div id="main">
+    <div id="topbar">
+      <h1>Bank Statement Processor</h1>
+      <select id="bank-select"><option value="">Auto-detect bank</option></select>
+      <label id="upload-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Upload PDF
+        <input type="file" accept=".pdf" id="file-input">
+      </label>
+    </div>
+
+    <div id="content">
+      <!-- Left: PDF viewer -->
+      <div id="pdf-panel">
+        <div id="processing-overlay" class="hidden">
+          <div class="spinner"></div>
+          <div id="processing-stage">Processing…</div>
+        </div>
+        <div id="pdf-placeholder" class="placeholder">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <p>Upload a PDF bank statement to get started</p>
+        </div>
+        <iframe id="pdf-iframe" style="display:none"></iframe>
+      </div>
+
+      <!-- Right: extracted data -->
+      <div id="data-panel">
+        <div id="data-placeholder" class="placeholder">
+          <p>Extracted statement data will appear here</p>
+        </div>
+        <div id="data-content" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Config ──────────────────────────────────────────────── */
+const API = window.__API_BASE__ || '';   /* set via env / nginx or empty for same-origin */
+
+/* ── State ───────────────────────────────────────────────── */
+let activeJobId = null;
+let pollTimer = null;
+
+/* ── DOM refs ────────────────────────────────────────────── */
+const $fileInput       = document.getElementById('file-input');
+const $bankSelect      = document.getElementById('bank-select');
+const $historyList     = document.getElementById('history-list');
+const $pdfPlaceholder  = document.getElementById('pdf-placeholder');
+const $pdfIframe       = document.getElementById('pdf-iframe');
+const $overlay         = document.getElementById('processing-overlay');
+const $stage           = document.getElementById('processing-stage');
+const $dataPlaceholder = document.getElementById('data-placeholder');
+const $dataContent     = document.getElementById('data-content');
+
+/* ── Init ────────────────────────────────────────────────── */
+loadBanks();
+loadHistory();
+
+/* ── Banks dropdown ──────────────────────────────────────── */
+async function loadBanks(){
+  try{
+    const r=await fetch(API+'/api/banks');
+    const d=await r.json();
+    d.banks.forEach(b=>{
+      const o=document.createElement('option');o.value=b;o.textContent=b.charAt(0).toUpperCase()+b.slice(1);
+      $bankSelect.appendChild(o);
+    });
+  }catch(e){console.warn('Could not load banks',e)}
+}
+
+/* ── History ─────────────────────────────────────────────── */
+async function loadHistory(){
+  try{
+    const r=await fetch(API+'/api/history');
+    const d=await r.json();
+    renderHistory(d.jobs);
+  }catch(e){console.warn('Could not load history',e)}
+}
+
+function renderHistory(jobs){
+  $historyList.innerHTML='';
+  if(!jobs.length){$historyList.innerHTML='<p style="padding:12px;color:var(--muted);font-size:13px">No uploads yet</p>';return}
+  jobs.forEach(j=>{
+    const el=document.createElement('div');
+    el.className='history-item'+(j.job_id===activeJobId?' active':'');
+    el.innerHTML=`
+      <div class="hi-name" title="${esc(j.original_filename)}">${esc(j.original_filename)}</div>
+      <div class="hi-meta">
+        <span class="badge badge-${j.status}">${j.status}</span>
+        <span>${fmtDate(j.created_at)}</span>
+      </div>`;
+    el.onclick=()=>selectJob(j.job_id);
+    $historyList.appendChild(el);
+  });
+}
+
+/* ── Upload ──────────────────────────────────────────────── */
+$fileInput.addEventListener('change',async()=>{
+  const file=$fileInput.files[0];
+  if(!file)return;
+  const fd=new FormData();
+  fd.append('file',file);
+  const bank=$bankSelect.value;
+  if(bank)fd.append('bank',bank);
+
+  try{
+    const r=await fetch(API+'/api/upload',{method:'POST',body:fd});
+    if(!r.ok){const e=await r.json();alert(e.detail||'Upload failed');return}
+    const d=await r.json();
+    activeJobId=d.job_id;
+    showProcessing();
+    startPolling(d.job_id);
+    loadHistory();
+  }catch(e){alert('Upload error: '+e.message)}
+  $fileInput.value='';
+});
+
+/* ── Polling ─────────────────────────────────────────────── */
+function startPolling(jobId){
+  stopPolling();
+  poll(jobId);
+  pollTimer=setInterval(()=>poll(jobId),1500);
+}
+function stopPolling(){if(pollTimer){clearInterval(pollTimer);pollTimer=null}}
+
+async function poll(jobId){
+  try{
+    const r=await fetch(API+'/api/jobs/'+jobId+'/status');
+    const d=await r.json();
+    $stage.textContent=stageLabel(d.current_stage,d.status);
+    if(d.status==='completed'||d.status==='failed'){
+      stopPolling();
+      loadHistory();
+      showJobDetail(jobId);
+    }
+  }catch(e){console.warn('Poll error',e)}
+}
+
+function stageLabel(stage,status){
+  if(status==='failed')return 'Processing failed';
+  if(status==='completed')return 'Done';
+  if(!stage)return 'Queued…';
+  const map={extractor:'Extracting PDF…',cleanser:'Cleansing data…',regex_classifier:'Classifying (regex)…',ai_classifier:'Classifying (AI)…'};
+  return map[stage]||stage;
+}
+
+/* ── Select / show a job ────────────────────────────────── */
+async function selectJob(jobId){
+  activeJobId=jobId;
+  renderActiveHighlight();
+  showJobDetail(jobId);
+}
+
+async function showJobDetail(jobId){
+  try{
+    const r=await fetch(API+'/api/jobs/'+jobId);
+    const d=await r.json();
+
+    // PDF
+    if(d.status==='completed'||d.status==='processing'||d.status==='queued'){
+      showPdf(jobId);
+    }
+
+    if(d.status==='processing'||d.status==='queued'){
+      showProcessing();
+      startPolling(jobId);
+      return;
+    }
+    hideProcessing();
+
+    if(d.status==='failed'){
+      $dataPlaceholder.style.display='none';
+      $dataContent.style.display='block';
+      $dataContent.innerHTML=`<div class="error-banner"><strong>Processing failed</strong><br>${esc(d.error_message||'Unknown error')}</div>`;
+      return;
+    }
+
+    // completed → render data
+    if(d.result) renderResult(d.result);
+  }catch(e){console.warn('Could not load job',e)}
+}
+
+/* ── Render helpers ──────────────────────────────────────── */
+function showPdf(jobId){
+  $pdfPlaceholder.style.display='none';
+  $pdfIframe.style.display='block';
+  $pdfIframe.src=API+'/api/jobs/'+jobId+'/pdf';
+}
+function showProcessing(){$overlay.classList.remove('hidden')}
+function hideProcessing(){$overlay.classList.add('hidden')}
+
+function renderActiveHighlight(){
+  document.querySelectorAll('.history-item').forEach((el,i)=>{
+    /* relies on order matching */
+  });
+  loadHistory(); /* simple re-render */
+}
+
+function renderResult(res){
+  $dataPlaceholder.style.display='none';
+  $dataContent.style.display='block';
+
+  const classified=res.lines.filter(l=>l.category).length;
+  const total=res.lines.length;
+
+  let html=`
+  <div class="header-card">
+    <h3>${esc(res.bank_name)} — Statement</h3>
+    <dl class="hc-grid">
+      <dt>Account</dt><dd>${esc(res.account_number)}</dd>
+      <dt>Date</dt><dd>${res.statement_date||'—'}</dd>
+      <dt>Opening Balance</dt><dd>${fmt(res.opening_balance)}</dd>
+      <dt>Closing Balance</dt><dd>${fmt(res.closing_balance)}</dd>
+      <dt>Transactions</dt><dd>${total}</dd>
+      <dt>Classified</dt><dd>${classified} / ${total}</dd>
+    </dl>
+  </div>
+  <table class="lines-table">
+    <thead><tr>
+      <th>Date</th><th>Description</th><th>Amount</th><th>Balance</th><th>Type</th><th>Category</th><th>Method</th>
+    </tr></thead><tbody>`;
+
+  res.lines.forEach(l=>{
+    const cls=l.transaction_type==='debit'?'debit':'credit';
+    html+=`<tr>
+      <td>${l.date}</td>
+      <td>${esc(l.description)}</td>
+      <td class="amount ${cls}">${l.transaction_type==='debit'?'-':''}${fmt(l.amount)}</td>
+      <td class="amount">${l.balance!=null?fmt(l.balance):'—'}</td>
+      <td>${l.transaction_type}</td>
+      <td>${l.category?`<span class="cat-badge">${esc(l.category)}</span>`:'—'}</td>
+      <td>${l.classification_method||'—'}</td>
+    </tr>`;
+  });
+
+  html+=`</tbody></table>`;
+  $dataContent.innerHTML=html;
+}
+
+/* ── Utilities ───────────────────────────────────────────── */
+function esc(s){if(!s)return'';const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function fmt(n){return Number(n).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}
+function fmtDate(s){if(!s)return'';const d=new Date(s);return d.toLocaleDateString()+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}
+</script>
+</body>
+</html>

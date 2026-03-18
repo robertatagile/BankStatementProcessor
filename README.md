@@ -144,9 +144,15 @@ options:
 BankStatementProcessor/
 ├── main.py                          # CLI entry point
 ├── requirements.txt                 # Python dependencies
+├── Dockerfile                       # Backend Docker image
+├── docker-compose.yml               # Run frontend + backend together
 ├── config/
 │   └── classification_rules.json    # Regex classification rules (manual + AI-generated)
 ├── src/
+│   ├── api/
+│   │   ├── server.py                # FastAPI application + endpoints
+│   │   ├── schemas.py               # Pydantic request/response models
+│   │   └── jobs.py                  # Background job runner
 │   ├── pipeline/
 │   │   ├── queue.py                 # Pipeline, Stage base class, PipelineContext
 │   │   ├── pdf_extractor.py         # Stage 1: PDF parsing (profile-aware)
@@ -161,9 +167,14 @@ BankStatementProcessor/
 │   │   └── database.py              # SQLAlchemy models + DB initialisation
 │   └── utils/
 │       └── logger.py                # Logging configuration
-├── data/                            # Place PDF files here (also stores SQLite DB)
+├── frontend/
+│   ├── index.html                   # Single-page upload + viewer UI
+│   ├── nginx.conf                   # Nginx config (reverse-proxy to backend)
+│   └── Dockerfile                   # Frontend Docker image
+├── data/                            # SQLite DB (auto-created)
+├── uploads/                         # Uploaded PDFs (auto-created)
 ├── logs/                            # Pipeline log files (auto-created)
-└── tests/                           # Test suite (119 tests)
+└── tests/                           # Test suite
     ├── test_pipeline.py
     ├── test_pdf_extractor.py
     ├── test_data_cleanser.py
@@ -309,6 +320,64 @@ Edit `config/classification_rules.json` to add your own regex patterns:
 - **priority**: Lower numbers are checked first. If a transaction matches multiple rules, the lowest priority number wins.
 - **source**: Use `"manual"` for hand-written rules. AI-generated rules use `"ai"`.
 
+## Web UI
+
+The project includes a browser-based interface for uploading and viewing processed bank statements. The UI runs as two services: a **FastAPI backend** that wraps the existing pipeline and a **static frontend** served by nginx.
+
+### Running with Docker Compose (recommended)
+
+```bash
+# Optional — set the API key for AI classification
+export ANTHROPIC_API_KEY=your-api-key-here
+
+docker compose up --build
+```
+
+Open **http://localhost:3000** in your browser.
+
+- **Upload** a PDF bank statement (optionally select a bank profile).
+- The UI polls the backend until processing is complete.
+- The **left pane** shows the original PDF; the **right pane** shows extracted statement metadata and a classified transaction table.
+- The **sidebar** lists all previous uploads (history). Click any entry to view it again.
+
+### Running without Docker
+
+Start the backend:
+
+```bash
+pip install -r requirements.txt
+uvicorn src.api.server:app --reload --port 8000
+```
+
+Then serve the frontend however you like (e.g. open `frontend/index.html` directly, or use any static file server on port 3000). When opening the HTML file directly from disk, API calls go to the same origin by default. To point at a different backend, set `window.__API_BASE__` before the script runs, or use the nginx setup from `frontend/nginx.conf`.
+
+### Persistent data
+
+Docker Compose mounts these directories so data survives container restarts:
+
+| Host path | Container path | Contents |
+|---|---|---|
+| `./data/` | `/app/data/` | SQLite database |
+| `./uploads/` | `/app/uploads/` | Uploaded PDF files |
+| `./logs/` | `/app/logs/` | Pipeline log files |
+| `./config/` | `/app/config/` | Classification rules (manual + AI-generated) |
+
+### API endpoints
+
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/api/health` | Readiness check |
+| `POST` | `/api/upload` | Upload a PDF (multipart, optional `bank` field) |
+| `GET` | `/api/jobs/{job_id}` | Full job detail including extracted data |
+| `GET` | `/api/jobs/{job_id}/status` | Lightweight status poll |
+| `GET` | `/api/jobs/{job_id}/pdf` | Stream the original uploaded PDF |
+| `GET` | `/api/history` | List all jobs (newest first) |
+| `GET` | `/api/banks` | Available bank profile keys |
+
+### AI classification
+
+If `ANTHROPIC_API_KEY` is set (passed via the `environment` section in `docker-compose.yml`), unmatched transactions are sent to Claude for classification and new regex rules are saved automatically. If the key is not set, the AI stage is skipped and only regex classification is used.
+
 ## Logging
 
 Logs are written to both the console (INFO level) and `logs/pipeline.log` (DEBUG level). Each pipeline stage logs its entry, completion, and any warnings.
@@ -329,4 +398,7 @@ All tests use temporary databases and mock external dependencies (Anthropic API)
 | [SQLAlchemy](https://www.sqlalchemy.org/) | ORM and database management |
 | [anthropic](https://github.com/anthropics/anthropic-sdk-python) | Claude API client |
 | [pydantic](https://docs.pydantic.dev/) | Data validation for AI responses |
+| [FastAPI](https://fastapi.tiangolo.com/) | Web API framework |
+| [uvicorn](https://www.uvicorn.org/) | ASGI server for FastAPI |
+| [python-multipart](https://github.com/Kludex/python-multipart) | Multipart form parsing for file uploads |
 | [pytest](https://docs.pytest.org/) | Test framework |
