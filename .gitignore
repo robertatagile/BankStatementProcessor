@@ -3,6 +3,9 @@ __pycache__/
 *.pyo
 .pytest_cache/
 *.db
+*.db-shm
+*.db-wal
+*.db-journal
 logs/
 .env
 *.egg-info/
