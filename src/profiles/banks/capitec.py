@@ -20,17 +20,17 @@ def capitec_profile() -> BankProfile:
     """Capitec Bank profile."""
     patterns = sa_header_patterns()
 
-    # Account number: "Account 2423516890"
+    # Account number: "Account 2423516890" or "Account Number: 1676757366"
     patterns["account_number"] = re.compile(
-        r"Account\s+(\d{10,12})", re.IGNORECASE
+        r"Account\s+(?:Number:\s*)?(\d{10,12})", re.IGNORECASE
     )
 
-    # Period: "From Date: 01/11/2025" and "To Date: 24/02/2026"
+    # Period: "From Date: 01/11/2025" or "FromDate: 01/10/2023"
     patterns["period_start"] = re.compile(
-        r"From\s+Date:\s*(\d{2}/\d{2}/\d{4})", re.IGNORECASE
+        r"From\s*Date:\s*(\d{2}/\d{2}/\d{4})", re.IGNORECASE
     )
     patterns["period_end"] = re.compile(
-        r"To\s+Date:\s*(\d{2}/\d{2}/\d{4})", re.IGNORECASE
+        r"To\s*Date:\s*(\d{2}/\d{2}/\d{4})", re.IGNORECASE
     )
 
     # Opening/closing: "Opening Balance: R24.36" / "Closing Balance: R57.35"
@@ -66,6 +66,7 @@ def capitec_profile() -> BankProfile:
         detection_keywords=[
             "capitec", "capitec bank", "global one",
             "capitecbank.co.za", "main account statement",
+            "savings account statement",
         ],
         header_patterns=patterns,
         column_keywords=keywords,

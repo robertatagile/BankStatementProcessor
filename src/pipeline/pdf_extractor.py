@@ -107,7 +107,10 @@ class PDFExtractorStage(Stage):
         for field_name, pattern in profile.header_patterns.items():
             match = pattern.search(text)
             if match:
-                value = match.group(1).strip()
+                # Use first non-None group (handles alternation patterns)
+                value = next(
+                    (g for g in match.groups() if g is not None), ""
+                ).strip()
                 if field_name == "account_number":
                     first_numeric_line = next(
                         (line.strip() for line in value.splitlines() if re.search(r"\d", line)),
@@ -408,6 +411,17 @@ class PDFExtractorStage(Stage):
                             header.setdefault("postal_code", postal_m.group(1))
                             break
 
+        # --- 4a.5. PO BOX address (customer mailing address) ---
+        # Matches standalone "PO BOX 135" lines but not bank PO Boxes that have
+        # city/country on the same line (e.g. "P O Box 1144, Johannesburg, 2000").
+        if "address_line1" not in header:
+            for po_match in re.finditer(
+                r"(?:^|\n)((?:PO|P\.?O\.?)\s+BOX\s+\d+)\s*$",
+                text, re.IGNORECASE | re.MULTILINE,
+            ):
+                header["address_line1"] = po_match.group(1).strip().upper()
+                break
+
         # --- 4b. FNB-style: street address starting with digits ---
         if "address_line1" not in header:
             street_match = re.search(
@@ -537,14 +551,48 @@ class PDFExtractorStage(Stage):
         all_lines = [
             ln for ln in all_lines
             if not re.match(
-                r"(?:Opening\s+Balance|Closing\s+Balance|Available\s+Balance|"
+                r"(?:Opening\s*Balance|Closing\s*Balance|Available\s+Balance|"
                 r"Saldo\s+Oorgedra)\b",
                 ln.get("description", ""), re.IGNORECASE,
             )
         ]
 
+        # Infer debit/credit from running balance when Cr/Dr suffixes are absent
+        all_lines = self._infer_transaction_types(all_lines)
+
         logger.debug(f"Total transaction lines extracted: {len(all_lines)}")
         return all_lines
+
+    @staticmethod
+    def _infer_transaction_types(lines: list[dict]) -> list[dict]:
+        """Correct transaction types using running balance when available.
+
+        For statements without Cr/Dr indicators, compare consecutive balances
+        to determine if a transaction is a debit or credit.
+        """
+        for i, line in enumerate(lines):
+            balance = line.get("balance")
+            amount = line.get("amount")
+            if balance is None or amount is None or amount == 0:
+                continue
+
+            # Find previous balance
+            prev_balance = None
+            for j in range(i - 1, -1, -1):
+                if lines[j].get("balance") is not None:
+                    prev_balance = lines[j]["balance"]
+                    break
+
+            if prev_balance is None:
+                continue
+
+            # Check if balance movement matches debit or credit
+            if abs(prev_balance - amount - balance) < Decimal("0.015"):
+                line["transaction_type"] = "debit"
+            elif abs(prev_balance + amount - balance) < Decimal("0.015"):
+                line["transaction_type"] = "credit"
+
+        return lines
 
     def _parse_table(
         self, table: list[list], page_num: int, profile: BankProfile

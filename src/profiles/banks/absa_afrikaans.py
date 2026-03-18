@@ -49,26 +49,29 @@ def absa_afrikaans_profile() -> BankProfile:
         re.IGNORECASE,
     )
 
-    # Period: "17 Okt 2025 tot 16 Nov 2025"
+    # Period: "17 Okt 2025 tot 16 Nov 2025" or "Staat vir Periode 2024-05-08 - 2024-06-27"
+    # "tot" pattern is group(1) to preserve backward compat with tests
     patterns["period_start"] = re.compile(
-        r"(\d{1,2}\s+\w{3,10}\s+\d{4})\s+tot\s+",
+        r"(\d{1,2}\s+\w{3,10}\s+\d{4})\s+tot\s+"
+        r"|Staat\s+vir\s+Periode\s*[:\-]?\s*(\d{4}-\d{2}-\d{2})",
         re.IGNORECASE,
     )
     patterns["period_end"] = re.compile(
-        r"tot\s+(\d{1,2}\s+\w{3,10}\s+\d{4})",
+        r"tot\s+(\d{1,2}\s+\w{3,10}\s+\d{4})"
+        r"|Staat\s+vir\s+Periode\s*[:\-]?\s*\d{4}-\d{2}-\d{2}\s*-\s*(\d{4}-\d{2}-\d{2})",
         re.IGNORECASE,
     )
 
-    # Opening balance: "Saldo oorgedra 16 270,50" (comma decimal in header summary)
-    # But in transaction lines it's "Saldo Oorgedra 16 270.50" (dot decimal)
+    # Opening balance: "Saldo oorgedra 16 270,50" or "Saldo oorgebring 6.66"
     patterns["opening_balance"] = re.compile(
-        r"Saldo\s+[Oo]orgedra\s+([\d\s]+[.,]\d{2})",
+        r"Saldo\s+[Oo]or(?:gedra|gebring)\s+([\d\s]+[.,]\d{2})",
         re.IGNORECASE,
     )
 
-    # Closing balance: "Saldo 10 095,87" (from header summary)
+    # Closing balance: "Saldo 10 095,87" or "Huidige balans R 35,014.11"
     patterns["closing_balance"] = re.compile(
-        r"(?:^|\n)\s*Saldo\s+([\d\s]+[.,]\d{2})\s*$",
+        r"(?:(?:^|\n)\s*Saldo\s+([\d\s]+[.,]\d{2})\s*$"
+        r"|Huidige\s+balans\s*R?\s*([\d\s,]+\.\d{2}))",
         re.IGNORECASE | re.MULTILINE,
     )
 
@@ -97,8 +100,9 @@ def absa_afrikaans_profile() -> BankProfile:
         "cost": ["koste", "cost", "fees"],
     }
 
-    # Afrikaans date formats: "17 Okt 2025", "16Nov2025"
+    # Afrikaans date formats: "17 Okt 2025", "16Nov2025", "2024-05-08"
     afr_dates = [
+        "%Y-%m-%d",
         "%d/%m/%Y",
         "%d %b %Y",     # 17 Okt 2025
         "%d%b%Y",        # 16Nov2025
@@ -111,6 +115,8 @@ def absa_afrikaans_profile() -> BankProfile:
             "tjekrekeningnommer", "tjekrekeningstaat",
             "transaksiebeskrywing", "saldo oorgedra",
             "debietbedrag", "kredietbedrag",
+            "staat vir periode", "saldo oorgebring",
+            "transaksie geskiedenis",
         ],
         header_patterns=patterns,
         column_keywords=keywords,

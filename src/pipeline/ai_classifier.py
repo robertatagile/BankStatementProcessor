@@ -94,12 +94,9 @@ class AIClassifierStage(Stage):
 
                 newly_classified.append({**line, "category": result.category})
 
-                # Route high-confidence rules to refinement queue for approval
+                # Auto-append high-confidence rules to JSON and DB
                 if result.confidence >= CONFIDENCE_THRESHOLD and result.regex_pattern:
-                    self._propose_refinement(
-                        session, result.regex_pattern, result.category,
-                        result.confidence, line.get("description", ""),
-                    )
+                    self._append_rule(session, result.regex_pattern, result.category)
 
             session.commit()
 
@@ -183,34 +180,52 @@ class AIClassifierStage(Stage):
             return text[start:end]
         return text
 
-    def _propose_refinement(
+    def _append_rule(
         self, session, regex_pattern: str, category: str,
-        confidence: float, source_description: str,
     ) -> None:
-        """Create a refinement proposal for human review instead of auto-activating."""
+        """Append a new AI-generated rule to the JSON config and database."""
         if not regex_pattern:
             return
 
-        # Check for duplicate pending proposals with the same pattern
-        existing = (
-            session.query(RefinementProposal)
-            .filter_by(pattern=regex_pattern, status="pending")
-            .first()
-        )
-        if existing:
-            logger.debug(f"Refinement already pending: {regex_pattern}")
-            return
+        # Load existing rules
+        try:
+            with open(self._rules_path, "r") as f:
+                data = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            data = {"rules": []}
 
-        proposal = RefinementProposal(
+        rules = data.get("rules", [])
+
+        # Check if a similar pattern already exists
+        for existing in rules:
+            if existing["pattern"] == regex_pattern:
+                logger.debug(f"Rule already exists: {regex_pattern}")
+                return
+
+        # Compute next priority
+        max_priority = max((r.get("priority", 0) for r in rules), default=0)
+        new_priority = max_priority + 1
+
+        # Append to JSON file
+        new_rule = {
+            "pattern": regex_pattern,
+            "category": category,
+            "priority": new_priority,
+            "source": "ai",
+        }
+        rules.append(new_rule)
+        data["rules"] = rules
+
+        with open(self._rules_path, "w") as f:
+            json.dump(data, f, indent=2)
+
+        logger.info(f"New AI rule added: '{regex_pattern}' → {category}")
+
+        # Also insert into the database
+        db_rule = ClassificationRule(
             pattern=regex_pattern,
             category=category,
-            confidence=confidence,
-            source_description=source_description[:500] if source_description else None,
-            source_job_id=self._job_id,
-            status="pending",
+            priority=new_priority,
+            source="ai",
         )
-        session.add(proposal)
-        logger.info(
-            f"Refinement proposed: '{regex_pattern}' → {category} "
-            f"(confidence={confidence:.2f})"
-        )
+        session.add(db_rule)

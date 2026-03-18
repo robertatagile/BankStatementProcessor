@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import date
 from decimal import Decimal
 
 from sqlalchemy.orm import sessionmaker
@@ -134,7 +135,16 @@ class DataCleanserStage(Stage):
         statement = Statement(
             bank_name=header.get("bank_name", "Unknown"),
             account_number=header.get("account_number", "Unknown"),
-            statement_date=header.get("period_end") or header.get("period_start"),
+            statement_date=(
+                header.get("period_end")
+                or header.get("period_start")
+                # Fallback: use first transaction date if period dates unavailable
+                or next(
+                    (line.get("date") for line in context.classified_lines + context.unclassified_lines
+                     if line.get("date")),
+                    date.today(),
+                )
+            ),
             opening_balance=header.get("opening_balance", Decimal("0.00")),
             closing_balance=header.get("closing_balance", Decimal("0.00")),
             file_path=context.file_path,
