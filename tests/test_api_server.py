@@ -45,3 +45,53 @@ def test_upload_returns_json_and_creates_job(tmp_path, monkeypatch):
             assert jobs_in_db[0].statement is None
 
     server._session_factory = None
+
+
+def test_upload_rejects_non_pdf_extension(tmp_path, monkeypatch):
+    upload_dir = tmp_path / "uploads"
+    upload_dir.mkdir()
+
+    db_path = tmp_path / "test.db"
+    rules_path = Path(__file__).resolve().parent.parent / "config" / "classification_rules.json"
+
+    server._session_factory = None
+    monkeypatch.setattr(server, "UPLOAD_DIR", str(upload_dir))
+    monkeypatch.setattr(server, "DB_PATH", str(db_path))
+    monkeypatch.setattr(server, "RULES_PATH", str(rules_path))
+    monkeypatch.setattr(jobs._executor, "submit", lambda *args, **kwargs: None)
+
+    with TestClient(server.app) as client:
+        response = client.post(
+            "/api/upload",
+            files={"file": ("statement.txt", MINIMAL_PDF, "application/pdf")},
+        )
+
+        assert response.status_code == 400
+        assert response.json() == {"detail": "Only PDF files are accepted"}
+
+    server._session_factory = None
+
+
+def test_upload_rejects_non_pdf_content(tmp_path, monkeypatch):
+    upload_dir = tmp_path / "uploads"
+    upload_dir.mkdir()
+
+    db_path = tmp_path / "test.db"
+    rules_path = Path(__file__).resolve().parent.parent / "config" / "classification_rules.json"
+
+    server._session_factory = None
+    monkeypatch.setattr(server, "UPLOAD_DIR", str(upload_dir))
+    monkeypatch.setattr(server, "DB_PATH", str(db_path))
+    monkeypatch.setattr(server, "RULES_PATH", str(rules_path))
+    monkeypatch.setattr(jobs._executor, "submit", lambda *args, **kwargs: None)
+
+    with TestClient(server.app) as client:
+        response = client.post(
+            "/api/upload",
+            files={"file": ("statement.pdf", b"not a pdf", "application/pdf")},
+        )
+
+        assert response.status_code == 400
+        assert response.json() == {"detail": "Only PDF files are accepted"}
+
+    server._session_factory = None

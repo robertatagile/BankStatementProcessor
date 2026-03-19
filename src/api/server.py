@@ -61,6 +61,8 @@ UPLOAD_DIR = os.environ.get("UPLOAD_DIR", "uploads")
 # ---------------------------------------------------------------------------
 app = FastAPI(title="Bank Statement Processor")
 
+PDF_SIGNATURE = b"%PDF-"
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -106,12 +108,15 @@ async def upload(
     if not file.filename or not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are accepted")
 
+    contents = await file.read()
+    if not contents[:1024].lstrip().startswith(PDF_SIGNATURE):
+        raise HTTPException(status_code=400, detail="Only PDF files are accepted")
+
     sf = _get_session_factory()
 
     # Save the uploaded file with a unique name to avoid collisions
     safe_name = f"{uuid.uuid4().hex}_{file.filename}"
     dest = Path(UPLOAD_DIR) / safe_name
-    contents = await file.read()
     dest.write_bytes(contents)
 
     job_id = enqueue_job(

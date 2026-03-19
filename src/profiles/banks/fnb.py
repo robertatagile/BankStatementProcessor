@@ -71,18 +71,18 @@ def fnb_profile() -> BankProfile:
     # Opening balance: "Openingsaldo 127.36Kt" or "Opening Balance 127.36Cr"
     # OCR may produce "22 347 86 Dt" (spaces instead of comma/period)
     patterns["opening_balance"] = re.compile(
-        r"(?:Openingsaldo|Opening\s*Balance)\s+([\d\s,]+[.,\s]\d{2})\s*(?:Kt|Cr|Dt|Dr)?\|?",
+        r"(?:Openingsaldo|Opening\s*Balance)\s+([\d\s,]+[.,\s]\d{2}(?:Kt|Cr|Dt|Dr)?)\|?",
         re.IGNORECASE,
     )
 
     # Closing balance: "Afsluitingsaldo 5,497.24Kt" or "Closing Balance 5,497.24Cr"
     patterns["closing_balance"] = re.compile(
-        r"(?:Afsluitingsaldo|Closing\s*Balance)\s+([\d\s,]+[.,\s]\d{2})\s*(?:Kt|Cr|Dt|Dr)?\|?",
+        r"(?:Afsluitingsaldo|Closing\s*Balance)\s+([\d\s,]+[.,\s]\d{2}(?:Kt|Cr|Dt|Dr)?)\|?",
         re.IGNORECASE,
     )
 
     # FNB date formats: DD Mon / DDMon (no year) + YYYY/MM/DD + standard SA formats
-    fnb_dates = ["%d%b", "%d %b", "%Y/%m/%d"] + sa_date_formats()
+    fnb_dates = ["%d%b", "%d %b", "%Y/%m/%d", "%m/%d/%y", "%m/%d/%Y"] + sa_date_formats()
 
     return sa_base_profile(
         name="FNB",

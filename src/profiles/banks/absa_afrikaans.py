@@ -48,7 +48,7 @@ def absa_afrikaans_profile() -> BankProfile:
 
     # Bank name: matches "Absa Bank" from the text
     patterns["bank_name"] = re.compile(
-        r"(Absa\s+Bank)", re.IGNORECASE
+        r"(Absa\s+Bank(?:\s+Ltd)?)", re.IGNORECASE
     )
 
     # Account number: "Tjekrekeningnommer: 7-1323-1819" or "Rekeningnommer 92 4428 9156"

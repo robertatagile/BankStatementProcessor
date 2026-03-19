@@ -1,7 +1,7 @@
 {
   "rules": [
     {
-      "pattern": "(?i)checkers|pick.*pay|(?i)takealo|pnp\\b|woolworths.*food|shoprite|spar\\b|food.*lovers|fruit.*veg|cambridge food|ok foods|grocery|supermarket",
+      "pattern": "(?i)checkers|pick.*pay|takealo|pnp\\b|woolworths.*food|shoprite|spar\\b|food.*lovers|fruit.*veg|cambridge food|ok foods|grocery|supermarket",
       "category": "Groceries",
       "priority": 1,
       "source": "manual"

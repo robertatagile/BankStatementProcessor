@@ -9,7 +9,12 @@ import pytest
 from src.pipeline.pdf_extractor import PDFExtractorStage
 from src.pipeline.queue import PipelineContext
 from src.profiles.base import BankProfile
-from src.profiles.south_africa import absa_profile, capitec_profile, fnb_profile
+from src.profiles.south_africa import (
+    absa_afrikaans_profile,
+    absa_profile,
+    capitec_profile,
+    fnb_profile,
+)
 
 
 class TestParseDateHelper:
@@ -204,7 +209,7 @@ class TestHeaderExtraction:
 
     def test_absa_afrikaans_header_extraction(self):
         stage = PDFExtractorStage()
-        profile = absa_profile()
+        profile = absa_afrikaans_profile()
         text = """
         Stuur terug na: Absa Bank Ltd
         Tjekrekeningnommer: 7-1323-1819
