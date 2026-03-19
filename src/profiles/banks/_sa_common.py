@@ -91,7 +91,7 @@ def sa_column_keywords() -> Dict[str, List[str]]:
 def sa_text_line_pattern() -> str:
     """Text-based extraction pattern for SA bank statements."""
     return (
-        r"(\d{1,2}[\/\-\s](?:\w+|\d{1,2})[\/\-\s]\d{2,4})\s+"
+        r"^(\d{4}-\d{2}-\d{2}|\d{1,2}[\/\-\s](?:\w+|\d{1,2})[\/\-\s]\d{2,4})\s+"
         r"(.+?)\s+"
         r"(-?R?\s?[\d\s,]+\.\d{2})"
         r"(?:\s+(-?R?\s?[\d\s,]+\.\d{2}))?"

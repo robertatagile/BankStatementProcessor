@@ -1,0 +1,212 @@
+{
+  "line_count": 23,
+  "lines": [
+    {
+      "date": "2025-09-17",
+      "description": "NOTIFIC FEE SMS NOTIFYME 28 SMS",
+      "amount": 0.0,
+      "balance": 4802.96,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-09-17",
+      "description": "DIGITAL PAYMENT DT ABSA BANK Olive Hair Design",
+      "amount": 300.0,
+      "balance": 4502.96,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-09-22",
+      "description": "TRANSACTION FEE ARCHIVE STMT ENQ (EFF: 220925 AMT: 0,00 )",
+      "amount": 10.0,
+      "balance": 4492.96,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-09-22",
+      "description": "TRANSACTION FEE ARCHIVE STMT ENQ (EFF: 220925 AMT: 0,00 )",
+      "amount": 10.0,
+      "balance": 4482.96,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-09-22",
+      "description": "TRANSACTION FEE ARCHIVE STMT ENQ (EFF: 220925 AMT: 0,00 )",
+      "amount": 10.0,
+      "balance": 4472.96,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-09-22",
+      "description": "TRANSFER FROM CSR P/LEND 30-6296-5160 ABSA LOAN",
+      "amount": 100000.0,
+      "balance": 104472.96,
+      "transaction_type": "credit",
+      "category": "Transfer",
+      "confidence": null
+    },
+    {
+      "date": "2025-09-22",
+      "description": "DIGITAL PAYMENT DT ABSA BANK Yolandi varsity",
+      "amount": 10000.0,
+      "balance": 94472.96,
+      "transaction_type": "debit",
+      "category": "Education",
+      "confidence": null
+    },
+    {
+      "date": "2025-09-22",
+      "description": "TRANSACTION FEE PROOF OF PMT EMAIL(EFF: 220925 AMT: 0,00 )",
+      "amount": 1.0,
+      "balance": 94471.96,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-09-22",
+      "description": "DIGITAL PAYMENT DT ABSA BANK Julian varsity",
+      "amount": 10000.0,
+      "balance": 84471.96,
+      "transaction_type": "debit",
+      "category": "Education",
+      "confidence": null
+    },
+    {
+      "date": "2025-09-22",
+      "description": "TRANSACTION FEE PROOF OF PMT EMAIL(EFF: 220925 AMT: 0,00 )",
+      "amount": 1.0,
+      "balance": 84470.96,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-09-24",
+      "description": "PayShap Ext Debit Julian",
+      "amount": 500.0,
+      "balance": 83970.96,
+      "transaction_type": "debit",
+      "category": "Transfer",
+      "confidence": null
+    },
+    {
+      "date": "2025-09-24",
+      "description": "TRANSACTION FEE PayShap Ext Debit (EFF:240925 AMT: 500,00-)",
+      "amount": 7.5,
+      "balance": 83963.46,
+      "transaction_type": "debit",
+      "category": "Transfer",
+      "confidence": null
+    },
+    {
+      "date": "2025-09-24",
+      "description": "TRANSACTION FEE PROOF OF PMT EMAIL(EFF: 240925 AMT: 0,00 )",
+      "amount": 1.0,
+      "balance": 83962.46,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-09-25",
+      "description": "ACB DEBIT:EXTERNAL A ATKV 174261-602",
+      "amount": 135.0,
+      "balance": 83827.46,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-09-26",
+      "description": "POS PURCHASE (EFFEC 22092025) PIERRE VAN RYNEVELD ANIMACENTU CARD NO. 9104",
+      "amount": 1158.01,
+      "balance": 82669.45,
+      "transaction_type": "debit",
+      "category": "Shopping",
+      "confidence": null
+    },
+    {
+      "date": "2025-09-28",
+      "description": "SSD OTHER CHIP WDL",
+      "amount": 200.0,
+      "balance": 82469.45,
+      "transaction_type": "debit",
+      "category": "Cash Withdrawal",
+      "confidence": null
+    },
+    {
+      "date": "2025-09-28",
+      "description": "TRANSACTION FEE ATM WITHDRAWAL (EFF:260925 AMT: 200,00-)",
+      "amount": 15.2,
+      "balance": 82454.25,
+      "transaction_type": "debit",
+      "category": "Cash Withdrawal",
+      "confidence": null
+    },
+    {
+      "date": "2025-09-29",
+      "description": "DIGITAL PAYMENT DT ABSA BANK Property Sense",
+      "amount": 500.0,
+      "balance": 81954.25,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-09-29",
+      "description": "TRANSACTION FEE PROOF OF PMT EMAIL(EFF: 290925 AMT: 0,00 )",
+      "amount": 1.0,
+      "balance": 81953.25,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-10-01",
+      "description": "MONTHLY ACC FEE",
+      "amount": 140.0,
+      "balance": 81813.25,
+      "transaction_type": "debit",
+      "category": "Fees",
+      "confidence": null
+    },
+    {
+      "date": "2025-10-01",
+      "description": "ACB DEBIT:EXTERNAL VIRGIN ACT363502049",
+      "amount": 1531.25,
+      "balance": 80282.0,
+      "transaction_type": "debit",
+      "category": "Subscriptions",
+      "confidence": null
+    },
+    {
+      "date": "2025-10-01",
+      "description": "ACB DEBIT:EXTERNAL LIBERTY050 77000534080",
+      "amount": 199.65,
+      "balance": 80082.35,
+      "transaction_type": "debit",
+      "category": "Insurance",
+      "confidence": null
+    },
+    {
+      "date": "2025-10-04",
+      "description": "NOTIFIC FEE SMS NOTIFYME 32 SMS",
+      "amount": 0.0,
+      "balance": 80082.35,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    }
+  ]
+}

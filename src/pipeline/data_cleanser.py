@@ -61,7 +61,7 @@ class DataCleanserStage(Stage):
         return valid
 
     def _deduplicate(self, lines: list[dict]) -> list[dict]:
-        """Remove duplicate records based on (date, description, amount)."""
+        """Remove duplicate records based on stable transaction identity."""
         seen = set()
         unique_lines = []
 
@@ -70,6 +70,8 @@ class DataCleanserStage(Stage):
                 str(line.get("date")),
                 line.get("description", "").strip(),
                 str(line.get("amount")),
+                str(line.get("balance")),
+                line.get("transaction_type", "debit"),
             )
             if key not in seen:
                 seen.add(key)

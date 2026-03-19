@@ -353,6 +353,222 @@
       "category": "Other",
       "priority": 61,
       "source": "ai"
+    },
+    {
+      "pattern": "(?i)mndelikse\\s*rek[-\\s]*fooi.*hoofkntoor",
+      "category": "Utilities",
+      "priority": 62,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)acb\\s*krediet\\s*vereffenin",
+      "category": "Transfer",
+      "priority": 63,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)buiteland\\s*aankope.*vereffenin",
+      "category": "Shopping",
+      "priority": 64,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)internet\\s+pmt\\s+to\\s+discovery\\s+bank",
+      "category": "Transfer",
+      "priority": 65,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)internet\\s+pmt\\s+to\\s+deonne\\s+spaar",
+      "category": "Transfer",
+      "priority": 66,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)internet\\s+pmt\\s+to\\s+betaal\\s+rihet",
+      "category": "Transfer",
+      "priority": 67,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)internet\\s+pmt\\s+to\\s+zander\\s+spaar",
+      "category": "Transfer",
+      "priority": 68,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)internet\\s+pmt\\s+to\\s+esabel\\s+hoffmann",
+      "category": "Transfer",
+      "priority": 69,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)kk\\s+garden\\s+services",
+      "category": "Other",
+      "priority": 70,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)internet\\s+trf\\s+to\\s+betaal\\s+fnb",
+      "category": "Transfer",
+      "priority": 71,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)debicheck\\s+toyota_fin",
+      "category": "Transport",
+      "priority": 72,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)fnb\\s+app\\s+payment\\s+from\\s+rihet",
+      "category": "Transfer",
+      "priority": 73,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)internal\\s+debit\\s+order\\s+fnblife",
+      "category": "Insurance",
+      "priority": 74,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)magtape\\s+debit\\s+keyhealth",
+      "category": "Healthcare",
+      "priority": 75,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)internet\\s+pmt\\s+to\\s+patrick\\s+duri",
+      "category": "Transfer",
+      "priority": 76,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)magtape\\s+debit\\s+boufonds",
+      "category": "Other",
+      "priority": 77,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)magtape\\s+debit\\s+regsfonds",
+      "category": "Other",
+      "priority": 78,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)debicheck\\s+fnb\\s+home",
+      "category": "Rent/Mortgage",
+      "priority": 79,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)debicheck\\s+internal\\s+d/o\\s+fnbconnect",
+      "category": "Utilities",
+      "priority": 80,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)b2b\\s+collection\\s+pps\\s+per1",
+      "category": "Education",
+      "priority": 81,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)magtape\\s+debit\\s+disclife",
+      "category": "Insurance",
+      "priority": 82,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)magtape\\s+credit\\s+sell\\s+your\\s+galaxy",
+      "category": "Other",
+      "priority": 83,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)fnb\\s+app\\s+payment\\s+from\\s+rihet\\s+hoffmann",
+      "category": "Transfer",
+      "priority": 84,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)int\\s+on\\s+debit\\s+balance",
+      "category": "Other",
+      "priority": 85,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)dr\\s+interest\\s+rebate",
+      "category": "Other",
+      "priority": 86,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)notific\\s*fee\\s*sms\\s*notifyme",
+      "category": "Other",
+      "priority": 87,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)digital\\s*payment.*olive\\s*hair\\s*design",
+      "category": "Other",
+      "priority": 88,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)transaction\\s*fee.*archive\\s*stmt\\s*enq",
+      "category": "Other",
+      "priority": 89,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)digital\\s*payment.*yolandi\\s*varsity",
+      "category": "Education",
+      "priority": 90,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)transaction\\s*fee.*proof\\s*of\\s*pmt\\s*email",
+      "category": "Other",
+      "priority": 91,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)digital\\s*payment.*julian\\s*varsity",
+      "category": "Education",
+      "priority": 92,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)acb\\s*debit:external.*atkv",
+      "category": "Other",
+      "priority": 93,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)ssd\\s*other\\s*chip\\s*wdl",
+      "category": "Cash Withdrawal",
+      "priority": 94,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)digital\\s*payment.*property\\s*sense",
+      "category": "Other",
+      "priority": 95,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)acb\\s*debit:external\\s*virgin",
+      "category": "Subscriptions",
+      "priority": 96,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)acb\\s*debit:external\\s*liberty",
+      "category": "Insurance",
+      "priority": 97,
+      "source": "ai"
     }
   ]
 }

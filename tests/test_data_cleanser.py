@@ -76,6 +76,22 @@ class TestDeduplication:
         result = stage.process(sample_context)
         assert len(result.unclassified_lines) == 4  # duplicate removed
 
+    def test_preserves_repeated_transactions_with_different_balances(self, session_factory, sample_context):
+        sample_context.raw_lines.append(
+            {
+                "date": date(2024, 1, 10),
+                "description": "TESCO STORES",
+                "amount": Decimal("50.00"),
+                "balance": Decimal("1400.00"),
+                "transaction_type": "debit",
+            }
+        )
+
+        stage = DataCleanserStage(session_factory)
+        result = stage.process(sample_context)
+
+        assert len(result.unclassified_lines) == 5
+
 
 class TestValidation:
     def test_balanced_totals(self, session_factory, sample_context):

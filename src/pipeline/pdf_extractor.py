@@ -14,6 +14,11 @@ from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
+FNB_BLANK_DESCRIPTION_ROW_PATTERN = re.compile(
+    r"^(\d{2}\s*\w{3})\s+([\d,]+\.\d{2}(?:Cr|Dr|Kt|Dt)?)\s+([\d,]+\.\d{2}(?:Cr|Dr|Kt|Dt)?)$",
+    re.IGNORECASE,
+)
+
 AFRIKAANS_MONTH_ALIASES = {
     "januarie": "January",
     "jan": "Jan",
@@ -543,6 +548,10 @@ class PDFExtractorStage(Stage):
                 text = page.extract_text()
                 if text:
                     page_lines = self._parse_text(text, page_num, profile)
+                    if page_lines and self._enable_ocr:
+                        page_lines = self._supplement_fnb_ocr_fee_lines(
+                            page, text, page_lines, page_num, profile
+                        )
                     if page_lines:
                         page_method = "text"
 
@@ -614,6 +623,87 @@ class PDFExtractorStage(Stage):
                 line["transaction_type"] = "credit"
 
         return lines
+
+    def _supplement_fnb_ocr_fee_lines(
+        self,
+        page,
+        extracted_text: str,
+        page_lines: list[dict],
+        page_num: int,
+        profile: BankProfile,
+    ) -> list[dict]:
+        """Supplement FNB text extraction with OCR-only fee rows.
+
+        Some FNB PDFs render fee descriptions as non-extractable glyphs. The
+        normal text extract then produces rows with only ``date amount balance``.
+        OCR can recover the missing description text for those specific rows, so
+        we only merge OCR lines that match the unresolved date/amount/balance
+        triples from the normal extract.
+        """
+        if profile.name != "FNB" or not extracted_text:
+            return page_lines
+
+        missing_keys = self._find_fnb_blank_description_keys(extracted_text, profile)
+        if not missing_keys:
+            return page_lines
+
+        ocr_text = self._ocr_page(page)
+        if not ocr_text:
+            return page_lines
+
+        ocr_lines = self._parse_text(ocr_text, page_num, profile)
+        if not ocr_lines:
+            return page_lines
+
+        existing_keys = {self._line_identity_key(line) for line in page_lines}
+        supplemented_lines = list(page_lines)
+
+        for line in ocr_lines:
+            identity_key = self._line_identity_key(line)
+            if identity_key in existing_keys:
+                continue
+            missing_key = self._line_amount_balance_key(line)
+            if missing_key in missing_keys:
+                supplemented_lines.append(line)
+                existing_keys.add(identity_key)
+
+        return supplemented_lines
+
+    def _find_fnb_blank_description_keys(
+        self, text: str, profile: BankProfile
+    ) -> set[tuple]:
+        """Return date/amount/balance keys for FNB rows missing descriptions."""
+        missing_keys: set[tuple] = set()
+
+        for raw_line in text.splitlines():
+            stripped = raw_line.strip()
+            match = FNB_BLANK_DESCRIPTION_ROW_PATTERN.match(stripped)
+            if not match:
+                continue
+
+            parsed_date = self._parse_date_with_profile(match.group(1), profile)
+            amount = profile.parse_amount(match.group(2))
+            balance = profile.parse_amount(match.group(3))
+            if parsed_date is None or amount is None or balance is None:
+                continue
+
+            missing_keys.add((parsed_date, abs(amount), balance))
+
+        return missing_keys
+
+    @staticmethod
+    def _line_amount_balance_key(line: dict) -> tuple:
+        return (line.get("date"), line.get("amount"), line.get("balance"))
+
+    @staticmethod
+    def _line_identity_key(line: dict) -> tuple:
+        return (
+            line.get("date"),
+            line.get("description"),
+            line.get("amount"),
+            line.get("balance"),
+            line.get("transaction_type"),
+        )
 
     def _parse_table(
         self, table: list[list], page_num: int, profile: BankProfile
@@ -958,6 +1048,7 @@ class PDFExtractorStage(Stage):
                 if result:
                     last_date = result["date"]
                     lines.append(result)
+                    continue
             elif fee_pattern and last_date:
                 # Try fee/sub-transaction pattern (dateless lines like "Transaksie Fooi 3,50-")
                 fee_match = fee_pattern.search(stripped)
@@ -967,8 +1058,43 @@ class PDFExtractorStage(Stage):
                     )
                     if fee_result:
                         lines.append(fee_result)
+                    continue
+
+            continuation = self._parse_text_continuation_line(stripped, lines, profile)
+            if continuation:
+                lines.append(continuation)
 
         return lines
+
+    def _parse_text_continuation_line(
+        self, stripped: str, lines: list[dict], profile: BankProfile
+    ) -> Optional[dict]:
+        """Treat certain unmatched ABSA text rows as description continuations."""
+        if not stripped or not lines:
+            return None
+
+        if profile.name not in {"ABSA", "ABSA Afrikaans"}:
+            return None
+
+        if re.match(
+            r"^(?:Transaction\s+History|Date\s+Transaction\s+Description\s+Amount\s+Balance|"
+            r"Current\s+Balance|Available\s+Balance|Uncleared\s+Cheques|"
+            r"Statement\s+for\s+the\s+Period|Page\s+\d+\s+of\s+\d+)$",
+            stripped,
+            re.IGNORECASE,
+        ):
+            return None
+
+        if re.match(r"^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\s+Page\s+\d+\s+of\s+\d+$", stripped):
+            return None
+
+        if re.match(r"^\d+$", stripped):
+            return None
+
+        if re.match(r"^[A-Z]+$", stripped):
+            return None
+
+        return {"_continuation": True, "description": stripped}
 
     def _parse_named_text_match(
         self, gd: dict, profile: BankProfile

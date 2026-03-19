@@ -20,6 +20,7 @@ playwright-report/
 .claude/
 .vscode/
 uploads/
+tests/**/*.pdf
 teststatement/input/*.pdf
 teststatement/input/processed/
 teststatement/input/failed/

@@ -1,0 +1,401 @@
+{
+    "line_count": 44,
+    "lines": [
+        {
+            "date": "2026-01-23",
+            "description": "#Service Fees #Eft Charge-FNB To Other",
+            "amount": 8.0,
+            "balance": 10091.29,
+            "transaction_type": "debit",
+            "category": "Transfer",
+            "confidence": null
+        },
+        {
+            "date": "2026-01-23",
+            "description": "FNB OB Pmt Salary",
+            "amount": 94425.83,
+            "balance": 84334.54,
+            "transaction_type": "credit",
+            "category": "Salary",
+            "confidence": null
+        },
+        {
+            "date": "2026-01-23",
+            "description": "Internet Pmt To Discovery Bank 10241512060",
+            "amount": 450.0,
+            "balance": 83884.54,
+            "transaction_type": "debit",
+            "category": "Transfer",
+            "confidence": null
+        },
+        {
+            "date": "2026-01-23",
+            "description": "Internet Pmt To Deonne Spaar Geld",
+            "amount": 200.0,
+            "balance": 83684.54,
+            "transaction_type": "debit",
+            "category": "Transfer",
+            "confidence": null
+        },
+        {
+            "date": "2026-01-23",
+            "description": "Internet Pmt To Betaal Rihet Geld Vanaf Stefan",
+            "amount": 5000.0,
+            "balance": 78684.54,
+            "transaction_type": "debit",
+            "category": "Transfer",
+            "confidence": null
+        },
+        {
+            "date": "2026-01-23",
+            "description": "Internet Pmt To Zander Spaar Geld",
+            "amount": 100.0,
+            "balance": 78584.54,
+            "transaction_type": "debit",
+            "category": "Transfer",
+            "confidence": null
+        },
+        {
+            "date": "2026-01-23",
+            "description": "Internet Pmt To Esabel Hoffmann",
+            "amount": 2100.0,
+            "balance": 76484.54,
+            "transaction_type": "debit",
+            "category": "Transfer",
+            "confidence": null
+        },
+        {
+            "date": "2026-01-23",
+            "description": "Internet Pmt To Kk Garden Services Ou Hout Close 3944 -",
+            "amount": 650.0,
+            "balance": 75834.54,
+            "transaction_type": "debit",
+            "category": "Other",
+            "confidence": null
+        },
+        {
+            "date": "2026-01-23",
+            "description": "Internet Trf To Betaal FNB Kk",
+            "amount": 15000.0,
+            "balance": 60834.54,
+            "transaction_type": "debit",
+            "category": "Transfer",
+            "confidence": null
+        },
+        {
+            "date": "2026-01-24",
+            "description": "DebiCheck Toyota_Fin8614023010",
+            "amount": 13635.35,
+            "balance": 47199.19,
+            "transaction_type": "debit",
+            "category": "Transport",
+            "confidence": null
+        },
+        {
+            "date": "2026-01-26",
+            "description": "FNB App Payment From Rihet Hoffmann",
+            "amount": 200.0,
+            "balance": 47399.19,
+            "transaction_type": "credit",
+            "category": "Transfer",
+            "confidence": null
+        },
+        {
+            "date": "2026-01-26",
+            "description": "Internal Debit Order Fnblife Dp04Tn23 Sb3149 Sb3149",
+            "amount": 7.7,
+            "balance": 47391.49,
+            "transaction_type": "debit",
+            "category": "Insurance",
+            "confidence": null
+        },
+        {
+            "date": "2026-01-26",
+            "description": "Magtape Debit Keyhealth S 9987982 C346304",
+            "amount": 5324.0,
+            "balance": 42067.49,
+            "transaction_type": "debit",
+            "category": "Healthcare",
+            "confidence": null
+        },
+        {
+            "date": "2026-01-27",
+            "description": "#Service Fees #Eft Charge-FNB To Other",
+            "amount": 2.0,
+            "balance": 42065.49,
+            "transaction_type": "debit",
+            "category": "Transfer",
+            "confidence": null
+        },
+        {
+            "date": "2026-01-27",
+            "description": "Internet Pmt To Patrick Duri Bidvest Stefan - Amberfield",
+            "amount": 450.0,
+            "balance": 41615.49,
+            "transaction_type": "debit",
+            "category": "Transfer",
+            "confidence": null
+        },
+        {
+            "date": "2026-01-30",
+            "description": "Magtape Debit Boufonds Bou 00207600539193",
+            "amount": 140.0,
+            "balance": 41475.49,
+            "transaction_type": "debit",
+            "category": "Other",
+            "confidence": null
+        },
+        {
+            "date": "2026-01-30",
+            "description": "Magtape Debit Regsfonds Reg 00207600539193",
+            "amount": 208.0,
+            "balance": 41267.49,
+            "transaction_type": "debit",
+            "category": "Other",
+            "confidence": null
+        },
+        {
+            "date": "2026-01-31",
+            "description": "DebiCheck FNB Home 3000015381",
+            "amount": 20801.26,
+            "balance": 20466.23,
+            "transaction_type": "debit",
+            "category": "Rent/Mortgage",
+            "confidence": null
+        },
+        {
+            "date": "2026-01-31",
+            "description": "DebiCheck Internal D/O Fnbconnect8882285816",
+            "amount": 199.0,
+            "balance": 20267.23,
+            "transaction_type": "debit",
+            "category": "Utilities",
+            "confidence": null
+        },
+        {
+            "date": "2026-01-31",
+            "description": "DebiCheck Internal D/O Fnbconnect8882286216",
+            "amount": 269.0,
+            "balance": 19998.23,
+            "transaction_type": "debit",
+            "category": "Utilities",
+            "confidence": null
+        },
+        {
+            "date": "2026-01-31",
+            "description": "Magtape Debit Club Mcc 4820022514 Jan Jan",
+            "amount": 107.0,
+            "balance": 19891.23,
+            "transaction_type": "debit",
+            "category": "Entertainment",
+            "confidence": null
+        },
+        {
+            "date": "2026-02-02",
+            "description": "DebiCheck MTN Sp Ba11172278",
+            "amount": 1657.12,
+            "balance": 18234.11,
+            "transaction_type": "debit",
+            "category": "Utilities",
+            "confidence": null
+        },
+        {
+            "date": "2026-02-02",
+            "description": "B2B Collection Pps Per1 Inv2020111001517",
+            "amount": 8485.43,
+            "balance": 9748.68,
+            "transaction_type": "debit",
+            "category": "Education",
+            "confidence": null
+        },
+        {
+            "date": "2026-02-02",
+            "description": "Magtape Debit Tracker 00Gha521 Of4593 Of4593",
+            "amount": 89.0,
+            "balance": 9659.68,
+            "transaction_type": "debit",
+            "category": null,
+            "confidence": null
+        },
+        {
+            "date": "2026-02-02",
+            "description": "Magtape Debit Outsurance Ot7774815 Nl8458 Nl8458",
+            "amount": 252.31,
+            "balance": 9407.37,
+            "transaction_type": "debit",
+            "category": "Insurance",
+            "confidence": null
+        },
+        {
+            "date": "2026-02-02",
+            "description": "Magtape Debit Thecomhut 388878538 Netcash",
+            "amount": 850.0,
+            "balance": 8557.37,
+            "transaction_type": "debit",
+            "category": "Cash Withdrawal",
+            "confidence": null
+        },
+        {
+            "date": "2026-02-02",
+            "description": "Magtape Debit Outsurance Ot7774815 Nl8495 Nl8495",
+            "amount": 2328.64,
+            "balance": 6228.73,
+            "transaction_type": "debit",
+            "category": "Insurance",
+            "confidence": null
+        },
+        {
+            "date": "2026-02-02",
+            "description": "Magtape Debit Disclife 5130169300-333818280",
+            "amount": 4488.76,
+            "balance": 1739.97,
+            "transaction_type": "debit",
+            "category": "Insurance",
+            "confidence": null
+        },
+        {
+            "date": "2026-02-02",
+            "description": "Magtape Debit Coc Nec007855",
+            "amount": 171.0,
+            "balance": 1568.97,
+            "transaction_type": "debit",
+            "category": null,
+            "confidence": null
+        },
+        {
+            "date": "2026-02-02",
+            "description": "Magtape Debit Bidtrack 1982 376950-N",
+            "amount": 182.53,
+            "balance": 1386.44,
+            "transaction_type": "debit",
+            "category": null,
+            "confidence": null
+        },
+        {
+            "date": "2026-02-10",
+            "description": "Magtape Credit Sell Your Galaxy",
+            "amount": 9451.0,
+            "balance": 10837.44,
+            "transaction_type": "credit",
+            "category": "Other",
+            "confidence": null
+        },
+        {
+            "date": "2026-02-13",
+            "description": "FNB App Payment From Rihet Hoffmann",
+            "amount": 360.0,
+            "balance": 11197.44,
+            "transaction_type": "credit",
+            "category": "Transfer",
+            "confidence": null
+        },
+        {
+            "date": "2026-02-14",
+            "description": "FNB App Payment From Rihet Hoffmann",
+            "amount": 230.0,
+            "balance": 11427.44,
+            "transaction_type": "credit",
+            "category": "Transfer",
+            "confidence": null
+        },
+        {
+            "date": "2026-02-14",
+            "description": "FNB App Transfer To Zander Game",
+            "amount": 230.0,
+            "balance": 11197.44,
+            "transaction_type": "debit",
+            "category": "Transfer",
+            "confidence": null
+        },
+        {
+            "date": "2026-02-14",
+            "description": "FNB App Payment From Rihet Hoffmann",
+            "amount": 700.0,
+            "balance": 11897.44,
+            "transaction_type": "credit",
+            "category": "Transfer",
+            "confidence": null
+        },
+        {
+            "date": "2026-02-16",
+            "description": "FNB App Transfer To Zander Game",
+            "amount": 250.0,
+            "balance": 11647.44,
+            "transaction_type": "debit",
+            "category": "Transfer",
+            "confidence": null
+        },
+        {
+            "date": "2026-02-16",
+            "description": "FNB App Payment From Rihet Hoffmann",
+            "amount": 250.0,
+            "balance": 11897.44,
+            "transaction_type": "credit",
+            "category": "Transfer",
+            "confidence": null
+        },
+        {
+            "date": "2026-02-16",
+            "description": "POS Purchase Hafeez General Deal 410588*5509 13 Feb",
+            "amount": 150.0,
+            "balance": 11747.44,
+            "transaction_type": "debit",
+            "category": "Shopping",
+            "confidence": null
+        },
+        {
+            "date": "2026-02-16",
+            "description": "POS Purchase Skin Phd 410588*5509 13 Feb",
+            "amount": 440.0,
+            "balance": 11307.44,
+            "transaction_type": "debit",
+            "category": "Shopping",
+            "confidence": null
+        },
+        {
+            "date": "2026-02-17",
+            "description": "POS Purchase Create Wolwesprui10 410588*5509 14 Feb",
+            "amount": 1447.8,
+            "balance": 9859.64,
+            "transaction_type": "debit",
+            "category": "Shopping",
+            "confidence": null
+        },
+        {
+            "date": "2026-02-19",
+            "description": "POS Purchase F H Chamberlain Tra 410588*5509 17 Feb",
+            "amount": 838.9,
+            "balance": 9020.74,
+            "transaction_type": "debit",
+            "category": "Shopping",
+            "confidence": null
+        },
+        {
+            "date": "2026-02-21",
+            "description": "Int On Debit Balance",
+            "amount": 2.83,
+            "balance": 9017.91,
+            "transaction_type": "debit",
+            "category": "Other",
+            "confidence": null
+        },
+        {
+            "date": "2026-02-21",
+            "description": "Dr Interest Rebate",
+            "amount": 1.93,
+            "balance": 9019.84,
+            "transaction_type": "credit",
+            "category": "Other",
+            "confidence": null
+        },
+        {
+            "date": "2026-02-21",
+            "description": "#Monthly Account Fee",
+            "amount": 250.0,
+            "balance": 8769.84,
+            "transaction_type": "debit",
+            "category": "Fees",
+            "confidence": null
+        }
+    ]
+}
