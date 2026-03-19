@@ -17,6 +17,7 @@ class PipelineContext:
     raw_header: dict = field(default_factory=dict)
     raw_lines: list[dict] = field(default_factory=list)
     statement_id: int | None = None
+    extraction_method: str | None = None  # "text", "table", or "ocr"
     classified_lines: list[dict] = field(default_factory=list)
     unclassified_lines: list[dict] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)

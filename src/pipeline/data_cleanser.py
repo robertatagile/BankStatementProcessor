@@ -148,6 +148,7 @@ class DataCleanserStage(Stage):
             opening_balance=header.get("opening_balance", Decimal("0.00")),
             closing_balance=header.get("closing_balance", Decimal("0.00")),
             file_path=context.file_path,
+            extraction_method=context.extraction_method,
         )
 
         with self._session_factory() as session:

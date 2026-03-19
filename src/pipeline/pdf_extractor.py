@@ -74,7 +74,7 @@ class PDFExtractorStage(Stage):
                 full_text = self._ocr_all_pages(pdf)
 
             context.raw_header = self._extract_header(full_text, profile)
-            context.raw_lines = self._extract_lines(pdf, profile)
+            context.raw_lines, context.extraction_method = self._extract_lines(pdf, profile)
 
         # Use profile name if bank_name couldn't be parsed from the text
         if context.raw_header.get("bank_name") == "Unknown Bank" and profile.name != "Generic":
@@ -85,7 +85,8 @@ class PDFExtractorStage(Stage):
 
         logger.info(
             f"Extracted header: {context.raw_header.get('bank_name', 'Unknown')} | "
-            f"Profile: {profile.name} | Lines: {len(context.raw_lines)}"
+            f"Profile: {profile.name} | Lines: {len(context.raw_lines)} | "
+            f"Method: {context.extraction_method or 'none'}"
         )
         return context
 
@@ -487,17 +488,22 @@ class PDFExtractorStage(Stage):
 
     def _extract_lines(
         self, pdf: pdfplumber.PDF, profile: BankProfile
-    ) -> list[dict]:
+    ) -> tuple:
         """Extract transaction lines from all pages.
+
+        Returns (lines, extraction_method) where extraction_method is the
+        dominant method used: ``"table"``, ``"text"``, or ``"ocr"``.
 
         Tries table extraction first; if a page's tables yield mostly empty
         amounts (common with FNB's merged-cell layout), falls back to text
         extraction for that page.
         """
         all_lines = []
+        method_counts = {"table": 0, "text": 0, "ocr": 0}
 
         for page_num, page in enumerate(pdf.pages, 1):
             page_lines: list[dict] = []
+            page_method = None
 
             if not profile.prefer_text_extraction:
                 # Try table extraction first
@@ -516,7 +522,9 @@ class PDFExtractorStage(Stage):
                     1 for ln in page_lines if not ln.get("_continuation")
                 )
 
-                if total_lines == 0 or valid_amounts < total_lines * 0.5:
+                if total_lines > 0 and valid_amounts >= total_lines * 0.5:
+                    page_method = "table"
+                else:
                     # Tables produced bad data — fall back to text extraction
                     text = page.extract_text()
                     if text:
@@ -528,12 +536,15 @@ class PDFExtractorStage(Stage):
                                 f"using text extraction ({len(text_lines)} lines)"
                             )
                             page_lines = text_lines
+                            page_method = "text"
 
             if not page_lines:
                 # No tables, or profile prefers text — use text extraction
                 text = page.extract_text()
                 if text:
                     page_lines = self._parse_text(text, page_num, profile)
+                    if page_lines:
+                        page_method = "text"
 
             # OCR fallback: if no lines extracted (scanned PDF page)
             if not page_lines and self._enable_ocr:
@@ -544,8 +555,14 @@ class PDFExtractorStage(Stage):
                         logger.info(
                             f"Page {page_num}: OCR extracted {len(page_lines)} lines"
                         )
+                        page_method = "ocr"
 
+            if page_method and page_lines:
+                method_counts[page_method] += len(page_lines)
             all_lines.extend(page_lines)
+
+        # Determine dominant extraction method
+        extraction_method = max(method_counts, key=method_counts.get) if any(method_counts.values()) else None
 
         # Handle multi-line descriptions (rows with description but no amount)
         all_lines = self._merge_multiline_descriptions(all_lines)
@@ -565,7 +582,7 @@ class PDFExtractorStage(Stage):
         all_lines = self._infer_transaction_types(all_lines)
 
         logger.debug(f"Total transaction lines extracted: {len(all_lines)}")
-        return all_lines
+        return all_lines, extraction_method
 
     @staticmethod
     def _infer_transaction_types(lines: list[dict]) -> list[dict]:

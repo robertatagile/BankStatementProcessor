@@ -32,6 +32,9 @@ class Statement(Base):
         Numeric(precision=12, scale=2, asdecimal=True)
     )
     file_path: Mapped[str] = mapped_column(String(500))
+    extraction_method: Mapped[Optional[str]] = mapped_column(
+        String(20), nullable=True
+    )  # "text", "table", "ocr", or null
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
 
     lines: Mapped[List["StatementLine"]] = relationship(
@@ -227,6 +230,13 @@ def _migrate(engine):
             (table,),
         )
         return cur.fetchone() is not None
+
+    # Statement extraction_method column
+    if _has_table("statements"):
+        if not _has_column("statements", "extraction_method"):
+            cur.execute(
+                "ALTER TABLE statements ADD COLUMN extraction_method VARCHAR(20)"
+            )
 
     # StatementLine provenance columns
     if _has_table("statement_lines"):
