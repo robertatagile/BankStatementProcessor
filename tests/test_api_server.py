@@ -19,6 +19,10 @@ FNB_REGRESSION_PDF = FIXTURES_DIR / "pdfs" / "fnb_regression_statement.pdf"
 FNB_REGRESSION_EXPECTED = (
     FIXTURES_DIR / "expected" / "fnb_regression_statement.json"
 )
+CAPITEC_REGRESSION_PDF = FIXTURES_DIR / "pdfs" / "capitec_regression_statement.pdf"
+CAPITEC_REGRESSION_EXPECTED = (
+    FIXTURES_DIR / "expected" / "capitec_regression_statement.json"
+)
 
 
 def _run_jobs_inline(monkeypatch):
@@ -73,11 +77,29 @@ def _sort_normalized_lines(payload: dict) -> dict:
             payload["lines"],
             key=lambda line: (
                 line["date"],
-                line["balance"],
+                line["balance"] is None,
+                line["balance"] if line["balance"] is not None else 0,
                 line["amount"],
                 line["description"],
             ),
         ),
+    }
+
+
+def _normalize_extracted_job_lines(payload: dict) -> dict:
+    result = payload["result"]
+    return {
+        "line_count": len(result["lines"]),
+        "lines": [
+            {
+                "date": line["date"],
+                "description": line["description"],
+                "amount": line["amount"],
+                "balance": line["balance"],
+                "transaction_type": line["transaction_type"],
+            }
+            for line in result["lines"]
+        ],
     }
 
 
@@ -288,6 +310,115 @@ def test_absa_statement_regression_returns_expected_lines(tmp_path, monkeypatch)
             "category": "Insurance",
             "confidence": None,
         } in normalized["lines"]
+        assert _sort_normalized_lines(normalized) == _sort_normalized_lines(expected)
+
+    server._session_factory = None
+
+
+def test_capitec_statement_regression_returns_expected_extracted_lines(tmp_path, monkeypatch):
+    _configure_api_test_env(tmp_path, monkeypatch)
+    _run_jobs_inline(monkeypatch)
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+
+    expected = json.loads(CAPITEC_REGRESSION_EXPECTED.read_text(encoding="utf-8"))
+
+    with TestClient(server.app) as client:
+        response = client.post(
+            "/api/upload",
+            files={
+                "file": (
+                    CAPITEC_REGRESSION_PDF.name,
+                    CAPITEC_REGRESSION_PDF.read_bytes(),
+                    "application/pdf",
+                )
+            },
+        )
+
+        assert response.status_code == 200
+
+        job_id = response.json()["job_id"]
+        detail = client.get(f"/api/jobs/{job_id}")
+
+        assert detail.status_code == 200
+        payload = detail.json()
+        assert payload["status"] == "completed"
+
+        normalized = _normalize_extracted_job_lines(payload)
+
+        assert normalized["line_count"] == 69
+        assert {
+            "date": "2025-11-01",
+            "description": "Eft Debit Order Insufficient Funds Fee",
+            "amount": 6.0,
+            "balance": -5.84,
+            "transaction_type": "debit",
+        } in normalized["lines"]
+        assert {
+            "date": "2025-10-30",
+            "description": "DebiCheck Debit Order (2760398567): Npfinafbfn\n(DCPRD0001QB5SZ) Fee",
+            "amount": 3.0,
+            "balance": 16989.68,
+            "transaction_type": "debit",
+        } in normalized["lines"]
+        assert {
+            "date": "2025-11-28",
+            "description": "Banking App Immediate Payment: Amanda Smit Fee",
+            "amount": 1.0,
+            "balance": 20136.0,
+            "transaction_type": "debit",
+        } in normalized["lines"]
+        assert {
+            "date": "2025-11-28",
+            "description": "Banking App Immediate Payment: Amanda Smit",
+            "amount": 600.0,
+            "balance": 20137.0,
+            "transaction_type": "debit",
+        } in normalized["lines"]
+        assert {
+            "date": "2025-11-28",
+            "description": "Banking App External Payment: Iclix",
+            "amount": 1000.0,
+            "balance": 19120.0,
+            "transaction_type": "debit",
+        } in normalized["lines"]
+        assert {
+            "date": "2025-12-15",
+            "description": "Banking App External PayShap Payment: Sanet Minnie Fee",
+            "amount": 6.0,
+            "balance": 7445.0,
+            "transaction_type": "debit",
+        } in normalized["lines"]
+        assert {
+            "date": "2025-12-15",
+            "description": "Banking App External PayShap Payment: Sanet Minnie",
+            "amount": 1000.0,
+            "balance": 7451.0,
+            "transaction_type": "debit",
+        } in normalized["lines"]
+        assert {
+            "date": "2025-12-31",
+            "description": "PayShap Payment Received: Ina",
+            "amount": 1200.0,
+            "balance": 5848.8,
+            "transaction_type": "credit",
+        } in normalized["lines"]
+        assert {
+            "date": "2026-01-01",
+            "description": "Banking App Immediate Payment: Johanna L Visag Fee",
+            "amount": 1.0,
+            "balance": 4012.63,
+            "transaction_type": "debit",
+        } in normalized["lines"]
+        assert {
+            "date": "2026-01-01",
+            "description": "Banking App Immediate Payment: Johanna L Visag",
+            "amount": 201.0,
+            "balance": 4013.63,
+            "transaction_type": "debit",
+        } in normalized["lines"]
+        assert not any(line["description"] == "Npfinafbfn" for line in normalized["lines"])
+        assert not any(line["description"] == "Loancirc" for line in normalized["lines"])
+        assert not any("Insufficient Funds (" in line["description"] for line in normalized["lines"])
         assert _sort_normalized_lines(normalized) == _sort_normalized_lines(expected)
 
     server._session_factory = None

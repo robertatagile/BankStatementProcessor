@@ -569,6 +569,42 @@
       "category": "Insurance",
       "priority": 97,
       "source": "ai"
+    },
+    {
+      "pattern": "(?i)debicheck.*debit.*order.*npfinafbfn",
+      "category": "Other",
+      "priority": 98,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)interest\\s+received",
+      "category": "Other",
+      "priority": 99,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)set-off\\s+applied",
+      "category": "Other",
+      "priority": 100,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)banking\\s+app\\s+immediate\\s+payment.*anco\\s+simpson",
+      "category": "Transfer",
+      "priority": 101,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)banking\\s+app\\s+immediate\\s+payment.*b\\s+du\\s+toit",
+      "category": "Transfer",
+      "priority": 102,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)banking\\s+app\\s+immediate\\s+payment.*kv\\s+shopane",
+      "category": "Transfer",
+      "priority": 103,
+      "source": "ai"
     }
   ]
 }

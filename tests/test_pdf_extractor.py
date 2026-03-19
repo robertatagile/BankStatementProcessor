@@ -164,6 +164,81 @@ class TestMergeMultilineDescriptions:
         assert len(merged) == 1
 
 
+class TestCapitecExtraction:
+    def test_capitec_table_row_splits_fee_into_separate_line(self):
+        stage = PDFExtractorStage()
+        profile = capitec_profile()
+        row = [
+            "28/11/2025",
+            "Banking App Immediate Payment: Amanda Smit",
+            "Digital\nPayments",
+            "",
+            "",
+            "-600.00",
+            "",
+            "-1.00",
+            "20 136.00",
+        ]
+
+        lines = stage._parse_capitec_table_row(row, 1, 1, profile)
+
+        assert lines == [
+            {
+                "date": date(2025, 11, 28),
+                "description": "Banking App Immediate Payment: Amanda Smit",
+                "amount": Decimal("600.00"),
+                "balance": Decimal("20137.00"),
+                "transaction_type": "debit",
+            },
+            {
+                "date": date(2025, 11, 28),
+                "description": "Banking App Immediate Payment: Amanda Smit Fee",
+                "amount": Decimal("1.00"),
+                "balance": Decimal("20136.00"),
+                "transaction_type": "debit",
+            },
+        ]
+
+    def test_capitec_text_row_skips_informational_insufficient_funds(self):
+        stage = PDFExtractorStage()
+        profile = capitec_profile()
+        row_parts = [
+            "01/11/2025 Eft Debit Order Insufficient Funds (R1 631.80): Loancirc (-",
+            "LOANCIRCL0241)",
+        ]
+
+        lines = stage._parse_capitec_text_row(row_parts, profile)
+
+        assert lines == []
+
+    def test_capitec_text_row_splits_fee_bearing_transaction(self):
+        stage = PDFExtractorStage()
+        profile = capitec_profile()
+        row_parts = [
+            "15/12/2025 Banking App External PayShap Payment: Sanet Minnie Digital -1 000.00 -6.00 7 445.00",
+            "Payments",
+        ]
+
+        lines = stage._parse_capitec_text_row(row_parts, profile)
+
+        assert lines == [
+            {
+                "date": date(2025, 12, 15),
+                "description": "Banking App External PayShap Payment: Sanet Minnie",
+                "amount": Decimal("1000.00"),
+                "balance": Decimal("7451.00"),
+                "transaction_type": "debit",
+            },
+            {
+                "date": date(2025, 12, 15),
+                "description": "Banking App External PayShap Payment: Sanet Minnie Fee",
+                "amount": Decimal("6.00"),
+                "balance": Decimal("7445.00"),
+                "transaction_type": "debit",
+            },
+        ]
+
+
 class TestHeaderExtraction:
     def test_extracts_header_fields(self):
         stage = PDFExtractorStage()

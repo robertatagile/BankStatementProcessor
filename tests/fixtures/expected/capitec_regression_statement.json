@@ -1,0 +1,488 @@
+{
+    "line_count": 69,
+    "lines": [
+        {
+            "date": "2025-10-30",
+            "description": "Payment Received: Dairy Corporation Transfer 2765383829",
+            "amount": 18021.06,
+            "balance": 18021.06,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2025-10-30",
+            "description": "DebiCheck Debit Order (2760398567): Npfinafbfn\n(DCPRD0001QB5SZ)",
+            "amount": 1028.38,
+            "balance": 16992.68,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-10-30",
+            "description": "DebiCheck Debit Order (2760398567): Npfinafbfn\n(DCPRD0001QB5SZ) Fee",
+            "amount": 3.0,
+            "balance": 16989.68,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-10-30",
+            "description": "Banking App Transfer to Main Account: Transfer",
+            "amount": 16989.68,
+            "balance": 0.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-10-31",
+            "description": "Interest Received",
+            "amount": 0.16,
+            "balance": 0.16,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2025-11-01",
+            "description": "Eft Debit Order Insufficient Funds Fee",
+            "amount": 6.0,
+            "balance": -5.84,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-02",
+            "description": "Set-off Applied",
+            "amount": 5.84,
+            "balance": 0.0,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2025-11-04",
+            "description": "Eft Debit Order Insufficient Funds Fee",
+            "amount": 6.0,
+            "balance": -6.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-05",
+            "description": "Set-off Applied",
+            "amount": 6.0,
+            "balance": 0.0,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2025-11-11",
+            "description": "Banking App Transfer to Main Account: Transfer",
+            "amount": 450.0,
+            "balance": 0.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-11",
+            "description": "Payment Received: Retha Steyn",
+            "amount": 450.0,
+            "balance": 450.0,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2025-11-14",
+            "description": "Banking App Transfer to Main Account: Transfer",
+            "amount": 600.0,
+            "balance": 0.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-14",
+            "description": "Payment Received: A Smit",
+            "amount": 600.0,
+            "balance": 600.0,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2025-11-28",
+            "description": "Payment Received: Dairy Corporation Transfer 2828656285",
+            "amount": 21768.38,
+            "balance": 21768.38,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2025-11-28",
+            "description": "DebiCheck Debit Order (2821872463): Npfinafbfn\n(DCPRD0001QB5SZ)",
+            "amount": 1028.38,
+            "balance": 20740.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-28",
+            "description": "DebiCheck Debit Order (2821872463): Npfinafbfn\n(DCPRD0001QB5SZ) Fee",
+            "amount": 3.0,
+            "balance": 20737.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-28",
+            "description": "Banking App Immediate Payment: Amanda Smit",
+            "amount": 600.0,
+            "balance": 20137.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-28",
+            "description": "Banking App Immediate Payment: Amanda Smit Fee",
+            "amount": 1.0,
+            "balance": 20136.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-28",
+            "description": "Banking App Immediate Payment: Anco Simpson",
+            "amount": 15.0,
+            "balance": 20121.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-28",
+            "description": "Banking App Immediate Payment: Anco Simpson Fee",
+            "amount": 1.0,
+            "balance": 20120.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-28",
+            "description": "Banking App External Payment: Iclix",
+            "amount": 1000.0,
+            "balance": 19120.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-28",
+            "description": "Banking App External Payment: Iclix Fee",
+            "amount": 2.0,
+            "balance": 19118.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-28",
+            "description": "Banking App Immediate Payment: B Du Toit",
+            "amount": 100.0,
+            "balance": 19018.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-28",
+            "description": "Banking App Immediate Payment: B Du Toit Fee",
+            "amount": 1.0,
+            "balance": 19017.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-28",
+            "description": "Banking App Immediate Payment: P Fourie Huis",
+            "amount": 10000.0,
+            "balance": 9017.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-28",
+            "description": "Banking App Immediate Payment: P Fourie Huis Fee",
+            "amount": 1.0,
+            "balance": 9016.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-28",
+            "description": "Banking App Immediate Payment: Andre Lombard C",
+            "amount": 1000.0,
+            "balance": 8016.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-28",
+            "description": "Banking App Immediate Payment: Andre Lombard C Fee",
+            "amount": 1.0,
+            "balance": 8015.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-29",
+            "description": "Banking App Immediate Payment: Riann Burger",
+            "amount": 600.0,
+            "balance": 7415.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-29",
+            "description": "Banking App Immediate Payment: Riann Burger Fee",
+            "amount": 1.0,
+            "balance": 7414.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-29",
+            "description": "Banking App Immediate Payment: Kv Shopane",
+            "amount": 1200.0,
+            "balance": 6214.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-29",
+            "description": "Banking App Immediate Payment: Kv Shopane Fee",
+            "amount": 1.0,
+            "balance": 6213.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-29",
+            "description": "Set-off Applied",
+            "amount": 6.95,
+            "balance": 6206.05,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-29",
+            "description": "Banking App Immediate Payment: Anco Simpson",
+            "amount": 150.0,
+            "balance": 6056.05,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-29",
+            "description": "Banking App Immediate Payment: Anco Simpson Fee",
+            "amount": 1.0,
+            "balance": 6055.05,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-29",
+            "description": "Eft Debit Order (2822716402): Loancirc (-LOANCIRCL0241)",
+            "amount": 1631.8,
+            "balance": 4423.25,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-29",
+            "description": "Eft Debit Order (2822716402): Loancirc (-LOANCIRCL0241) Fee",
+            "amount": 3.0,
+            "balance": 4420.25,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-29",
+            "description": "Banking App Prepaid Purchase: MTN",
+            "amount": 30.0,
+            "balance": 4390.25,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-29",
+            "description": "Banking App Prepaid Purchase: MTN Fee",
+            "amount": 0.5,
+            "balance": 4389.75,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-30",
+            "description": "Banking App Transfer to Main Account: Transfer",
+            "amount": 1500.0,
+            "balance": 2889.75,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-30",
+            "description": "Banking App Transfer to Main Account: Transfer",
+            "amount": 900.0,
+            "balance": 1989.75,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-30",
+            "description": "Banking App Transfer to Main Account: Transfer",
+            "amount": 600.0,
+            "balance": 1389.75,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-11-30",
+            "description": "Interest Received",
+            "amount": 0.76,
+            "balance": 1390.51,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2025-12-01",
+            "description": "Banking App Transfer to Main Account: Transfer",
+            "amount": 390.0,
+            "balance": 1000.51,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-01",
+            "description": "Banking App Transfer to Main Account: Transfer",
+            "amount": 500.0,
+            "balance": 500.51,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-02",
+            "description": "Banking App Transfer to Roetes: Transfer",
+            "amount": 75.0,
+            "balance": 425.51,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-03",
+            "description": "Banking App Prepaid Purchase: MTN",
+            "amount": 40.0,
+            "balance": 385.51,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-03",
+            "description": "Banking App Prepaid Purchase: MTN Fee",
+            "amount": 0.5,
+            "balance": 385.01,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-03",
+            "description": "Eft Debit Order Insufficient Funds Fee",
+            "amount": 6.0,
+            "balance": 379.01,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-03",
+            "description": "Banking App Transfer to Main Account: Transfer",
+            "amount": 379.01,
+            "balance": 0.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-15",
+            "description": "Payment Received: Dairy Corporation Transfer 2864032721",
+            "amount": 8451.0,
+            "balance": 8451.0,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2025-12-15",
+            "description": "Banking App External PayShap Payment: Sanet Minnie",
+            "amount": 1000.0,
+            "balance": 7451.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-15",
+            "description": "Banking App External PayShap Payment: Sanet Minnie Fee",
+            "amount": 6.0,
+            "balance": 7445.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-15",
+            "description": "Banking App Transfer to Main Account: Transfer",
+            "amount": 2000.0,
+            "balance": 5445.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-15",
+            "description": "Banking App Transfer to Main Account: Transfer",
+            "amount": 5000.0,
+            "balance": 445.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-19",
+            "description": "Banking App Transfer to Main Account: Transfer",
+            "amount": 445.0,
+            "balance": 0.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-30",
+            "description": "Payment Received: Dairy Corporation Transfer 2893417909",
+            "amount": 16322.18,
+            "balance": 16322.18,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2025-12-30",
+            "description": "DebiCheck Debit Order (2889471597): Npfinafbfn\n(DCPRD0001QB5SZ)",
+            "amount": 1028.38,
+            "balance": 15293.8,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-30",
+            "description": "DebiCheck Debit Order (2889471597): Npfinafbfn\n(DCPRD0001QB5SZ) Fee",
+            "amount": 3.0,
+            "balance": 15290.8,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-30",
+            "description": "Banking App Immediate Payment: P Fourie Huis",
+            "amount": 10000.0,
+            "balance": 5290.8,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-30",
+            "description": "Banking App Immediate Payment: P Fourie Huis Fee",
+            "amount": 1.0,
+            "balance": 5289.8,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-30",
+            "description": "Banking App Immediate Payment: Kv Shopane",
+            "amount": 640.0,
+            "balance": 4649.8,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-30",
+            "description": "Banking App Immediate Payment: Kv Shopane Fee",
+            "amount": 1.0,
+            "balance": 4648.8,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-31",
+            "description": "PayShap Payment Received: Ina",
+            "amount": 1200.0,
+            "balance": 5848.8,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2025-12-31",
+            "description": "Eft Debit Order (2889756735): Loancirc (-LOANCIRCL0241)",
+            "amount": 1631.8,
+            "balance": 4217.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-31",
+            "description": "Eft Debit Order (2889756735): Loancirc (-LOANCIRCL0241) Fee",
+            "amount": 3.0,
+            "balance": 4214.0,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-31",
+            "description": "Interest Received",
+            "amount": 0.63,
+            "balance": 4214.63,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-01-01",
+            "description": "Banking App Immediate Payment: Johanna L Visag",
+            "amount": 201.0,
+            "balance": 4013.63,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-01",
+            "description": "Banking App Immediate Payment: Johanna L Visag Fee",
+            "amount": 1.0,
+            "balance": 4012.63,
+            "transaction_type": "debit"
+        }
+    ]
+}

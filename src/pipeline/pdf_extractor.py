@@ -19,6 +19,32 @@ FNB_BLANK_DESCRIPTION_ROW_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
+CAPITEC_TEXT_ROW_DATE_PATTERN = re.compile(r"^\d{2}/\d{2}/\d{4}\b")
+CAPITEC_TEXT_AMOUNT_PATTERN = re.compile(r"-?\d[\d\s]*\.\d{2}\*?")
+CAPITEC_TRANSACTION_HEADER_PATTERN = re.compile(
+    r"(?:^|\n)Date\s+Description\s+Category\s+Money\s+In\s+Money\s+Out\s+Fee\*\s+Balance",
+    re.IGNORECASE,
+)
+CAPITEC_FOOTER_LINE_PATTERN = re.compile(
+    r"^(?:\*\s+Includes\s+VAT|24hr\s+Client\s+Care\s+Centre|Capitec\s+Bank\s+is\s+an\s+authorised|Unique\s+Document\s+No\.)",
+    re.IGNORECASE,
+)
+CAPITEC_INSUFFICIENT_FUNDS_PATTERN = re.compile(
+    r"^Eft\s+Debit\s+Order\s+Insufficient\s+Funds\b",
+    re.IGNORECASE,
+)
+CAPITEC_CATEGORIES = (
+    "Other Income",
+    "Digital Payments",
+    "Loan Payments",
+    "Uncategorised",
+    "Cellphone",
+    "Transfer",
+    "Interest",
+    "Internet",
+    "Fees",
+)
+
 AFRIKAANS_MONTH_ALIASES = {
     "januarie": "January",
     "jan": "Jan",
@@ -529,6 +555,12 @@ class PDFExtractorStage(Stage):
 
                 if total_lines > 0 and valid_amounts >= total_lines * 0.5:
                     page_method = "table"
+                    if profile.name == "Capitec":
+                        text = page.extract_text()
+                        if text:
+                            page_lines = self._supplement_capitec_text_lines(
+                                page_lines, text, profile
+                            )
                 else:
                     # Tables produced bad data — fall back to text extraction
                     text = page.extract_text()
@@ -724,6 +756,9 @@ class PDFExtractorStage(Stage):
                 # Check if this is a footer/noise row
                 if row[0] and str(row[0]).strip().startswith("*"):
                     return lines
+                if profile.name == "Capitec":
+                    lines.extend(self._parse_capitec_table_row(row, page_num, 1, profile))
+                    return lines
                 # Try to parse as a data row using the profile's default column map
                 line = self._parse_row(row, profile.default_column_map, page_num, 1, profile)
                 if line:
@@ -757,9 +792,92 @@ class PDFExtractorStage(Stage):
             ):
                 continue
 
+            if profile.name == "Capitec":
+                lines.extend(self._parse_capitec_table_row(row, page_num, row_idx, profile))
+                continue
+
             line = self._parse_row(row, col_map, page_num, row_idx, profile)
             if line:
                 lines.append(line)
+
+        return lines
+
+    def _parse_capitec_table_row(
+        self,
+        row: list,
+        page_num: int,
+        row_idx: int,
+        profile: BankProfile,
+    ) -> list[dict]:
+        """Parse one Capitec table row and split fee-bearing rows."""
+
+        def get_cell(index: int) -> str:
+            if index < len(row) and row[index]:
+                return str(row[index]).replace("\x00", "").strip()
+            return ""
+
+        date_str = get_cell(profile.default_column_map["date"])
+        description = get_cell(profile.default_column_map["description"])
+        if not description:
+            return []
+
+        parsed_date = self._parse_date_with_profile(date_str, profile) if date_str else None
+        if parsed_date is None:
+            return []
+
+        credit = profile.parse_amount(get_cell(profile.default_column_map["credit"]))
+        debit = profile.parse_amount(get_cell(profile.default_column_map["debit"]))
+        fee = profile.parse_amount(get_cell(profile.default_column_map["fee"]))
+        balance = profile.parse_amount(get_cell(profile.default_column_map["balance"]))
+
+        if credit is None and debit is None and fee is None:
+            logger.debug(f"Page {page_num}, row {row_idx}: no posted amount found, skipping")
+            return []
+
+        if credit is not None and abs(credit) > 0:
+            main_amount = abs(credit)
+            main_transaction_type = "credit"
+        elif debit is not None and abs(debit) > 0:
+            main_amount = abs(debit)
+            main_transaction_type = "debit"
+        else:
+            main_amount = None
+            main_transaction_type = None
+
+        lines = []
+        if main_amount is not None:
+            main_balance = balance
+            if fee is not None and abs(fee) > 0 and balance is not None:
+                fee_abs = abs(fee)
+                if fee < 0:
+                    main_balance = balance + fee_abs
+                else:
+                    main_balance = balance - fee_abs
+
+            lines.append({
+                "date": parsed_date,
+                "description": description,
+                "amount": main_amount,
+                "balance": main_balance,
+                "transaction_type": main_transaction_type,
+            })
+        elif fee is not None and abs(fee) > 0:
+            lines.append({
+                "date": parsed_date,
+                "description": description,
+                "amount": abs(fee),
+                "balance": balance,
+                "transaction_type": "debit" if fee < 0 else "credit",
+            })
+
+        if main_amount is not None and fee is not None and abs(fee) > 0:
+            lines.append({
+                "date": parsed_date,
+                "description": f"{description} Fee",
+                "amount": abs(fee),
+                "balance": balance,
+                "transaction_type": "debit" if fee < 0 else "credit",
+            })
 
         return lines
 
@@ -1022,6 +1140,9 @@ class PDFExtractorStage(Stage):
         self, text: str, page_num: int, profile: BankProfile
     ) -> list[dict]:
         """Fall back to line-by-line regex extraction from raw text."""
+        if profile.name == "Capitec":
+            return self._parse_capitec_text_page(text, profile)
+
         lines = []
         pattern = profile.compile_text_pattern()
         fee_pattern = (
@@ -1065,6 +1186,195 @@ class PDFExtractorStage(Stage):
                 lines.append(continuation)
 
         return lines
+
+    def _parse_capitec_text_page(
+        self, text: str, profile: BankProfile
+    ) -> list[dict]:
+        """Parse Capitec transaction-history text rows.
+
+        Text extraction is used as a supplement for rows pdfplumber tables miss.
+        It buffers wrapped lines until the next date and then parses the final
+        row into one or more posted transactions.
+        """
+        if not CAPITEC_TRANSACTION_HEADER_PATTERN.search(text):
+            return []
+
+        buffered_rows = []
+        current_row = []
+        in_history = False
+
+        for raw_line in text.splitlines():
+            stripped = " ".join(raw_line.split())
+            if not stripped:
+                continue
+
+            if stripped == "Transaction History":
+                in_history = True
+                continue
+
+            if CAPITEC_FOOTER_LINE_PATTERN.match(stripped):
+                break
+
+            if not in_history and stripped != "Date Description Category Money In Money Out Fee* Balance":
+                continue
+
+            if stripped == "Date Description Category Money In Money Out Fee* Balance":
+                in_history = True
+                continue
+
+            if CAPITEC_TEXT_ROW_DATE_PATTERN.match(stripped):
+                if current_row:
+                    buffered_rows.append(current_row)
+                current_row = [stripped]
+                continue
+
+            if current_row:
+                current_row.append(stripped)
+
+        if current_row:
+            buffered_rows.append(current_row)
+
+        parsed_lines = []
+        for row_parts in buffered_rows:
+            parsed_lines.extend(self._parse_capitec_text_row(row_parts, profile))
+
+        return parsed_lines
+
+    def _parse_capitec_text_row(
+        self, row_parts: list[str], profile: BankProfile
+    ) -> list[dict]:
+        """Parse one logical Capitec text row into posted transaction lines."""
+        row_text = " ".join(row_parts)
+        date_match = CAPITEC_TEXT_ROW_DATE_PATTERN.match(row_text)
+        if not date_match:
+            return []
+
+        amount_matches = list(CAPITEC_TEXT_AMOUNT_PATTERN.finditer(row_text))
+        date_str = date_match.group(0)
+        parsed_date = self._parse_date_with_profile(date_str, profile)
+        if parsed_date is None:
+            return []
+
+        if len(amount_matches) == 1:
+            body = row_text[date_match.end():].strip()
+            if CAPITEC_INSUFFICIENT_FUNDS_PATTERN.match(body):
+                return []
+            return []
+
+        if len(amount_matches) < 2:
+            return []
+
+        amount_count = 3 if len(amount_matches) >= 3 else 2
+        amount_slice = amount_matches[-amount_count:]
+        body = row_text[date_match.end():amount_slice[0].start()].strip()
+        trailing_text = row_text[amount_slice[-1].end():].strip()
+
+        if trailing_text == "Payments" and body.endswith(("Digital", "Loan")):
+            body = f"{body} Payments"
+            trailing_text = ""
+
+        category_match = self._match_capitec_category(body)
+        if not category_match:
+            return []
+
+        category, category_index = category_match
+        description = body[:category_index].strip()
+        if not description:
+            return []
+
+        if trailing_text.startswith("("):
+            description = f"{description}\n{trailing_text}"
+
+        numeric_tokens = [match.group(0).replace("*", "") for match in amount_slice]
+        amount_value = profile.parse_amount(numeric_tokens[0])
+        if amount_value is None:
+            return []
+
+        if amount_count == 2:
+            balance_value = profile.parse_amount(numeric_tokens[1])
+            return [{
+                "date": parsed_date,
+                "description": description,
+                "amount": abs(amount_value),
+                "balance": balance_value,
+                "transaction_type": "debit" if amount_value < 0 else "credit",
+            }]
+
+        fee_value = profile.parse_amount(numeric_tokens[1])
+        balance_value = profile.parse_amount(numeric_tokens[2])
+        if fee_value is None or balance_value is None:
+            return []
+
+        fee_abs = abs(fee_value)
+        if fee_value < 0:
+            main_balance = balance_value + fee_abs
+            fee_type = "debit"
+        else:
+            main_balance = balance_value - fee_abs
+            fee_type = "credit"
+
+        return [
+            {
+                "date": parsed_date,
+                "description": description,
+                "amount": abs(amount_value),
+                "balance": main_balance,
+                "transaction_type": "debit" if amount_value < 0 else "credit",
+            },
+            {
+                "date": parsed_date,
+                "description": f"{description} Fee",
+                "amount": fee_abs,
+                "balance": balance_value,
+                "transaction_type": fee_type,
+            },
+        ]
+
+    def _match_capitec_category(self, body: str) -> Optional[tuple[str, int]]:
+        """Return the last matching Capitec category token and its index."""
+        normalized = " ".join(body.split())
+        best_match = None
+        for category in CAPITEC_CATEGORIES:
+            index = normalized.rfind(category)
+            if index == -1:
+                continue
+            if best_match is None or index > best_match[1]:
+                best_match = (category, index)
+        return best_match
+
+    def _supplement_capitec_text_lines(
+        self, page_lines: list[dict], text: str, profile: BankProfile
+    ) -> list[dict]:
+        """Supplement Capitec table extraction with rows missing from tables."""
+        text_lines = self._parse_capitec_text_page(text, profile)
+        if not text_lines:
+            return page_lines
+
+        existing_keys = {
+            (
+                line.get("date"),
+                line.get("description"),
+                line.get("amount"),
+                line.get("transaction_type"),
+            )
+            for line in page_lines
+            if not line.get("_continuation")
+        }
+        supplemented = list(page_lines)
+
+        for line in text_lines:
+            key = (
+                line.get("date"),
+                line.get("description"),
+                line.get("amount"),
+                line.get("transaction_type"),
+            )
+            if key in existing_keys:
+                continue
+            supplemented.append(line)
+            existing_keys.add(key)
+
+        return supplemented
 
     def _parse_text_continuation_line(
         self, stripped: str, lines: list[dict], profile: BankProfile
