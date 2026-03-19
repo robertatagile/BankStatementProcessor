@@ -1,0 +1,18 @@
+flowchart TD
+    Unmatched[Unmatched transaction description]
+    AI[AI classifier evaluates description]
+    Decision{Confidence and proposal quality acceptable?}
+    Pending[Create pending RefinementProposal]
+    Review[Operator reviews proposal\nvia UI or API]
+    Approve{Approve or reject?}
+    Edit[Optional edit to pattern or category]
+    Rule[Create enabled ClassificationRule\nsource=ai]
+    JsonSync[Sync rule to classification_rules.json]
+    Reject[Mark proposal rejected]
+    Reprocess[Reprocess statement or wait for next matching job]
+
+    Unmatched --> AI --> Decision
+    Decision --> Pending
+    Pending --> Review --> Approve
+    Approve -->|Approve| Edit --> Rule --> JsonSync --> Reprocess
+    Approve -->|Reject| Reject

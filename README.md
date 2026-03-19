@@ -94,53 +94,152 @@ cd BankStatementProcessor
 pip install -r requirements.txt
 ```
 
+## Documentation and Diagrams
+
+Detailed runtime documentation lives in `docs/`.
+
+| File | Purpose |
+|---|---|
+| `docs/README.md` | Documentation index |
+| `docs/architecture.mmd` | Runtime architecture and integration diagram |
+| `docs/job-lifecycle.mmd` | Upload, queue, processing, and polling lifecycle |
+| `docs/refinement-workflow.mmd` | AI proposal review and rule activation flow |
+| `docs/INTEGRATION_TESTING.md` | Automated and real-statement validation guide |
+
 ## Usage
 
-### Process all PDFs in a directory
+The repository supports three operating modes:
+
+1. **CLI batch processing** through `main.py`
+2. **FastAPI service** for asynchronous upload and polling
+3. **Browser operations console** served by nginx on port `3000`
+
+### CLI: process all PDFs in a directory
 
 ```bash
 export ANTHROPIC_API_KEY=your-api-key-here
 python3 main.py --pdf-dir data/
 ```
 
-Successfully processed PDFs are moved to `input/processed/`, failed ones to `input/failed/`.
+The CLI creates `processed/` and `failed/` folders inside the input directory and moves files after each run.
 
-### Process a single PDF
+### CLI: process a single PDF
 
 ```bash
 python3 main.py --pdf-file path/to/statement.pdf
 ```
 
-### Specify a bank profile
+### CLI: force a bank profile
 
 ```bash
 python3 main.py --pdf-file statement.pdf --bank absa
 ```
 
-Available profiles: `absa`, `fnb`, `nedbank`, `standard_bank`, `capitec`. If `--bank` is not specified, the bank is auto-detected from the PDF content.
+If `--bank` is omitted, the extractor auto-detects the most likely profile from the PDF content.
 
-### Skip AI classification (regex only)
+### CLI: skip AI classification
 
 ```bash
 python3 main.py --pdf-dir data/ --dry-run
 ```
 
-### All CLI options
+### CLI: disable OCR fallback
 
+```bash
+python3 main.py --pdf-file scanned.pdf --no-ocr
 ```
-usage: main.py [-h] [--pdf-dir PDF_DIR] [--pdf-file PDF_FILE]
-               [--db-path DB_PATH] [--rules-path RULES_PATH]
-               [--dry-run] [--bank BANK]
 
-options:
-  --pdf-dir PDF_DIR       Directory containing PDF bank statements (default: data)
-  --pdf-file PDF_FILE     Process a single PDF file instead of a directory
-  --db-path DB_PATH       Path to the SQLite database file (default: data/statements.db)
-  --rules-path RULES_PATH Path to the classification rules JSON file
-                          (default: config/classification_rules.json)
-  --dry-run               Skip the AI classification stage
-  --bank BANK             Bank profile to use for PDF parsing (default: auto-detect)
+### CLI options
+
+| Option | Description |
+|---|---|
+| `--pdf-dir` | Directory containing PDF bank statements |
+| `--pdf-file` | Process a single PDF file instead of a directory |
+| `--db-path` | SQLite database path. Default: `data/statements.db` |
+| `--rules-path` | Classification rules JSON path. Default: `config/classification_rules.json` |
+| `--dry-run` | Skip the AI classification stage |
+| `--bank` | Force a specific bank profile instead of auto-detecting |
+| `--no-ocr` | Disable OCR fallback for scanned PDFs |
+
+## Service Integration
+
+The FastAPI backend in this repository is the bank statement extraction service consumed by the Document Processor workspace.
+
+The active integration contract is:
+
+- `POST /api/upload` uploads the original bank statement PDF as multipart form data and returns a `job_id`
+- `GET /api/jobs/{job_id}/status` provides lightweight polling while the pipeline runs asynchronously
+- `GET /api/jobs/{job_id}` returns the completed statement and transaction payload once processing finishes
+
+In this workspace, the recommended host endpoint is `http://localhost:8001`.
+
+- When Document Processor runs on the host machine, configure `BankStatementProcessor:BaseUrl` as `http://localhost:8001`
+- When Document Processor runs in Docker, configure `BankStatementProcessor__BaseUrl` as `http://host.docker.internal:8001`
+
+The backend container listens on port `8000` internally. Docker publishes it on host port `8001`.
+
+## API Reference
+
+### Core processing endpoints
+
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/api/health` | Liveness check. Returns `{ "status": "ok" }` |
+| `POST` | `/api/upload` | Upload a PDF and enqueue a background job. Optional multipart field: `bank` |
+| `GET` | `/api/jobs/{job_id}` | Full job detail plus extracted statement lines when complete |
+| `GET` | `/api/jobs/{job_id}/status` | Lightweight status poll with stage and error fields |
+| `GET` | `/api/jobs/{job_id}/pdf` | Stream the original uploaded PDF |
+| `GET` | `/api/history` | List jobs with optional `status`, `bank`, and `search` filters |
+| `GET` | `/api/banks` | List all registered bank profile keys |
+| `POST` | `/api/jobs/{job_id}/reprocess` | Re-enqueue processing for the original stored PDF |
+| `POST` | `/api/jobs/{job_id}/open-file` | Open the file location in the host operating system's file explorer |
+
+### Rule management endpoints
+
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/api/rules` | List rules with optional `category`, `source`, and `enabled_only` filters |
+| `POST` | `/api/rules` | Create a manual rule. Request body: `pattern`, `category`, optional `priority`, optional `description` |
+| `PUT` | `/api/rules/{rule_id}` | Update a rule's pattern, category, priority, enabled flag, or description |
+| `DELETE` | `/api/rules/{rule_id}` | Delete a rule and sync the JSON config |
+
+### Refinement and dashboard endpoints
+
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/api/refinements` | List AI-generated rule proposals. Optional `status` filter |
+| `POST` | `/api/refinements/{proposal_id}/review` | Approve or reject a pending proposal. Request body: `action`, optional `note`, optional edited `pattern`, optional edited `category` |
+| `GET` | `/api/dashboard/stats` | Return aggregate counts for jobs, lines, rules, and pending refinements |
+
+## Operations Console
+
+The static frontend in `frontend/` runs on host port `3000` and talks to the FastAPI backend.
+
+The UI currently exposes:
+
+- **Dashboard**: job counts, classification totals, and recent activity
+- **Jobs**: search, filter, inspect job details, stream the original PDF, and reprocess jobs
+- **Rules**: create, edit, disable, and remove classification rules
+- **Refinements**: review AI-proposed regex patterns before they become active rules
+- **Training & Setup**: embedded operator guidance for improving coverage over time
+
+### Run with Docker Compose
+
+```bash
+docker compose up --build
 ```
+
+Open `http://localhost:3000` for the UI and `http://localhost:8001/api/health` for the backend health endpoint.
+
+### Run without Docker
+
+Start the backend:
+
+```bash
+uvicorn src.api.server:app --reload --port 8001
+```
+
+Then serve `frontend/index.html` with any static web server, or open it directly if you keep the default same-origin API setup.
 
 ## Project Structure
 
@@ -209,12 +308,16 @@ The PDF extractor uses a **profile system** to handle the formatting differences
 | Bank | Profile key | Currency | Thousands separator | Key features |
 |---|---|---|---|---|
 | **ABSA** | `absa` | R (ZAR) | Space | "Cheque Account" label, period as "01 January 2024 to 31 January 2024", branch code |
+| **ABSA Afrikaans** | `absa_afrikaans` | R (ZAR) | Space | Afrikaans headers, comma-decimal balances, `Kt`/`Dt`, text-only extraction |
 | **FNB** | `fnb` | R (ZAR) | Space | Merged-cell table parsing, `DDMon` dates (no space), `Cr`/`Dr` suffixes, personal info extraction, "First National Bank" detection |
 | **Nedbank** | `nedbank` | R (ZAR) | Space | "Account No" label, Greenbacks awareness, "Nedbank Ltd" detection |
 | **Standard Bank** | `standard_bank` | R (ZAR) | Space | "Statement Period" label, "SBSA" detection |
 | **Capitec** | `capitec` | R (ZAR) | Space | Single "Amount" column (not separate debit/credit), "Global One" branding, "Branch" without "Code" |
 | **African Bank** | `african_bank` | R (ZAR) | Space | `YYYY/MM/DD` dates, negative amounts for debits, "Bank Charges" column, "Statement for:" personal info block, "MyWORLD Account" detection |
-| **ABSA Afrikaans** | `absa_afrikaans` | R (ZAR) | Space | Full Afrikaans terminology ("Tjekrekeningstaat", "Debietbedrag"), comma-decimal in headers, "tot" period separator, `Kt`/`Dt` credit/debit indicators, text-only extraction (no tables), Afrikaans month translation |
+| **TymeBank** | `tymebank` | R (ZAR) | Space | TymeBank statement naming, local card purchase patterns, digital-wallet-oriented transaction text |
+| **Discovery Bank** | `discovery_bank` | R (ZAR) | Space | Discovery branding, card-focused descriptions, modern app-driven statement layouts |
+| **Investec** | `investec` | R (ZAR) | Space | Private banking statement formatting and high-balance account layouts |
+| **Old Mutual** | `old_mutual` | R (ZAR) | Space | Old Mutual transaction wording and statement branding |
 
 All South African profiles handle:
 - **Rand amounts**: `R 1 234.56` (space thousands separator) and `R1,234.56` (comma fallback)
@@ -349,37 +452,6 @@ Edit `config/classification_rules.json` to add your own regex patterns:
 - **priority**: Lower numbers are checked first. If a transaction matches multiple rules, the lowest priority number wins.
 - **source**: Use `"manual"` for hand-written rules. AI-generated rules use `"ai"`.
 
-## Web UI
-
-The project includes a browser-based interface for uploading and viewing processed bank statements. The UI runs as two services: a **FastAPI backend** that wraps the existing pipeline and a **static frontend** served by nginx.
-
-### Running with Docker Compose (recommended)
-
-```bash
-# Optional — set the API key for AI classification
-export ANTHROPIC_API_KEY=your-api-key-here
-
-docker compose up --build
-```
-
-Open **http://localhost:3000** in your browser.
-
-- **Upload** a PDF bank statement (optionally select a bank profile).
-- The UI polls the backend until processing is complete.
-- The **left pane** shows the original PDF; the **right pane** shows extracted statement metadata and a classified transaction table.
-- The **sidebar** lists all previous uploads (history). Click any entry to view it again.
-
-### Running without Docker
-
-Start the backend:
-
-```bash
-pip install -r requirements.txt
-uvicorn src.api.server:app --reload --port 8000
-```
-
-Then serve the frontend however you like (e.g. open `frontend/index.html` directly, or use any static file server on port 3000). When opening the HTML file directly from disk, API calls go to the same origin by default. To point at a different backend, set `window.__API_BASE__` before the script runs, or use the nginx setup from `frontend/nginx.conf`.
-
 ### Persistent data
 
 Docker Compose mounts these directories so data survives container restarts:
@@ -391,21 +463,49 @@ Docker Compose mounts these directories so data survives container restarts:
 | `./logs/` | `/app/logs/` | Pipeline log files |
 | `./config/` | `/app/config/` | Classification rules (manual + AI-generated) |
 
-### API endpoints
-
-| Method | Path | Description |
-|---|---|---|
-| `GET` | `/api/health` | Readiness check |
-| `POST` | `/api/upload` | Upload a PDF (multipart, optional `bank` field) |
-| `GET` | `/api/jobs/{job_id}` | Full job detail including extracted data |
-| `GET` | `/api/jobs/{job_id}/status` | Lightweight status poll |
-| `GET` | `/api/jobs/{job_id}/pdf` | Stream the original uploaded PDF |
-| `GET` | `/api/history` | List all jobs (newest first) |
-| `GET` | `/api/banks` | Available bank profile keys |
-
 ### AI classification
 
-If `ANTHROPIC_API_KEY` is set (passed via the `environment` section in `docker-compose.yml`), unmatched transactions are sent to Claude for classification and new regex rules are saved automatically. If the key is not set, the AI stage is skipped and only regex classification is used.
+If `ANTHROPIC_API_KEY` is set, unmatched transactions are sent to Claude for classification. The service uses two persistence paths for learning:
+
+- high-confidence matches can be written back into the rule set
+- lower-trust suggestions can be queued as `RefinementProposal` records for manual approval through the UI or API
+
+If the key is not set, the AI stage is skipped and only regex classification is used.
+
+## Classification Categories
+
+The active rule set is not limited to the original 14 seed categories. The repository currently uses a broader category set that includes manual and AI-generated coverage such as:
+
+- `Groceries`
+- `Utilities`
+- `Rent/Mortgage`
+- `Salary`
+- `Transfer`
+- `Subscriptions`
+- `Transport`
+- `Dining`
+- `Entertainment`
+- `Healthcare`
+- `Insurance`
+- `Cash Withdrawal`
+- `Clothing/Apparel`
+- `Electronics/Home`
+- `Shopping`
+- `Education`
+- `Charity`
+- `Fees`
+- `Other`
+
+Because rules can be created, approved, disabled, and deleted at runtime, treat `config/classification_rules.json` and `GET /api/rules` as the source of truth for the currently active catalogue.
+
+## Environment Variables
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | unset | Enables Stage 4 AI classification |
+| `DB_PATH` | `data/statements.db` | SQLite database path |
+| `RULES_PATH` | `config/classification_rules.json` | Rule config path |
+| `UPLOAD_DIR` | `uploads` | Directory for uploaded PDFs |
 
 ## Logging
 
@@ -414,14 +514,18 @@ Logs are written to both the console (INFO level) and `logs/pipeline.log` (DEBUG
 ## Running Tests
 
 ```bash
-# All 132 unit + integration tests
+# Python unit and integration tests
 python3 -m pytest tests/ -v
 
 # Integration tests only
 python3 -m pytest tests/test_integration.py -v
+
+# Browser UI smoke tests
+npm install
+npx playwright test
 ```
 
-All tests use temporary databases and mock external dependencies (Anthropic API), so no API key or network access is needed to run the test suite.
+The Python test suite uses temporary databases and mocked external dependencies, so no API key or network access is needed for normal test execution. UI smoke tests use Playwright and default to `http://127.0.0.1:3000`.
 
 For testing with real bank statement PDFs, see [docs/INTEGRATION_TESTING.md](docs/INTEGRATION_TESTING.md).
 

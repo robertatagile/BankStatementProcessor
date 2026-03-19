@@ -1,0 +1,38 @@
+sequenceDiagram
+    autonumber
+    participant Client as Client or Document Processor
+    participant API as FastAPI API
+    participant DB as SQLite
+    participant Worker as Background Worker
+    participant Pipeline as Pipeline Stages
+
+    Client->>API: POST /api/upload (PDF, optional bank)
+    API->>API: Validate PDF signature and file extension
+    API->>API: Persist original PDF to uploads/
+    API->>DB: Insert ProcessingJob(status=queued)
+    API-->>Client: 202-style response with job_id
+
+    API->>Worker: Submit background task
+    Worker->>DB: Update job to processing/extractor
+    Worker->>Pipeline: Extractor
+    Worker->>DB: Update stage to cleanser
+    Worker->>Pipeline: Data cleanser
+    Worker->>DB: Update stage to regex_classifier
+    Worker->>Pipeline: Regex classifier
+
+    alt Unclassified lines and ANTHROPIC_API_KEY present
+        Worker->>DB: Update stage to ai_classifier
+        Worker->>Pipeline: AI classifier
+    end
+
+    alt Pipeline succeeds
+        Worker->>DB: Update job status to completed and link statement_id
+        Client->>API: GET /api/jobs/{job_id}/status
+        API-->>Client: completed
+        Client->>API: GET /api/jobs/{job_id}
+        API-->>Client: Statement metadata and classified lines
+    else Pipeline fails
+        Worker->>DB: Update job status to failed with error_message
+        Client->>API: GET /api/jobs/{job_id}/status
+        API-->>Client: failed + error details
+    end

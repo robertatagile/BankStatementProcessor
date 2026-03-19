@@ -1,0 +1,36 @@
+flowchart LR
+    User[Operator or Integrating Service]
+    Frontend[Operations Console\nfrontend/index.html]
+    API[FastAPI Backend\nsrc/api/server.py]
+    Queue[Single-worker Job Executor\nThreadPoolExecutor max_workers=1]
+    Extractor[PDF Extractor Stage]
+    Cleanser[Data Cleanser Stage]
+    Regex[Regex Classifier Stage]
+    AI[AI Classifier Stage]
+    DB[(SQLite\nstatements.db)]
+    Rules[(classification_rules.json)]
+    Uploads[(uploads/)]
+    Refinements[(RefinementProposal table)]
+    Logs[(logs/pipeline.log)]
+    DocProcessor[Document Processor\nconsumer of BSP REST API]
+
+    User --> Frontend
+    User --> API
+    Frontend --> API
+    DocProcessor -->|POST /api/upload| API
+    DocProcessor -->|GET /api/jobs/{id}/status| API
+    DocProcessor -->|GET /api/jobs/{id}| API
+
+    API --> Uploads
+    API --> DB
+    API --> Queue
+    Queue --> Extractor --> Cleanser --> Regex
+    Regex --> DB
+    Regex --> Rules
+    Regex -->|unclassified lines| AI
+    AI --> DB
+    AI --> Rules
+    AI --> Refinements
+    API --> Logs
+    Queue --> Logs
+    Frontend -->|rules, refinements, dashboard| API

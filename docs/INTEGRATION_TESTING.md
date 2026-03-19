@@ -136,6 +136,13 @@ python3 main.py \
 
 These tests use programmatically generated PDFs (via `fpdf2`) and run entirely inside pytest with `tmp_path` fixtures. No real bank statements or API keys are needed.
 
+The broader automated test surface in this repository also includes:
+
+- API tests in `tests/test_api_server.py`
+- bank profile coverage in `tests/test_bank_profiles.py`
+- extractor, cleanser, regex, AI, and pipeline unit tests in the remaining `tests/*.py` modules
+- Playwright UI smoke tests in `tests/ui/`
+
 ### File Management Flow
 
 The `process_files()` function in `main.py` handles post-processing file management:
@@ -194,7 +201,7 @@ All fixtures are generated programmatically — no sample PDFs are committed.
 ### Running the Tests
 
 ```bash
-# All 132 tests (unit + integration)
+# All Python tests
 python3 -m pytest tests/ -v
 
 # Integration tests only
@@ -205,6 +212,10 @@ python3 -m pytest tests/test_integration.py::TestFileManagement -v
 
 # Single test
 python3 -m pytest tests/test_integration.py::TestFileManagement::test_mixed_valid_and_invalid -v
+
+# UI smoke tests (frontend running on http://127.0.0.1:3000)
+npm install
+npx playwright test
 ```
 
 ---
@@ -229,9 +240,14 @@ python3 main.py --pdf-dir teststatement/input --db-path teststatement/tmp/test.d
 | **FNB** | "FNB", "First National Bank", "FirstRand" | Merged-cell tables, `DDMon` dates, `Cr`/`Dr` suffixes, `*COMPANY` personal info |
 | **African Bank** | "African Bank", "MyWORLD" | `YYYY/MM/DD` dates, negative amounts for debits, Bank Charges column, "Statement for:" address block |
 | **ABSA** | "ABSA", "ABSA Bank" | "Cheque Account" label, period as "01 January 2024 to 31 January 2024" |
+| **ABSA Afrikaans** | "ABSA", "Tjekrekeningstaat", Afrikaans field labels | Afrikaans statement text, comma-decimal balances, `Kt`/`Dt` indicators |
 | **Nedbank** | "Nedbank", "Nedbank Ltd" | "Account No" label, Greenbacks awareness |
 | **Standard Bank** | "Standard Bank", "SBSA" | "Statement Period" label |
 | **Capitec** | "Capitec", "Global One" | Single Amount column, "Branch" without "Code" |
+| **TymeBank** | "TymeBank", TymeBank statement branding | Digital-first card/payment phrasing |
+| **Discovery Bank** | "Discovery", Discovery Bank branding | Card-centric transaction descriptions |
+| **Investec** | "Investec" | Private banking statement formatting |
+| **Old Mutual** | "Old Mutual" | Old Mutual branding and statement wording |
 
 The pipeline will:
 1. Auto-detect the bank from PDF content (or use `--bank` flag)
@@ -254,12 +270,30 @@ sqlite3 teststatement/tmp/test.db "SELECT count(*) as lines, sum(case when categ
 ## Full Validation (both approaches)
 
 ```bash
-# 1. Unit + automated integration tests (148 tests)
+# 1. Unit + automated integration tests
 python3 -m pytest tests/ -v
 
 # 2. Real PDF test (manually inspect DB results)
 python3 main.py --pdf-dir teststatement/input --db-path teststatement/tmp/test.db --dry-run
 ```
+
+## Document Processor Contract Check
+
+When validating the .NET Document Processor integration against this service, use the same host port described in `docker-compose.yml` and the README service section.
+
+Expected host endpoints:
+
+- `http://localhost:8001/api/upload`
+- `http://localhost:8001/api/jobs/{job_id}/status`
+- `http://localhost:8001/api/jobs/{job_id}`
+
+Quick manual validation flow:
+
+1. Start the Bank Statement Processor backend on host port `8001`
+2. Submit a PDF through the FastAPI upload endpoint or through Document Processor
+3. Confirm the upload response returns a `job_id`
+4. Poll the status endpoint until it reports `completed`
+5. Fetch the job detail and verify the `result.lines` payload contains the extracted transaction rows expected by Document Processor
 
 ## Troubleshooting
 
