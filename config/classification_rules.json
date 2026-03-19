@@ -173,6 +173,186 @@
       "category": "Transfer",
       "priority": 31,
       "source": "manual"
+    },
+    {
+      "pattern": "(?i)oms\\s+kaartvervang\\s+fooi",
+      "category": "Other",
+      "priority": 32,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)smart-ap\\s+corpiasing\\s+na\\s+don",
+      "category": "Transfer",
+      "priority": 33,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)ismart-ap\\s+corplasing\\s+na",
+      "category": "Transfer",
+      "priority": 34,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)kaartvervang\\s+fool.*replacement\\s+card\\s+fee",
+      "category": "Other",
+      "priority": 35,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)smart-ap\\s+corplasing\\s+na\\s+anthony",
+      "category": "Transfer",
+      "priority": 36,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)smart-ap\\s+betaling\\s+na.*swanepoel",
+      "category": "Transfer",
+      "priority": 37,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)dispuut\\s+trans\\s+kr\\s+wysiging",
+      "category": "Other",
+      "priority": 38,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)smart-ap\\s+corplasing\\s+na\\s+don",
+      "category": "Transfer",
+      "priority": 39,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)debiet\\s+order\\s+krediet\\s+a\\s+sars",
+      "category": "Other",
+      "priority": 40,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)smart-ap\\s+betaling\\s+na\\s+sap.*swanepoel",
+      "category": "Transfer",
+      "priority": 41,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)pos\\s+aankepe\\s+afgri",
+      "category": "Shopping",
+      "priority": 42,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)service\\s+charges",
+      "category": "Other",
+      "priority": 43,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)fusion\\s+interest\\s+rebate",
+      "category": "Other",
+      "priority": 44,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)pos\\s+aankepe\\s+superspar",
+      "category": "Groceries",
+      "priority": 45,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)maandlike\\s+o/d\\s+fooi",
+      "category": "Other",
+      "priority": 46,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)maandelike\\s*diens\\s*fooi",
+      "category": "Other",
+      "priority": 47,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)tcegevoegdewaard\\s*fooi",
+      "category": "Other",
+      "priority": 48,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)smart-ap\\s*betaling\\s*na\\s*diana\\s*swanepoel",
+      "category": "Transfer",
+      "priority": 49,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)smart-ap\\s*betaling\\s*na\\s*donnie\\s*leser",
+      "category": "Transfer",
+      "priority": 50,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)debicheck\\s*internal.*wesbank",
+      "category": "Other",
+      "priority": 51,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)interne\\s*debiet\\s*order\\s*fnbrviloan",
+      "category": "Other",
+      "priority": 52,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)interne\\s*debiet\\s*order\\s*fnb\\s*h\\s*loan",
+      "category": "Other",
+      "priority": 53,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)magband\\s*debiet\\s*solidarity",
+      "category": "Insurance",
+      "priority": 54,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)magband\\s*debiet\\s*vacationmg",
+      "category": "Other",
+      "priority": 55,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)kaart\\s*vervang\\s*fooi",
+      "category": "Other",
+      "priority": 56,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)smart-ap\\s*corplasing\\s*na\\s*skoolfonds",
+      "category": "Education",
+      "priority": 57,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)smart-ap\\s*betaling\\s*na\\s*sap\\s*donnie.*swanepoel",
+      "category": "Transfer",
+      "priority": 58,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)smart-ap\\s*betaling\\s*na\\s*sap\\s*donnie\\s*swanepoel",
+      "category": "Transfer",
+      "priority": 59,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)maandlike\\s*o/d\\s*fooi",
+      "category": "Other",
+      "priority": 60,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)toegevoegdewaard\\s*fooi",
+      "category": "Other",
+      "priority": 61,
+      "source": "ai"
     }
   ]
 }

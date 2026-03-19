@@ -1,8 +1,11 @@
 FROM python:3.11-slim
 
-# System deps required by pdfplumber (poppler) and general build tools
+# System deps required by pdfplumber (poppler), Tesseract OCR, and general build tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpoppler-cpp-dev \
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    tesseract-ocr-afr \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
