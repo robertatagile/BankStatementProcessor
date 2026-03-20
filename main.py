@@ -11,6 +11,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import List
 
+from src.categories import DEFAULT_CATEGORIES
 from src.models.database import init_db
 from src.pipeline.ai_classifier import AIClassifierStage
 from src.pipeline.data_cleanser import DataCleanserStage
@@ -21,26 +22,6 @@ from src.profiles import BankProfileFactory
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
-
-DEFAULT_CATEGORIES = [
-    "Groceries",
-    "Utilities",
-    "Rent/Mortgage",
-    "Salary",
-    "Transfer",
-    "Subscriptions",
-    "Transport",
-    "Dining",
-    "Entertainment",
-    "Healthcare",
-    "Insurance",
-    "Cash Withdrawal",
-    "Clothing/Apparel",
-    "Electronics/Home",
-    "Education",
-    "Charity",
-    "Other",
-]
 
 
 def build_pipeline(

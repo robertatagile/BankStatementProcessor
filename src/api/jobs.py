@@ -9,6 +9,7 @@ from datetime import datetime
 
 from sqlalchemy.orm import sessionmaker
 
+from src.categories import DEFAULT_CATEGORIES
 from src.models.database import ProcessingJob, Statement, StatementLine
 from src.pipeline.ai_classifier import AIClassifierStage
 from src.pipeline.data_cleanser import DataCleanserStage
@@ -19,12 +20,6 @@ from src.profiles import BankProfileFactory
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
-
-DEFAULT_CATEGORIES = [
-    "Groceries", "Utilities", "Rent/Mortgage", "Salary", "Transfer",
-    "Subscriptions", "Transport", "Dining", "Entertainment", "Healthcare",
-    "Insurance", "Cash Withdrawal", "Shopping", "Education", "Charity", "Other",
-]
 
 # Single‑thread pool so uploads are processed sequentially (safe for SQLite).
 _executor = ThreadPoolExecutor(max_workers=1)
