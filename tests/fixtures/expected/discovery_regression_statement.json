@@ -1,0 +1,680 @@
+{
+  "line_count": 75,
+  "lines": [
+    {
+      "date": "2025-10-30",
+      "description": "Inter account transfer from account...6317 Savings",
+      "amount": 150.0,
+      "balance": 89.46,
+      "transaction_type": "credit",
+      "category": "Transfer",
+      "confidence": null
+    },
+    {
+      "date": "2025-10-31",
+      "description": "CELL C 0036551633 I0469351",
+      "amount": 215.0,
+      "balance": -125.54,
+      "transaction_type": "debit",
+      "category": "Utilities",
+      "confidence": null
+    },
+    {
+      "date": "2025-10-31",
+      "description": "Debit Order fee",
+      "amount": 3.75,
+      "balance": -129.29,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-10-31",
+      "description": "Insufficient Funds",
+      "amount": 215.0,
+      "balance": 85.71,
+      "transaction_type": "credit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-10-31",
+      "description": "Returned debit order fee",
+      "amount": 100.0,
+      "balance": -14.29,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-11-04",
+      "description": "CELL C 0036743105 I0469351",
+      "amount": 215.0,
+      "balance": -229.29,
+      "transaction_type": "debit",
+      "category": "Utilities",
+      "confidence": null
+    },
+    {
+      "date": "2025-11-04",
+      "description": "Debit Order fee",
+      "amount": 3.75,
+      "balance": -233.04,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-11-04",
+      "description": "Insufficient Funds",
+      "amount": 215.0,
+      "balance": -18.04,
+      "transaction_type": "credit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-11-04",
+      "description": "Returned debit order fee",
+      "amount": 100.0,
+      "balance": -118.04,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-11-10",
+      "description": "EFS SALARIES",
+      "amount": 12841.42,
+      "balance": 12723.38,
+      "transaction_type": "credit",
+      "category": "Salary",
+      "confidence": null
+    },
+    {
+      "date": "2025-11-10",
+      "description": "Inter account transfer to account...6317 Savings",
+      "amount": 12350.0,
+      "balance": 373.38,
+      "transaction_type": "debit",
+      "category": "Transfer",
+      "confidence": null
+    },
+    {
+      "date": "2025-11-15",
+      "description": "CELL C 0036862238 I0469351",
+      "amount": 215.0,
+      "balance": 158.38,
+      "transaction_type": "debit",
+      "category": "Utilities",
+      "confidence": null
+    },
+    {
+      "date": "2025-11-15",
+      "description": "Debit Order fee",
+      "amount": 3.75,
+      "balance": 154.63,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-11-25",
+      "description": "EFS SALARY",
+      "amount": 8162.3,
+      "balance": 8316.93,
+      "transaction_type": "credit",
+      "category": "Salary",
+      "confidence": null
+    },
+    {
+      "date": "2025-11-25",
+      "description": "PayShap Salary EFW",
+      "amount": 8000.0,
+      "balance": 316.93,
+      "transaction_type": "debit",
+      "category": "Salary",
+      "confidence": null
+    },
+    {
+      "date": "2025-11-25",
+      "description": "PayShap payment fee",
+      "amount": 35.0,
+      "balance": 281.93,
+      "transaction_type": "debit",
+      "category": "Transfer",
+      "confidence": null
+    },
+    {
+      "date": "2025-11-27",
+      "description": "Interest Earned at 0.10%",
+      "amount": 0.01,
+      "balance": 281.94,
+      "transaction_type": "credit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-11-27",
+      "description": "Monthly Account fee",
+      "amount": 90.0,
+      "balance": 191.94,
+      "transaction_type": "debit",
+      "category": "Fees",
+      "confidence": null
+    },
+    {
+      "date": "2025-11-27",
+      "description": "Excess Interest charged at 21.00%",
+      "amount": 0.57,
+      "balance": 191.37,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-11-27",
+      "description": "Vitality Money Premium",
+      "amount": 45.0,
+      "balance": 146.37,
+      "transaction_type": "debit",
+      "category": "Insurance",
+      "confidence": null
+    },
+    {
+      "date": "2025-11-29",
+      "description": "CELL C 0037245716 I0469351",
+      "amount": 285.0,
+      "balance": -138.63,
+      "transaction_type": "debit",
+      "category": "Utilities",
+      "confidence": null
+    },
+    {
+      "date": "2025-11-29",
+      "description": "Debit Order fee",
+      "amount": 3.75,
+      "balance": -142.38,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-11-29",
+      "description": "Insufficient Funds",
+      "amount": 285.0,
+      "balance": 142.62,
+      "transaction_type": "credit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-11-29",
+      "description": "Returned debit order fee",
+      "amount": 100.0,
+      "balance": 42.62,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-04",
+      "description": "CELL C 0037417815 I0469351",
+      "amount": 285.0,
+      "balance": -242.38,
+      "transaction_type": "debit",
+      "category": "Utilities",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-04",
+      "description": "Debit Order fee",
+      "amount": 3.75,
+      "balance": -246.13,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-04",
+      "description": "Insufficient Funds",
+      "amount": 285.0,
+      "balance": 38.87,
+      "transaction_type": "credit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-04",
+      "description": "Returned debit order fee",
+      "amount": 100.0,
+      "balance": -61.13,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-10",
+      "description": "Inter account transfer from account...6317 CM",
+      "amount": 100.0,
+      "balance": 38.87,
+      "transaction_type": "credit",
+      "category": "Transfer",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-13",
+      "description": "CELL C 0037568679 I0469351",
+      "amount": 285.0,
+      "balance": -246.13,
+      "transaction_type": "debit",
+      "category": "Utilities",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-13",
+      "description": "Debit Order fee",
+      "amount": 3.75,
+      "balance": -249.88,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-13",
+      "description": "Insufficient Funds",
+      "amount": 285.0,
+      "balance": 35.12,
+      "transaction_type": "credit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-13",
+      "description": "Returned debit order fee",
+      "amount": 100.0,
+      "balance": -64.88,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-20",
+      "description": "CELL C 0037632855 I0469351",
+      "amount": 285.0,
+      "balance": -349.88,
+      "transaction_type": "debit",
+      "category": "Utilities",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-20",
+      "description": "Debit Order fee",
+      "amount": 3.75,
+      "balance": -353.63,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-20",
+      "description": "Insufficient Funds",
+      "amount": 285.0,
+      "balance": -68.63,
+      "transaction_type": "credit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-20",
+      "description": "Returned debit order fee",
+      "amount": 100.0,
+      "balance": -168.63,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-23",
+      "description": "Real-time payment CHARNE MEYER",
+      "amount": 29000.0,
+      "balance": 28831.37,
+      "transaction_type": "credit",
+      "category": "Transfer",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-23",
+      "description": "PayShap Salaries",
+      "amount": 28800.0,
+      "balance": 31.37,
+      "transaction_type": "debit",
+      "category": "Transfer",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-23",
+      "description": "PayShap payment fee",
+      "amount": 35.0,
+      "balance": -3.63,
+      "transaction_type": "debit",
+      "category": "Transfer",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-24",
+      "description": "CELL C 0037824464 I0469351",
+      "amount": 285.0,
+      "balance": -288.63,
+      "transaction_type": "debit",
+      "category": "Utilities",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-24",
+      "description": "Debit Order fee",
+      "amount": 3.75,
+      "balance": -292.38,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-24",
+      "description": "Insufficient Funds",
+      "amount": 285.0,
+      "balance": -7.38,
+      "transaction_type": "credit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-24",
+      "description": "Returned debit order fee",
+      "amount": 100.0,
+      "balance": -107.38,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-27",
+      "description": "Monthly Account fee",
+      "amount": 90.0,
+      "balance": -197.38,
+      "transaction_type": "debit",
+      "category": "Fees",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-27",
+      "description": "Excess Interest charged at 20.75%",
+      "amount": 0.87,
+      "balance": -198.25,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-27",
+      "description": "Vitality Money Premium",
+      "amount": 45.0,
+      "balance": -243.25,
+      "transaction_type": "debit",
+      "category": "Insurance",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-31",
+      "description": "CELL C 0037959556 I0469351",
+      "amount": 584.0,
+      "balance": -827.25,
+      "transaction_type": "debit",
+      "category": "Utilities",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-31",
+      "description": "Debit Order fee",
+      "amount": 3.75,
+      "balance": -831.0,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-31",
+      "description": "Insufficient Funds",
+      "amount": 584.0,
+      "balance": -247.0,
+      "transaction_type": "credit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2025-12-31",
+      "description": "Returned debit order fee",
+      "amount": 15.0,
+      "balance": -262.0,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-05",
+      "description": "CELL C 0038159595 I0469351",
+      "amount": 299.0,
+      "balance": -561.0,
+      "transaction_type": "debit",
+      "category": "Utilities",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-05",
+      "description": "Debit Order fee",
+      "amount": 3.75,
+      "balance": -564.75,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-05",
+      "description": "Insufficient Funds",
+      "amount": 299.0,
+      "balance": -265.75,
+      "transaction_type": "credit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-05",
+      "description": "Returned debit order fee",
+      "amount": 15.0,
+      "balance": -280.75,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-09",
+      "description": "EFS SALARIES",
+      "amount": 20333.52,
+      "balance": 20052.77,
+      "transaction_type": "credit",
+      "category": "Salary",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-11",
+      "description": "Inter account transfer to account...6317 Savings",
+      "amount": 19500.0,
+      "balance": 552.77,
+      "transaction_type": "debit",
+      "category": "Transfer",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-15",
+      "description": "CELL C 0038307023 I0469351",
+      "amount": 299.0,
+      "balance": 253.77,
+      "transaction_type": "debit",
+      "category": "Utilities",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-15",
+      "description": "Debit Order fee",
+      "amount": 3.75,
+      "balance": 250.02,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-20",
+      "description": "CELL C 0038387316 I0469351",
+      "amount": 285.0,
+      "balance": -34.98,
+      "transaction_type": "debit",
+      "category": "Utilities",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-20",
+      "description": "Debit Order fee",
+      "amount": 3.75,
+      "balance": -38.73,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-20",
+      "description": "Insufficient Funds",
+      "amount": 285.0,
+      "balance": 246.27,
+      "transaction_type": "credit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-20",
+      "description": "Returned debit order fee",
+      "amount": 15.0,
+      "balance": 231.27,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-23",
+      "description": "EFS SALARY",
+      "amount": 4281.94,
+      "balance": 4513.21,
+      "transaction_type": "credit",
+      "category": "Salary",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-23",
+      "description": "PayShap C Meyer",
+      "amount": 4500.0,
+      "balance": 13.21,
+      "transaction_type": "debit",
+      "category": "Transfer",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-23",
+      "description": "PayShap payment fee",
+      "amount": 24.75,
+      "balance": -11.54,
+      "transaction_type": "debit",
+      "category": "Transfer",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-24",
+      "description": "CELL C 0038589641 I0469351",
+      "amount": 285.0,
+      "balance": -296.54,
+      "transaction_type": "debit",
+      "category": "Utilities",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-24",
+      "description": "Debit Order fee",
+      "amount": 3.75,
+      "balance": -300.29,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-24",
+      "description": "Insufficient Funds",
+      "amount": 285.0,
+      "balance": -15.29,
+      "transaction_type": "credit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-24",
+      "description": "Returned debit order fee",
+      "amount": 15.0,
+      "balance": -30.29,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-27",
+      "description": "Interest Earned at 0.10%",
+      "amount": 0.12,
+      "balance": -30.17,
+      "transaction_type": "credit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-27",
+      "description": "Monthly Account fee",
+      "amount": 95.0,
+      "balance": -125.17,
+      "transaction_type": "debit",
+      "category": "Fees",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-27",
+      "description": "Excess Interest charged at 20.75%",
+      "amount": 2.11,
+      "balance": -127.28,
+      "transaction_type": "debit",
+      "category": "Other",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-27",
+      "description": "Vitality Money Premium",
+      "amount": 50.0,
+      "balance": -177.28,
+      "transaction_type": "debit",
+      "category": "Insurance",
+      "confidence": null
+    },
+    {
+      "date": "2026-01-27",
+      "description": "InDuplum Write off",
+      "amount": 1.11,
+      "balance": -176.17,
+      "transaction_type": "credit",
+      "category": "Other",
+      "confidence": null
+    }
+  ]
+}

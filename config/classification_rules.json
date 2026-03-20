@@ -737,6 +737,102 @@
       "category": "Transport",
       "priority": 125,
       "source": "ai"
+    },
+    {
+      "pattern": "(?i)debit\\s+order\\s+fee",
+      "category": "Other",
+      "priority": 126,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)insufficient\\s+funds|insucient\\s+funds",
+      "category": "Other",
+      "priority": 127,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)returned\\s+debit\\s+order\\s+fee",
+      "category": "Other",
+      "priority": 128,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)efs\\s+salaries|salaries",
+      "category": "Salary",
+      "priority": 129,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)interest\\s+earned",
+      "category": "Other",
+      "priority": 130,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)excess\\s+interest\\s+charged",
+      "category": "Other",
+      "priority": 131,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)vitality\\s+money\\s+premium",
+      "category": "Insurance",
+      "priority": 132,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)debit\\s*order\\s*fee",
+      "category": "Other",
+      "priority": 133,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)insucient\\s*funds",
+      "category": "Other",
+      "priority": 134,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)returned\\s*debit\\s*order\\s*fee",
+      "category": "Other",
+      "priority": 135,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)real-time\\s*payment\\s+charne\\s+meyer",
+      "category": "Transfer",
+      "priority": 136,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)excess\\s*interest\\s*charged",
+      "category": "Other",
+      "priority": 137,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)vitality\\s*money\\s*premium",
+      "category": "Insurance",
+      "priority": 138,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)efs\\s*salaries",
+      "category": "Salary",
+      "priority": 139,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)insufficient\\s+funds",
+      "category": "Other",
+      "priority": 140,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)induplum\\s+write\\s+o",
+      "category": "Other",
+      "priority": 141,
+      "source": "ai"
     }
   ]
 }

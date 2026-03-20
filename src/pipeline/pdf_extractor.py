@@ -966,6 +966,8 @@ class PDFExtractorStage(Stage):
             if not description:
                 continue
 
+            description = self._normalize_description(description, profile)
+
             parsed_date = (
                 self._parse_date_with_profile(date_str, profile)
                 if date_str else None
@@ -1047,6 +1049,7 @@ class PDFExtractorStage(Stage):
 
         date_str = get_cell("date")
         description = get_cell("description")
+        description = self._normalize_description(description, profile)
 
         # Must have at least a description to be a valid transaction
         if not description:
@@ -1135,6 +1138,26 @@ class PDFExtractorStage(Stage):
             "balance": balance,
             "transaction_type": transaction_type,
         }
+
+    def _normalize_description(self, description: str, profile: BankProfile) -> str:
+        """Apply targeted bank-specific cleanup to extracted descriptions."""
+        normalized = description.strip()
+        if not normalized or profile.name != "Discovery Bank":
+            return normalized
+
+        normalized = re.sub(
+            r"\bInsucient\s+Funds\b",
+            "Insufficient Funds",
+            normalized,
+            flags=re.IGNORECASE,
+        )
+        normalized = re.sub(
+            r"\bInDuplum\s+Write\s+o\b",
+            "InDuplum Write off",
+            normalized,
+            flags=re.IGNORECASE,
+        )
+        return normalized
 
     def _parse_text(
         self, text: str, page_num: int, profile: BankProfile
@@ -1411,7 +1434,7 @@ class PDFExtractorStage(Stage):
     ) -> Optional[dict]:
         """Parse a regex match with named groups (e.g. Investec pattern)."""
         date_str = gd["date"]
-        desc = gd.get("description", "").strip()
+        desc = self._normalize_description(gd.get("description", ""), profile)
         parsed_date = self._parse_date_with_profile(date_str, profile)
         if not parsed_date:
             return None
@@ -1450,6 +1473,7 @@ class PDFExtractorStage(Stage):
     ) -> Optional[dict]:
         """Parse a regex match with 4 positional groups (legacy path)."""
         date_str, desc, amount_str, balance_str = groups
+        desc = self._normalize_description(desc, profile)
         parsed_date = self._parse_date_with_profile(date_str, profile)
         amount = profile.parse_amount(amount_str)
 
@@ -1474,7 +1498,7 @@ class PDFExtractorStage(Stage):
 
         return {
             "date": parsed_date,
-            "description": desc.strip(),
+            "description": desc,
             "amount": abs(amount),
             "balance": profile.parse_amount(balance_str) if balance_str else None,
             "transaction_type": transaction_type,
@@ -1488,6 +1512,7 @@ class PDFExtractorStage(Stage):
         Groups: date, description, fees, money_out, money_in, balance.
         """
         date_str, desc, fees_str, out_str, in_str, balance_str = groups
+        desc = self._normalize_description(desc, profile)
         parsed_date = self._parse_date_with_profile(date_str, profile)
         if not parsed_date:
             return None
@@ -1510,7 +1535,7 @@ class PDFExtractorStage(Stage):
 
         return {
             "date": parsed_date,
-            "description": desc.strip(),
+            "description": desc,
             "amount": abs(amount),
             "balance": profile.parse_amount(balance_str) if balance_str else None,
             "transaction_type": transaction_type,
@@ -1524,7 +1549,7 @@ class PDFExtractorStage(Stage):
         Groups: (description, amount_str, optional_balance_str).
         The date is inherited from the preceding transaction.
         """
-        desc = groups[0].strip() if groups[0] else ""
+        desc = self._normalize_description(groups[0] if groups[0] else "", profile)
         amount_str = groups[1] if len(groups) > 1 else None
         balance_str = groups[2] if len(groups) > 2 else None
 

@@ -27,6 +27,12 @@ NEDBANK_REGRESSION_PDF = FIXTURES_DIR / "pdfs" / "nedbank_regression_statement.p
 NEDBANK_REGRESSION_EXPECTED = (
     FIXTURES_DIR / "expected" / "nedbank_regression_statement.json"
 )
+DISCOVERY_REGRESSION_PDF = (
+    FIXTURES_DIR / "pdfs" / "discovery_regression_statement.pdf"
+)
+DISCOVERY_REGRESSION_EXPECTED = (
+    FIXTURES_DIR / "expected" / "discovery_regression_statement.json"
+)
 
 
 def _run_jobs_inline(monkeypatch):
@@ -493,6 +499,78 @@ def test_nedbank_statement_regression_returns_expected_extracted_lines(tmp_path,
             "amount": 113.86,
             "balance": 10199.03,
             "transaction_type": "debit",
+        } in normalized["lines"]
+        assert _sort_normalized_lines(normalized) == _sort_normalized_lines(expected)
+
+    server._session_factory = None
+
+
+def test_discovery_statement_regression_returns_expected_lines(tmp_path, monkeypatch):
+    _configure_api_test_env(tmp_path, monkeypatch)
+    _run_jobs_inline(monkeypatch)
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+
+    expected = json.loads(DISCOVERY_REGRESSION_EXPECTED.read_text(encoding="utf-8"))
+
+    with TestClient(server.app) as client:
+        response = client.post(
+            "/api/upload",
+            files={
+                "file": (
+                    DISCOVERY_REGRESSION_PDF.name,
+                    DISCOVERY_REGRESSION_PDF.read_bytes(),
+                    "application/pdf",
+                )
+            },
+        )
+
+        assert response.status_code == 200
+
+        job_id = response.json()["job_id"]
+        detail = client.get(f"/api/jobs/{job_id}")
+
+        assert detail.status_code == 200
+        payload = detail.json()
+        assert payload["status"] == "completed"
+
+        normalized = _normalize_job_lines(payload)
+
+        assert normalized["line_count"] == 75
+        assert {
+            "date": "2025-10-30",
+            "description": "Inter account transfer from account...6317 Savings",
+            "amount": 150.0,
+            "balance": 89.46,
+            "transaction_type": "credit",
+            "category": "Transfer",
+            "confidence": None,
+        } in normalized["lines"]
+        assert {
+            "date": "2025-10-31",
+            "description": "Insufficient Funds",
+            "amount": 215.0,
+            "balance": 85.71,
+            "transaction_type": "credit",
+            "category": "Other",
+            "confidence": None,
+        } in normalized["lines"]
+        assert {
+            "date": "2025-12-23",
+            "description": "Real-time payment CHARNE MEYER",
+            "amount": 29000.0,
+            "balance": 28831.37,
+            "transaction_type": "credit",
+            "category": "Transfer",
+            "confidence": None,
+        } in normalized["lines"]
+        assert {
+            "date": "2026-01-27",
+            "description": "InDuplum Write off",
+            "amount": 1.11,
+            "balance": -176.17,
+            "transaction_type": "credit",
+            "category": "Other",
+            "confidence": None,
         } in normalized["lines"]
         assert _sort_normalized_lines(normalized) == _sort_normalized_lines(expected)
 
