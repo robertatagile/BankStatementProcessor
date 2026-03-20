@@ -605,6 +605,138 @@
       "category": "Transfer",
       "priority": 103,
       "source": "ai"
+    },
+    {
+      "pattern": "(?i)swellendam\\s*gas",
+      "category": "Utilities",
+      "priority": 104,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)swd\\s*bearings",
+      "category": "Shopping",
+      "priority": 105,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)platsak\\s*takeaw",
+      "category": "Dining",
+      "priority": 106,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)swellendam\\s*agr",
+      "category": "Shopping",
+      "priority": 107,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)langeberg\\s*teel",
+      "category": "Shopping",
+      "priority": 108,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)struisbaaispec",
+      "category": "Shopping",
+      "priority": 109,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)liquorshop\\s*swe",
+      "category": "Shopping",
+      "priority": 110,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)ok\\s*struisbaai",
+      "category": "Groceries",
+      "priority": 111,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)swellendam\\s*mec",
+      "category": "Shopping",
+      "priority": 112,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)c\\*swellendam\\s*m",
+      "category": "Shopping",
+      "priority": 113,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)vat\\s+\\d{2}/\\d{2}-\\d{2}/\\d{2}",
+      "category": "Other",
+      "priority": 114,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)maintenance\\s*fee",
+      "category": "Utilities",
+      "priority": 115,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)kaartjie",
+      "category": "Transport",
+      "priority": 116,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)cap\\s*justinvest",
+      "category": "Transfer",
+      "priority": 117,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)tops\\s*swellenda",
+      "category": "Groceries",
+      "priority": 118,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)oldmutcol",
+      "category": "Insurance",
+      "priority": 119,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)disclife",
+      "category": "Insurance",
+      "priority": 120,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)c\\*hoeks\\s*toyota",
+      "category": "Transport",
+      "priority": 121,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)ae\\s+voortrek\\s+st",
+      "category": "Transport",
+      "priority": 122,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)ae\\s+n1\\s+beaufort",
+      "category": "Transport",
+      "priority": 123,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)swd\\s+glass\\s+alumn",
+      "category": "Shopping",
+      "priority": 124,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)heyneman\\s+yamah",
+      "category": "Transport",
+      "priority": 125,
+      "source": "ai"
     }
   ]
 }

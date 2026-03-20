@@ -23,6 +23,10 @@ CAPITEC_REGRESSION_PDF = FIXTURES_DIR / "pdfs" / "capitec_regression_statement.p
 CAPITEC_REGRESSION_EXPECTED = (
     FIXTURES_DIR / "expected" / "capitec_regression_statement.json"
 )
+NEDBANK_REGRESSION_PDF = FIXTURES_DIR / "pdfs" / "nedbank_regression_statement.pdf"
+NEDBANK_REGRESSION_EXPECTED = (
+    FIXTURES_DIR / "expected" / "nedbank_regression_statement.json"
+)
 
 
 def _run_jobs_inline(monkeypatch):
@@ -419,6 +423,77 @@ def test_capitec_statement_regression_returns_expected_extracted_lines(tmp_path,
         assert not any(line["description"] == "Npfinafbfn" for line in normalized["lines"])
         assert not any(line["description"] == "Loancirc" for line in normalized["lines"])
         assert not any("Insufficient Funds (" in line["description"] for line in normalized["lines"])
+        assert _sort_normalized_lines(normalized) == _sort_normalized_lines(expected)
+
+    server._session_factory = None
+
+
+def test_nedbank_statement_regression_returns_expected_extracted_lines(tmp_path, monkeypatch):
+    _configure_api_test_env(tmp_path, monkeypatch)
+    _run_jobs_inline(monkeypatch)
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+
+    expected = json.loads(NEDBANK_REGRESSION_EXPECTED.read_text(encoding="utf-8"))
+
+    with TestClient(server.app) as client:
+        response = client.post(
+            "/api/upload",
+            files={
+                "file": (
+                    NEDBANK_REGRESSION_PDF.name,
+                    NEDBANK_REGRESSION_PDF.read_bytes(),
+                    "application/pdf",
+                )
+            },
+        )
+
+        assert response.status_code == 200
+
+        job_id = response.json()["job_id"]
+        detail = client.get(f"/api/jobs/{job_id}")
+
+        assert detail.status_code == 200
+        payload = detail.json()
+        assert payload["status"] == "completed"
+
+        normalized = _normalize_extracted_job_lines(payload)
+
+        assert normalized["line_count"] == 55
+        assert {
+            "date": "2025-12-19",
+            "description": "S2S*Citycorner541282XXXXXX6246",
+            "amount": 300.0,
+            "balance": 31542.24,
+            "transaction_type": "debit",
+        } in normalized["lines"]
+        assert {
+            "date": "2025-12-27",
+            "description": "VAT 26/11-26/12 = R19.17",
+            "amount": 0.0,
+            "balance": 17590.66,
+            "transaction_type": "debit",
+        } in normalized["lines"]
+        assert {
+            "date": "2025-12-31",
+            "description": "CAP JUSTINVEST 295270549996",
+            "amount": 5000.0,
+            "balance": 16269.84,
+            "transaction_type": "credit",
+        } in normalized["lines"]
+        assert {
+            "date": "2026-01-13",
+            "description": "Koos",
+            "amount": 7500.0,
+            "balance": 12209.82,
+            "transaction_type": "credit",
+        } in normalized["lines"]
+        assert {
+            "date": "2026-01-14",
+            "description": "SWELLENDAM MEC541282XXXXXX6246",
+            "amount": 113.86,
+            "balance": 10199.03,
+            "transaction_type": "debit",
+        } in normalized["lines"]
         assert _sort_normalized_lines(normalized) == _sort_normalized_lines(expected)
 
     server._session_factory = None
