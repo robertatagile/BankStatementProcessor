@@ -154,6 +154,7 @@ def get_job(job_id: str) -> JobDetailResponse:
                     statement_date=stmt.statement_date,
                     opening_balance=float(stmt.opening_balance),
                     closing_balance=float(stmt.closing_balance),
+                    extraction_method=stmt.extraction_method,
                     lines=[
                         StatementLineResponse(
                             id=ln.id,

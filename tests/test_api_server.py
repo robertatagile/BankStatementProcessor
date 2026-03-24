@@ -575,3 +575,41 @@ def test_discovery_statement_regression_returns_expected_lines(tmp_path, monkeyp
         assert _sort_normalized_lines(normalized) == _sort_normalized_lines(expected)
 
     server._session_factory = None
+
+
+def test_job_detail_includes_extraction_method(tmp_path, monkeypatch):
+    """Contract test: completed job result must include extraction_method (text/table/ocr)."""
+    _configure_api_test_env(tmp_path, monkeypatch)
+    _run_jobs_inline(monkeypatch)
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+
+    with TestClient(server.app) as client:
+        response = client.post(
+            "/api/upload",
+            files={
+                "file": (
+                    FNB_REGRESSION_PDF.name,
+                    FNB_REGRESSION_PDF.read_bytes(),
+                    "application/pdf",
+                )
+            },
+        )
+
+        assert response.status_code == 200
+
+        job_id = response.json()["job_id"]
+        detail = client.get(f"/api/jobs/{job_id}")
+
+        assert detail.status_code == 200
+        payload = detail.json()
+        assert payload["status"] == "completed"
+
+        result = payload["result"]
+        assert "extraction_method" in result, (
+            "StatementResultResponse must include extraction_method"
+        )
+        assert result["extraction_method"] in ("text", "table", "ocr"), (
+            f"extraction_method must be text/table/ocr, got: {result['extraction_method']}"
+        )
+
+    server._session_factory = None

@@ -833,6 +833,108 @@
       "category": "Other",
       "priority": 141,
       "source": "ai"
+    },
+    {
+      "pattern": "(?i)pajamas",
+      "category": "Clothing/Apparel",
+      "priority": 142,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)gb\\s*linkage\\s*fee",
+      "category": "Fees",
+      "priority": 143,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)savings\\s*-\\s*\\d+",
+      "category": "Transfer",
+      "priority": 144,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)interest\\s*\\d{2}/\\d{2}\\s*-\\s*\\d{2}/\\d{2}",
+      "category": "Other",
+      "priority": 145,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)facility\\s*fee",
+      "category": "Fees",
+      "priority": 146,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)s{0,2}apolisie\\s*\\d+\\s*pay",
+      "category": "Insurance",
+      "priority": 147,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)credit\\s*card\\s*-\\s*\\d+",
+      "category": "Transfer",
+      "priority": 148,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)onrus\\s*vacation\\s*-\\s*\\d+",
+      "category": "Transfer",
+      "priority": 149,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)afriforum",
+      "category": "Other",
+      "priority": 150,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)w\\s*p\\s*vleis\\s*groo",
+      "category": "Groceries",
+      "priority": 151,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)solidaritysol",
+      "category": "Other",
+      "priority": 152,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)unpaid\\s*magtape\\s*item",
+      "category": "Fees",
+      "priority": 153,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)fairfield\\s*meat",
+      "category": "Groceries",
+      "priority": 154,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)essential\\s*heal",
+      "category": "Healthcare",
+      "priority": 155,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)onrus\\s*vacation",
+      "category": "Entertainment",
+      "priority": 156,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)kwikspar",
+      "category": "Groceries",
+      "priority": 157,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)fivestar\\s*medite",
+      "category": "Healthcare",
+      "priority": 158,
+      "source": "ai"
     }
   ]
 }

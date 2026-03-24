@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime
-from typing import List, Optional
+from typing import List, Literal, Optional
 
 from pydantic import BaseModel
 
@@ -48,6 +48,7 @@ class StatementResultResponse(BaseModel):
     statement_date: Optional[date] = None
     opening_balance: float
     closing_balance: float
+    extraction_method: Optional[Literal["text", "table", "ocr"]] = None
     lines: List[StatementLineResponse]
 
 
