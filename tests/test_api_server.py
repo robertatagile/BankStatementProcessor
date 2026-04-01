@@ -33,6 +33,12 @@ DISCOVERY_REGRESSION_PDF = (
 DISCOVERY_REGRESSION_EXPECTED = (
     FIXTURES_DIR / "expected" / "discovery_regression_statement.json"
 )
+STANDARD_BANK_REGRESSION_PDF = (
+    FIXTURES_DIR / "pdfs" / "standard_bank_regression_statement.pdf"
+)
+STANDARD_BANK_REGRESSION_EXPECTED = (
+    FIXTURES_DIR / "expected" / "standard_bank_regression_statement.json"
+)
 
 
 def _run_jobs_inline(monkeypatch):
@@ -572,6 +578,42 @@ def test_discovery_statement_regression_returns_expected_lines(tmp_path, monkeyp
             "category": "Other",
             "confidence": None,
         } in normalized["lines"]
+        assert _sort_normalized_lines(normalized) == _sort_normalized_lines(expected)
+
+    server._session_factory = None
+
+
+def test_standard_bank_statement_regression_returns_expected_extracted_lines(tmp_path, monkeypatch):
+    _configure_api_test_env(tmp_path, monkeypatch)
+    _run_jobs_inline(monkeypatch)
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+
+    expected = json.loads(STANDARD_BANK_REGRESSION_EXPECTED.read_text(encoding="utf-8"))
+
+    with TestClient(server.app) as client:
+        response = client.post(
+            "/api/upload",
+            files={
+                "file": (
+                    STANDARD_BANK_REGRESSION_PDF.name,
+                    STANDARD_BANK_REGRESSION_PDF.read_bytes(),
+                    "application/pdf",
+                )
+            },
+        )
+
+        assert response.status_code == 200
+
+        job_id = response.json()["job_id"]
+        detail = client.get(f"/api/jobs/{job_id}")
+
+        assert detail.status_code == 200
+        payload = detail.json()
+        assert payload["status"] == "completed"
+
+        normalized = _normalize_extracted_job_lines(payload)
+
+        assert normalized["line_count"] == expected["line_count"]
         assert _sort_normalized_lines(normalized) == _sort_normalized_lines(expected)
 
     server._session_factory = None

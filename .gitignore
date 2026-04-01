@@ -28,3 +28,7 @@ teststatement/tmp/*
 teststatement/*.db
 .claude/settings.local.json
 .DS_Store
+verifystatement/input/*.pdf
+verifystatement/reports/*
+!verifystatement/reports/.gitkeep
+verifystatement/*.db
