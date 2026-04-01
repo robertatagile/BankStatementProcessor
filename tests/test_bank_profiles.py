@@ -248,6 +248,11 @@ class TestBankProfileFactory:
         profile = BankProfileFactory.detect(text)
         assert profile.name == "Standard Bank"
 
+    def test_detect_standard_bank_from_domain_branding(self):
+        text = "Website: www.standardbank.co.za\nTransactions\nAccount: PureSave"
+        profile = BankProfileFactory.detect(text)
+        assert profile.name == "Standard Bank"
+
     def test_detect_capitec(self):
         text = "Capitec Bank\nGlobal One Account\nBranch: 470010"
         profile = BankProfileFactory.detect(text)

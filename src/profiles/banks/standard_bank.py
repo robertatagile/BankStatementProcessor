@@ -87,8 +87,8 @@ def standard_bank_profile() -> BankProfile:
     return sa_base_profile(
         name="Standard Bank",
         detection_keywords=[
-            "standard bank", "sbsa", "standard bank of south africa",
-            "universal branch",
+            "standard bank", "standardbank", "standardbank.co.za",
+            "sbsa", "standard bank of south africa", "universal branch",
         ],
         header_patterns=patterns,
         text_line_pattern=text_line_pattern,

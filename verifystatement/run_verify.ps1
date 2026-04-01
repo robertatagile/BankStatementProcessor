@@ -17,7 +17,7 @@ param(
     [switch]$AutoFix,
     [string]$ReportDir,
     [string]$Model = "claude-sonnet-4-20250514",
-    [int]$MaxAttempts = 3
+    [int]$MaxAttempts = 10
 )
 
 Set-StrictMode -Version Latest
