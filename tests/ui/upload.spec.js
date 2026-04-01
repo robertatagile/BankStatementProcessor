@@ -232,8 +232,12 @@ test.describe('Job Detail', () => {
       timeout: 30_000
     });
 
-    await expect(page.locator('.detail-card').first()).toBeVisible();
-    await expect(page.locator('.detail-grid')).toBeVisible();
+    const jobInfoCard = page.locator('.detail-card').filter({
+      has: page.getByRole('heading', { name: 'Job Info' })
+    });
+
+    await expect(jobInfoCard).toBeVisible();
+    await expect(jobInfoCard.locator('.detail-grid')).toBeVisible();
   });
 });
 
@@ -266,7 +270,7 @@ test.describe('Rules', () => {
     await expect(page.locator('.toast')).toBeVisible({ timeout: 5_000 });
 
     // The rule should appear in the table
-    await expect(page.locator('#rules-table-container').getByText('Test Category')).toBeVisible({
+    await expect(page.locator('#rules-table-container').getByText(uniquePattern)).toBeVisible({
       timeout: 5_000
     });
   });
