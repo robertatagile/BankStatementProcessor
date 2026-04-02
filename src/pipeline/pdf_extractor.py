@@ -184,6 +184,11 @@ class PDFExtractorStage(Stage):
             self._apply_tymebank_header_fallbacks(text, header, profile)
             return
 
+        if profile.name.startswith("Standard Bank"):
+            self._apply_standard_bank_header_fallbacks(text, header, profile)
+            if profile.name != "FNB":
+                return
+
         if profile.name != "FNB":
             return
 
@@ -331,6 +336,99 @@ class PDFExtractorStage(Stage):
                 parsed = profile.parse_amount(closing_match.group(1))
                 if parsed is not None:
                     header["closing_balance"] = parsed
+
+    def _apply_standard_bank_header_fallbacks(
+        self, text: str, header: dict, profile: BankProfile
+    ) -> None:
+        """Apply Standard Bank-specific fallbacks for all statement variants."""
+        # Bank name fallback
+        if header.get("bank_name") in (None, "Unknown Bank"):
+            header["bank_name"] = "Standard Bank"
+
+        # Account number fallback: "Account number: 04 510 813 7" or
+        # "Rekeningnommer 08 315 263 6" or "Account: PureSave 10-12-800-108-7"
+        if header.get("account_number") == "Unknown":
+            for acct_pattern in [
+                r"(?:Account\s+number|Rekeningnommer)\s*:?\s*([\d\s\-]{8,})",
+                r"Account\s*:\s*\w+\s+([\d\-]{8,})",
+            ]:
+                m = re.search(acct_pattern, text, re.IGNORECASE)
+                if m:
+                    header["account_number"] = re.sub(r"\s+", " ", m.group(1)).strip()
+                    break
+
+        # Account holder: "Account holder: NAME" or "MR./MS. NAME" after address header
+        if "account_holder" not in header:
+            holder_m = re.search(
+                r"(?:Account\s+holder|Rekeninghouer)\s*:\s*(.+?)$",
+                text, re.IGNORECASE | re.MULTILINE,
+            )
+            if not holder_m:
+                holder_m = re.search(
+                    r"(?:^|\n)((?:MR|MRS|MS|ME|MNR|MEV|MEJ)\.?\s+[A-Z][A-Z\s]+?)$",
+                    text, re.MULTILINE,
+                )
+            if holder_m:
+                header["account_holder"] = holder_m.group(1).strip()
+
+        # Prestige: "From: 04 Dec 25" / "To: 04 Mar 26"
+        if header.get("period_start") is None:
+            from_m = re.search(r"From\s*:\s*(\d{1,2}\s+\w{3}\s+\d{2,4})", text, re.IGNORECASE)
+            if from_m:
+                header["period_start"] = self._parse_date_with_profile(from_m.group(1), profile)
+        if header.get("period_end") is None:
+            to_m = re.search(r"To\s*:\s*(\d{1,2}\s+\w{3}\s+\d{2,4})", text, re.IGNORECASE)
+            if to_m:
+                header["period_end"] = self._parse_date_with_profile(to_m.group(1), profile)
+
+        # Afrikaans period: "Staat van 12 November 2025 tot 12 Desember 2025"
+        if header.get("period_start") is None or header.get("period_end") is None:
+            staat_m = re.search(
+                r"Staat\s+van\s+(\d{1,2}\s+\w+\s+\d{4})\s+tot\s+(\d{1,2}\s+\w+\s+\d{4})",
+                text, re.IGNORECASE,
+            )
+            if staat_m:
+                header["period_start"] = header.get("period_start") or self._parse_date_with_profile(staat_m.group(1), profile)
+                header["period_end"] = header.get("period_end") or self._parse_date_with_profile(staat_m.group(2), profile)
+
+        # Online: "Transaction date range: 28 November 2025 - 26 February 2026"
+        if header.get("period_start") is None or header.get("period_end") is None:
+            range_m = re.search(
+                r"Transaction\s+date\s+range\s*:\s*(\d{1,2}\s+\w+\s+\d{4})\s*[\-–]\s*(\d{1,2}\s+\w+\s+\d{4})",
+                text, re.IGNORECASE,
+            )
+            if range_m:
+                header["period_start"] = header.get("period_start") or self._parse_date_with_profile(range_m.group(1), profile)
+                header["period_end"] = header.get("period_end") or self._parse_date_with_profile(range_m.group(2), profile)
+
+        # Opening balance fallbacks
+        if header.get("opening_balance") in (Decimal("0.00"), None):
+            for ob_pat in [
+                r"STATEMENT\s+OPENING\s+BALANCE\s+([\d,]+\.\d{2})",
+                r"BALANCE\s+BROUGHT\s+FORWARD\s+\d{1,2}\s+\d{1,2}\s+([\d,]+\.\d{2})",
+                r"SALDO\s+OORGEBRING\s+\d{1,2}\s+\d{1,2}\s+([\d,]+\.\d{2})",
+            ]:
+                m = re.search(ob_pat, text, re.IGNORECASE)
+                if m:
+                    parsed = profile.parse_amount(m.group(1))
+                    if parsed is not None:
+                        header["opening_balance"] = parsed
+                        break
+
+        # Closing balance fallbacks
+        if header.get("closing_balance") in (Decimal("0.00"), None):
+            for cb_pat in [
+                r"Month[\-\s]*end\s+Balance\s+R\s*([\d,]+\.\d{2})",
+                r"Maandeindesaldo\s+R\s*([\d,]+\.\d{2})",
+                r"Available\s+balance\s*:\s*R\s*([\d\s]+\.\d{2})",
+                r"Available\s+Balance\s*:\s*R\s*([\d,]+\.\d{2})",
+            ]:
+                m = re.search(cb_pat, text, re.IGNORECASE)
+                if m:
+                    parsed = profile.parse_amount(m.group(1))
+                    if parsed is not None:
+                        header["closing_balance"] = parsed
+                        break
 
     def _extract_personal_info(self, text: str, header: dict, profile: Optional[BankProfile] = None) -> None:
         """Extract personal, address, and account info from bank statement text.
@@ -614,7 +712,8 @@ class PDFExtractorStage(Stage):
             if not re.match(
                 r"(?:Opening\s*Balance|Closing\s*Balance|Available\s+Balance|"
                 r"Balance\s+(?:brought|as\s+at)|Saldo\s+[Oo]or(?:gedra|gebring)|"
-                r"Afsluitingsaldo|Openingsaldo)\b",
+                r"Afsluitingsaldo|Openingsaldo|"
+                r"Statement\s+Opening\s+Balance|Maandeindesaldo)\b",
                 ln.get("description", ""), re.IGNORECASE,
             )
         ]
@@ -1406,13 +1505,51 @@ class PDFExtractorStage(Stage):
         if not stripped or not lines:
             return None
 
-        if profile.name not in {"ABSA", "ABSA Afrikaans"}:
+        _CONTINUATION_PROFILES = {
+            "ABSA", "ABSA Afrikaans",
+            "Standard Bank Prestige", "Standard Bank Achieva",
+            "Standard Bank Achieva Afrikaans",
+        }
+        if profile.name not in _CONTINUATION_PROFILES:
             return None
 
         if re.match(
             r"^(?:Transaction\s+History|Date\s+Transaction\s+Description\s+Amount\s+Balance|"
             r"Current\s+Balance|Available\s+Balance|Uncleared\s+Cheques|"
             r"Statement\s+for\s+the\s+Period|Page\s+\d+\s+of\s+\d+)$",
+            stripped,
+            re.IGNORECASE,
+        ):
+            return None
+
+        # Standard Bank noise: prefix-match (these lines can be long)
+        if profile.name.startswith("Standard Bank") and re.match(
+            r"(?:BANK\s*STATEMENT|TAX\s*INVOICE|BANKSTAAT|BELASTINGFAKTUUR|"
+            r"Statement\s+Frequency|Staatfrekwensie|"
+            r"Customer\s+Care|Klientesorgsentrum|"
+            r"Transact@standardbank|www\.standardbank|"
+            r"(?:The\s+)?Standard\s+Bank\s+(?:of|van)|"
+            r"Die\s+Standard\s+Bank|"
+            r"Please\s+verify|Verifieer\s+asseblief|"
+            r"Please\s+visit|Besoek\s+asseblief|"
+            r"We\s+subscribe\s+to|Ons\s+onderskryf|"
+            r"Account\s+Number|Rekeningnommer|Account\s+holder|Rekeninghouer|"
+            r"Month[\-\s]*end\s+Balance|Maandeindesaldo|"
+            r"BALANCE\s+BROUGHT\s+FORWARD|SALDO\s+OORGEBRING|"
+            r"STATEMENT\s+OPENING\s+BALANCE|"
+            r"Statement\s+from|Staat\s+van|"
+            r"Statement\s+Summary|Transaction\s+details|"
+            r"Today'?s\s+debits|"
+            r"Payments\s+[\-R]|Deposits\s+R|"
+            r"Product\s+name|"
+            r"Pg\s+\d+|Page\s+\d+|Bladsy\s+\d+|"
+            r"VAT\s+Reg|BTW[\-\s]Reg|"
+            r"e[\-\s]?mail:|epos:|"
+            r"0860\s+123\s+000|"
+            r"\d{1,2}\s+\w+\s+\d{4}$|"  # standalone date line (e.g. "04 Mar 2026")
+            r"MONTANA|RICHMOND|MOOIRIVIER|"
+            r"PO\s+BOX|POSBUS|MARSHALLTOWN|"
+            r"MONTHLY\s+|MAANDELIKS)",
             stripped,
             re.IGNORECASE,
         ):

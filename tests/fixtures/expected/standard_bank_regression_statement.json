@@ -1,4 +1,1475 @@
 {
-  "line_count": 0,
-  "lines": []
+  "line_count": 210,
+  "lines": [
+    {
+      "date": "2025-12-06",
+      "description": "SUPERSPAR POT 5326*2508 04 DEC CHEQUE CARD PURCHASE",
+      "amount": 55.97,
+      "balance": 3025.1,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-08",
+      "description": "ENGEN BULT 5326*2508 05 DEC CHEQUE CARD PURCHASE",
+      "amount": 300.0,
+      "balance": 2725.1,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-08",
+      "description": "SUPERSPAR POT 5326*2508 05 DEC CHEQUE CARD PURCHASE",
+      "amount": 195.78,
+      "balance": 2529.32,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-09",
+      "description": "JB MARKS PAYSHAP PAYMENT TO",
+      "amount": 310.0,
+      "balance": 2219.32,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-09",
+      "description": "FEE: PAYSHAP PAYMENT FEE: PAYSHAP PAYMENT",
+      "amount": 7.0,
+      "balance": 2212.32,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-09",
+      "description": "ENGEN BULT 5326*2508 07 DEC CHEQUE CARD PURCHASE",
+      "amount": 656.08,
+      "balance": 1556.24,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-09",
+      "description": "SUPERSPAR POT 5326*2508 07 DEC CHEQUE CARD PURCHASE",
+      "amount": 65.97,
+      "balance": 1490.27,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-09",
+      "description": "VAS00164127876 ELECTRICITY PURCHASE",
+      "amount": 300.0,
+      "balance": 1190.27,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-10",
+      "description": "SUPERSPAR POT 5326*2508 08 DEC CHEQUE CARD PURCHASE",
+      "amount": 109.65,
+      "balance": 1080.62,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-10",
+      "description": "CLICKS POTCHE 5326*2508 08 DEC CHEQUE CARD PURCHASE",
+      "amount": 39.99,
+      "balance": 1040.63,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-10",
+      "description": "SAYED`S INDUS 5326*2508 08 DEC CHEQUE CARD PURCHASE",
+      "amount": 15.0,
+      "balance": 1025.63,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-10",
+      "description": "CX CASTLE GAT 5326*2508 07 DEC CHEQUE CARD PURCHASE",
+      "amount": 135.26,
+      "balance": 890.37,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-11",
+      "description": "SUPERSPAR POT 5326*2508 09 DEC CHEQUE CARD PURCHASE",
+      "amount": 32.0,
+      "balance": 858.37,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-12",
+      "description": "MRP POTCHEFST 5326*2508 10 DEC CHEQUE CARD PURCHASE",
+      "amount": 99.99,
+      "balance": 758.38,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-12",
+      "description": "ENGEN UNCLE A 5326*2508 10 DEC CHEQUE CARD PURCHASE",
+      "amount": 300.0,
+      "balance": 458.38,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-13",
+      "description": "C*SPAR POTCH 5326*2508 12 DEC CHEQUE CARD PURCHASE",
+      "amount": 70.31,
+      "balance": 388.07,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-13",
+      "description": "RED CAP LIQUO 5326*2508 11 DEC CHEQUE CARD PURCHASE",
+      "amount": 139.9,
+      "balance": 248.17,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-13",
+      "description": "SUPERSPAR POT 5326*2508 11 DEC CHEQUE CARD PURCHASE",
+      "amount": 44.29,
+      "balance": 203.88,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-13",
+      "description": "CHECKERS FRES 5326*2508 10 DEC CHEQUE CARD PURCHASE",
+      "amount": 90.25,
+      "balance": 113.63,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-15",
+      "description": "YELLO DATA71883-251215 SERVICE AGREEMENT",
+      "amount": 19.0,
+      "balance": 94.63,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-17",
+      "description": "CAPITEC X WILLIAMS CREDIT TRANSFER",
+      "amount": 165.0,
+      "balance": 259.63,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2025-12-19",
+      "description": "DICON SALARY IB PAYMENT FROM",
+      "amount": 28483.13,
+      "balance": 28742.76,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2025-12-20",
+      "description": "HILOOK 5326*2508 18 DEC CHEQUE CARD PURCHASE",
+      "amount": 40.0,
+      "balance": 28702.76,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-20",
+      "description": "OUPAS BILTONG 5326*2508 18 DEC CHEQUE CARD PURCHASE",
+      "amount": 49.8,
+      "balance": 28652.96,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-22",
+      "description": "SUPERSPAR POT 5326*2508 19 DEC CHEQUE CARD PURCHASE",
+      "amount": 177.74,
+      "balance": 28475.22,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-22",
+      "description": "VAS00169046286 ELECTRICITY PURCHASE",
+      "amount": 300.0,
+      "balance": 28175.22,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-23",
+      "description": "CHECKERS FRES 5326*2508 19 DEC CHEQUE CARD PURCHASE",
+      "amount": 304.45,
+      "balance": 27870.77,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-23",
+      "description": "ESKORT POTCHE 5326*2508 21 DEC CHEQUE CARD PURCHASE",
+      "amount": 72.9,
+      "balance": 27797.87,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-23",
+      "description": "BOXER SPR POT 5326*2508 21 DEC CHEQUE CARD PURCHASE",
+      "amount": 264.0,
+      "balance": 27533.87,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-23",
+      "description": "PNP CRP CANAL 5326*2508 21 DEC CHEQUE CARD PURCHASE",
+      "amount": 78.77,
+      "balance": 27455.1,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-24",
+      "description": "SBSA CML 10261609511001251224 DEBICHECK DEBIT ORDER",
+      "amount": 2715.77,
+      "balance": 24739.33,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-24",
+      "description": "GOLDWING RETA 5326*2508 22 DEC CHEQUE CARD PURCHASE",
+      "amount": 160.5,
+      "balance": 24578.83,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-24",
+      "description": "RED CAP LIQUO 5326*2508 19 DEC CHEQUE CARD PURCHASE",
+      "amount": 148.8,
+      "balance": 24430.03,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-24",
+      "description": "ENGEN UNCLE A 5326*2508 22 DEC CHEQUE CARD PURCHASE",
+      "amount": 300.0,
+      "balance": 24130.03,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-24",
+      "description": "MEDIRITE MOOI 5326*2508 22 DEC CHEQUE CARD PURCHASE",
+      "amount": 98.99,
+      "balance": 24031.04,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-24",
+      "description": "ESKORT POTCHE 5326*2508 22 DEC CHEQUE CARD PURCHASE",
+      "amount": 122.1,
+      "balance": 23908.94,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-27",
+      "description": "SB CARD DC39826902975853251227 MIGRATED DC DEBIT",
+      "amount": 1909.04,
+      "balance": 21999.9,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-27",
+      "description": "P005423POT MOSAIC FUNERAL GROUP STOP ORDER",
+      "amount": 190.0,
+      "balance": 21809.9,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-27",
+      "description": "SUPERSPAR POT 5326*2508 23 DEC CHEQUE CARD PURCHASE",
+      "amount": 106.58,
+      "balance": 21703.32,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-27",
+      "description": "CASH CRUSADER 5326*2508 23 DEC CHEQUE CARD PURCHASE",
+      "amount": 109.9,
+      "balance": 21593.42,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-27",
+      "description": "C*THE CRAZY S 5326*2508 23 DEC CHEQUE CARD PURCHASE",
+      "amount": 89.97,
+      "balance": 21503.45,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-29",
+      "description": "ZIG MART POTC 5326*2508 23 DEC CHEQUE CARD PURCHASE",
+      "amount": 329.9,
+      "balance": 21173.55,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-29",
+      "description": "RED CAP LIQUO 5326*2508 24 DEC CHEQUE CARD PURCHASE",
+      "amount": 279.8,
+      "balance": 20893.75,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-30",
+      "description": "ENGEN MOOIRIV 5326*2508 27 DEC CHEQUE CARD PURCHASE",
+      "amount": 300.0,
+      "balance": 20593.75,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-30",
+      "description": "OLDMUTCOL 33401076820251230 INSURANCE PREMIUM",
+      "amount": 1139.17,
+      "balance": 19454.58,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-30",
+      "description": "GAME/DIONW0005022190315055980 ACCOUNT PAYMENT",
+      "amount": 2494.66,
+      "balance": 16959.92,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-31",
+      "description": "C*ECONOFOODS 5326*2508 30 DEC CHEQUE CARD PURCHASE",
+      "amount": 244.98,
+      "balance": 16714.94,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-31",
+      "description": "RED CAP LIQUO 5326*2508 29 DEC CHEQUE CARD PURCHASE",
+      "amount": 139.9,
+      "balance": 16575.04,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-31",
+      "description": "OK FOODS ( IN 5326*2508 29 DEC CHEQUE CARD PURCHASE",
+      "amount": 84.96,
+      "balance": 16490.08,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-31",
+      "description": "PNP CRP POTCH 5326*2508 29 DEC CHEQUE CARD PURCHASE",
+      "amount": 165.98,
+      "balance": 16324.1,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-31",
+      "description": "ENGEN BULT 5326*2508 29 DEC CHEQUE CARD PURCHASE",
+      "amount": 300.0,
+      "balance": 16024.1,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-31",
+      "description": "MTN SP 5058887045 DEBIT TRANSFER",
+      "amount": 549.0,
+      "balance": 15475.1,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-31",
+      "description": "FIXED MONTHLY FEE FIXED MONTHLY FEE",
+      "amount": 250.0,
+      "balance": 15225.1,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-02",
+      "description": "VAS00173027152 ELECTRICITY PURCHASE",
+      "amount": 1000.0,
+      "balance": 14225.1,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-02",
+      "description": "FEE: ELECTRICITY PURCHASE FEE: ELECTRICITY PURCHASE",
+      "amount": 1.6,
+      "balance": 14223.5,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-02",
+      "description": "IE JOHNSON IAN JOHNSON STOP ORDER",
+      "amount": 50.0,
+      "balance": 14173.5,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-02",
+      "description": "AA JOHNSON ABIGAIL JOHNSON STOP ORDER",
+      "amount": 50.0,
+      "balance": 14123.5,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-02",
+      "description": "C*THE CRAZY S 5326*2508 31 DEC CHEQUE CARD PURCHASE",
+      "amount": 134.98,
+      "balance": 13988.52,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-02",
+      "description": "GAME POTCHEFS 5326*2508 30 DEC CHEQUE CARD PURCHASE",
+      "amount": 248.97,
+      "balance": 13739.55,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-02",
+      "description": "MOOIRIVIER PU 5326*2508 30 DEC CHEQUE CARD PURCHASE",
+      "amount": 20.0,
+      "balance": 13719.55,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-02",
+      "description": "GENAS BUTCHER 5326*2508 30 DEC CHEQUE CARD PURCHASE",
+      "amount": 330.31,
+      "balance": 13389.24,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-02",
+      "description": "UCOUNT MEMBERSHIP FEE",
+      "amount": 25.0,
+      "balance": 13364.24,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-03",
+      "description": "YOCO *MOKWE 5326*2508 31 DEC CHEQUE CARD PURCHASE",
+      "amount": 635.0,
+      "balance": 12729.24,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-03",
+      "description": "GAME POTCHEFS 5326*2508 31 DEC CHEQUE CARD PURCHASE",
+      "amount": 174.99,
+      "balance": 12554.25,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-03",
+      "description": "0000J648 2026-01-03T10:54:00 5326*2508 AUTOBANK CASH WITHDRAWAL AT",
+      "amount": 350.0,
+      "balance": 12204.25,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-05",
+      "description": "SUPERSPAR POT 5326*2508 02 JAN CHEQUE CARD PURCHASE",
+      "amount": 95.09,
+      "balance": 12109.16,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-06",
+      "description": "GAME POTCHEFS 5326*2508 03 JAN CHEQUE CARD PURCHASE",
+      "amount": 95.0,
+      "balance": 12014.16,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-06",
+      "description": "THE GENERAL S 5326*2508 02 JAN CHEQUE CARD PURCHASE",
+      "amount": 40.0,
+      "balance": 11974.16,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-06",
+      "description": "PNP CRP CANAL 5326*2508 03 JAN CHEQUE CARD PURCHASE",
+      "amount": 205.94,
+      "balance": 11768.22,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-07",
+      "description": "ENGEN UNCLE A 5326*2508 05 JAN CHEQUE CARD PURCHASE",
+      "amount": 300.0,
+      "balance": 11468.22,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-08",
+      "description": "OK FOODS ( IN 5326*2508 06 JAN CHEQUE CARD PURCHASE",
+      "amount": 41.98,
+      "balance": 11426.24,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-08",
+      "description": "OK FOODS ( IN 5326*2508 06 JAN CHEQUE CARD PURCHASE",
+      "amount": 84.97,
+      "balance": 11341.27,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-08",
+      "description": "CHECKERS FRES 5326*2508 05 JAN CHEQUE CARD PURCHASE",
+      "amount": 55.97,
+      "balance": 11285.3,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-08",
+      "description": "00001008 2026-01-08T07:24:08 5326*2508 AUTOBANK CASH WITHDRAWAL AT",
+      "amount": 1000.0,
+      "balance": 10285.3,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-08",
+      "description": "ER JOHNSON EULALIA IB PAYMENT TO",
+      "amount": 1500.0,
+      "balance": 8785.3,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-09",
+      "description": "JB MARKS MUNICIPALIT IB PAYMENT TO",
+      "amount": 527.0,
+      "balance": 8258.3,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-10",
+      "description": "CHECKERS FRES 5326*2508 07 JAN CHEQUE CARD PURCHASE",
+      "amount": 377.07,
+      "balance": 7881.23,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-12",
+      "description": "IAN JOHNSON IB PAYMENT TO",
+      "amount": 1000.0,
+      "balance": 6881.23,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-12",
+      "description": "C*SPAR POTCH 5326*2508 10 JAN CHEQUE CARD PURCHASE",
+      "amount": 178.15,
+      "balance": 6703.08,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-12",
+      "description": "0000J648 2026-01-12T13:53:50 5326*2508 AUTOBANK CASH WITHDRAWAL AT",
+      "amount": 100.0,
+      "balance": 6603.08,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-13",
+      "description": "ENGEN MOOIRIV 5326*2508 11 JAN CHEQUE CARD PURCHASE",
+      "amount": 791.54,
+      "balance": 5811.54,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-13",
+      "description": "SAYED`S INDUS 5326*2508 10 JAN CHEQUE CARD PURCHASE",
+      "amount": 65.0,
+      "balance": 5746.54,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-13",
+      "description": "CHECKERS FRES 5326*2508 09 JAN CHEQUE CARD PURCHASE",
+      "amount": 130.97,
+      "balance": 5615.57,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-13",
+      "description": "RED CAP LIQUO 5326*2508 10 JAN CHEQUE CARD PURCHASE",
+      "amount": 252.8,
+      "balance": 5362.77,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-14",
+      "description": "DIE BLOMWINKE 5326*2508 10 JAN CHEQUE CARD PURCHASE",
+      "amount": 135.0,
+      "balance": 5227.77,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-15",
+      "description": "VAS00177337015 ELECTRICITY PURCHASE",
+      "amount": 300.0,
+      "balance": 4927.77,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-15",
+      "description": "FEE: ELECTRICITY PURCHASE FEE: ELECTRICITY PURCHASE",
+      "amount": 1.6,
+      "balance": 4926.17,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-15",
+      "description": "CHECKERS FRES 5326*2508 12 JAN CHEQUE CARD PURCHASE",
+      "amount": 215.66,
+      "balance": 4710.51,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-15",
+      "description": "DISCHEM MOOIR 5326*2508 13 JAN CHEQUE CARD PURCHASE",
+      "amount": 144.2,
+      "balance": 4566.31,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-15",
+      "description": "0000J874 2026-01-15T08:19:37 5326*2508 AUTOBANK CASH WITHDRAWAL AT",
+      "amount": 200.0,
+      "balance": 4366.31,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-15",
+      "description": "YELLO DATA71883-260115 SERVICE AGREEMENT",
+      "amount": 19.0,
+      "balance": 4347.31,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-16",
+      "description": "BUYALLELECTRO 5326*2508 14 JAN CHEQUE CARD PURCHASE",
+      "amount": 50.0,
+      "balance": 4297.31,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-16",
+      "description": "SUPERSPAR POT 5326*2508 14 JAN CHEQUE CARD PURCHASE",
+      "amount": 21.98,
+      "balance": 4275.33,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-16",
+      "description": "REDSPOTHYGIEN 5326*2508 14 JAN CHEQUE CARD PURCHASE",
+      "amount": 55.02,
+      "balance": 4220.31,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-16",
+      "description": "ENGEN EMSLIES 5326*2508 14 JAN CHEQUE CARD PURCHASE",
+      "amount": 300.0,
+      "balance": 3920.31,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-16",
+      "description": "CHECKERS FRES 5326*2508 13 JAN CHEQUE CARD PURCHASE",
+      "amount": 108.43,
+      "balance": 3811.88,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-17",
+      "description": "PNP CRP POTCH 5326*2508 15 JAN CHEQUE CARD PURCHASE",
+      "amount": 157.77,
+      "balance": 3654.11,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-17",
+      "description": "PANDMEKKA 5326*2508 14 JAN CHEQUE CARD PURCHASE",
+      "amount": 45.0,
+      "balance": 3609.11,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-17",
+      "description": "PNP CRP POTCH 5326*2508 15 JAN CHEQUE CARD PURCHASE",
+      "amount": 43.29,
+      "balance": 3565.82,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-17",
+      "description": "SUPERSPAR POT 5326*2508 15 JAN CHEQUE CARD PURCHASE",
+      "amount": 165.75,
+      "balance": 3400.07,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-19",
+      "description": "RED CAP LIQUO 5326*2508 16 JAN CHEQUE CARD PURCHASE",
+      "amount": 144.9,
+      "balance": 3255.17,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-21",
+      "description": "RED CAP LIQUO 5326*2508 19 JAN CHEQUE CARD PURCHASE",
+      "amount": 144.9,
+      "balance": 3110.27,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-21",
+      "description": "ZIG MART POTC 5326*2508 19 JAN CHEQUE CARD PURCHASE",
+      "amount": 329.9,
+      "balance": 2780.37,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-21",
+      "description": "REDSPOTHYGIEN 5326*2508 19 JAN CHEQUE CARD PURCHASE",
+      "amount": 100.28,
+      "balance": 2680.09,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-21",
+      "description": "JB MARKS LM D 5326*2508 19 JAN CHEQUE CARD PURCHASE",
+      "amount": 300.0,
+      "balance": 2380.09,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-22",
+      "description": "PNP CRP CANAL 5326*2508 20 JAN CHEQUE CARD PURCHASE",
+      "amount": 61.99,
+      "balance": 2318.1,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-22",
+      "description": "ENGEN MOOIRIV 5326*2508 20 JAN CHEQUE CARD PURCHASE",
+      "amount": 300.0,
+      "balance": 2018.1,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-22",
+      "description": "DISCHEM MOOIR 5326*2508 20 JAN CHEQUE CARD PURCHASE",
+      "amount": 72.99,
+      "balance": 1945.11,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-23",
+      "description": "REDSPOTHYGIEN 5326*2508 21 JAN CHEQUE CARD PURCHASE",
+      "amount": 105.23,
+      "balance": 1839.88,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-23",
+      "description": "DICON SALARY IB PAYMENT FROM",
+      "amount": 16183.13,
+      "balance": 18023.01,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2026-01-24",
+      "description": "OK FOODS ( IN 5326*2508 22 JAN CHEQUE CARD PURCHASE",
+      "amount": 38.98,
+      "balance": 17984.03,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-26",
+      "description": "SBSA CML 10261609511001260126 DEBICHECK DEBIT ORDER",
+      "amount": 2715.77,
+      "balance": 15268.26,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-26",
+      "description": "P005423POT MOSAIC FUNERAL GROUP STOP ORDER",
+      "amount": 190.0,
+      "balance": 15078.26,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-27",
+      "description": "SB CARD DC39826902975853260127 MIGRATED DC DEBIT",
+      "amount": 2017.77,
+      "balance": 13060.49,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-27",
+      "description": "C*HABITAT POT 5326*2508 26 JAN CHEQUE CARD PURCHASE",
+      "amount": 28.0,
+      "balance": 13032.49,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-28",
+      "description": "OK FOODS ( IN 5326*2508 26 JAN CHEQUE CARD PURCHASE",
+      "amount": 125.14,
+      "balance": 12907.35,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-28",
+      "description": "CONFIRITE FOR 5326*2508 26 JAN CHEQUE CARD PURCHASE",
+      "amount": 300.0,
+      "balance": 12607.35,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-28",
+      "description": "C*SAYED INDUS 5326*2508 27 JAN CHEQUE CARD PURCHASE",
+      "amount": 78.0,
+      "balance": 12529.35,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-29",
+      "description": "OK FOODS ( IN 5326*2508 27 JAN CHEQUE CARD PURCHASE",
+      "amount": 34.97,
+      "balance": 12494.38,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-29",
+      "description": "ENGEN BULT 5326*2508 27 JAN CHEQUE CARD PURCHASE",
+      "amount": 300.0,
+      "balance": 12194.38,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-29",
+      "description": "ENGEN MOOIRIV 5326*2508 27 JAN CHEQUE CARD PURCHASE",
+      "amount": 150.0,
+      "balance": 12044.38,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-29",
+      "description": "SUPERSPAR POT 5326*2508 27 JAN CHEQUE CARD PURCHASE",
+      "amount": 72.97,
+      "balance": 11971.41,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-29",
+      "description": "SUPERSPAR POT 5326*2508 27 JAN CHEQUE CARD PURCHASE",
+      "amount": 99.16,
+      "balance": 11872.25,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-30",
+      "description": "BOXER SPR POT 5326*2508 28 JAN CHEQUE CARD PURCHASE",
+      "amount": 264.0,
+      "balance": 11608.25,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-30",
+      "description": "CHECKERS POTC 5326*2508 27 JAN CHEQUE CARD PURCHASE",
+      "amount": 120.27,
+      "balance": 11487.98,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-30",
+      "description": "SUPERSPAR POT 5326*2508 28 JAN CHEQUE CARD PURCHASE",
+      "amount": 254.21,
+      "balance": 11233.77,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-30",
+      "description": "OK FOODS ( IN 5326*2508 28 JAN CHEQUE CARD PURCHASE",
+      "amount": 72.47,
+      "balance": 11161.3,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-30",
+      "description": "OLDMUTCOL 33401076820260130 INSURANCE PREMIUM",
+      "amount": 1139.17,
+      "balance": 10022.13,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-30",
+      "description": "GAME/DIONW0005022190315055980 ACCOUNT PAYMENT",
+      "amount": 2496.75,
+      "balance": 7525.38,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-31",
+      "description": "MTN SP 5059581145 DEBIT TRANSFER",
+      "amount": 549.0,
+      "balance": 6976.38,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-31",
+      "description": "FIXED MONTHLY FEE FIXED MONTHLY FEE",
+      "amount": 260.0,
+      "balance": 6716.38,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-02",
+      "description": "IAN PAYSHAP PAYMENT TO",
+      "amount": 1000.0,
+      "balance": 5716.38,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-02",
+      "description": "FEE: PAYSHAP PAYMENT FEE: PAYSHAP PAYMENT",
+      "amount": 7.0,
+      "balance": 5709.38,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-02",
+      "description": "IE JOHNSON IAN JOHNSON STOP ORDER",
+      "amount": 50.0,
+      "balance": 5659.38,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-02",
+      "description": "AA JOHNSON ABIGAIL JOHNSON STOP ORDER",
+      "amount": 50.0,
+      "balance": 5609.38,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-02",
+      "description": "SUPERSPAR POT 5326*2508 30 JAN CHEQUE CARD PURCHASE",
+      "amount": 358.65,
+      "balance": 5250.73,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-02",
+      "description": "CHECKERS FRES 5326*2508 29 JAN CHEQUE CARD PURCHASE",
+      "amount": 104.24,
+      "balance": 5146.49,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-02",
+      "description": "UCOUNT MEMBERSHIP FEE",
+      "amount": 25.0,
+      "balance": 5121.49,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-03",
+      "description": "BOERESJIEK PO 5326*2508 30 JAN CHEQUE CARD PURCHASE",
+      "amount": 36.0,
+      "balance": 5085.49,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-03",
+      "description": "IAN PAYSHAP PAYMENT TO",
+      "amount": 1000.0,
+      "balance": 4085.49,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-03",
+      "description": "FEE: PAYSHAP PAYMENT FEE: PAYSHAP PAYMENT",
+      "amount": 7.0,
+      "balance": 4078.49,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-03",
+      "description": "VAS00184627601 ELECTRICITY PURCHASE",
+      "amount": 1000.0,
+      "balance": 3078.49,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-03",
+      "description": "FEE: ELECTRICITY PURCHASE FEE: ELECTRICITY PURCHASE",
+      "amount": 1.6,
+      "balance": 3076.89,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-04",
+      "description": "ENGEN MOOIRIV 5326*2508 02 FEB CHEQUE CARD PURCHASE",
+      "amount": 200.0,
+      "balance": 2876.89,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-04",
+      "description": "ENGEN MOOIRIV 5326*2508 02 FEB CHEQUE CARD PURCHASE",
+      "amount": 200.0,
+      "balance": 2676.89,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-04",
+      "description": "PNP CRP POTCH 5326*2508 02 FEB CHEQUE CARD PURCHASE",
+      "amount": 48.97,
+      "balance": 2627.92,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-04",
+      "description": "BUYALLELECTRO 5326*2508 02 FEB CHEQUE CARD PURCHASE",
+      "amount": 99.0,
+      "balance": 2528.92,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-04",
+      "description": "OUPAS BILTONG 5326*2508 02 FEB CHEQUE CARD PURCHASE",
+      "amount": 37.6,
+      "balance": 2491.32,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-05",
+      "description": "F KHANS BUTCH 5326*2508 03 FEB CHEQUE CARD PURCHASE",
+      "amount": 34.0,
+      "balance": 2457.32,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-05",
+      "description": "PNP CRP POTCH 5326*2508 03 FEB CHEQUE CARD PURCHASE",
+      "amount": 71.27,
+      "balance": 2386.05,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-05",
+      "description": "SHAIKSMOTORSP 5326*2508 03 FEB CHEQUE CARD PURCHASE",
+      "amount": 120.0,
+      "balance": 2266.05,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-06",
+      "description": "ENGEN BULT 5326*2508 04 FEB CHEQUE CARD PURCHASE",
+      "amount": 300.0,
+      "balance": 1966.05,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-07",
+      "description": "C*RIO CAFE. 5326*2508 05 FEB CHEQUE CARD PURCHASE",
+      "amount": 42.0,
+      "balance": 1924.05,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-09",
+      "description": "CHECKERS FRES 5326*2508 05 FEB CHEQUE CARD PURCHASE",
+      "amount": 289.55,
+      "balance": 1634.5,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-09",
+      "description": "GOLDWING RETA 5326*2508 06 FEB CHEQUE CARD PURCHASE",
+      "amount": 207.0,
+      "balance": 1427.5,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-10",
+      "description": "JB MARKS MUNICIPALIT IB PAYMENT TO",
+      "amount": 132.0,
+      "balance": 1295.5,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-10",
+      "description": "SUPERSPAR POT 5326*2508 08 FEB CHEQUE CARD PURCHASE",
+      "amount": 222.13,
+      "balance": 1073.37,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-10",
+      "description": "C*THE CRAZY S 5326*2508 09 FEB CHEQUE CARD PURCHASE",
+      "amount": 171.18,
+      "balance": 902.19,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-12",
+      "description": "CHECKERS FRES 5326*2508 09 FEB CHEQUE CARD PURCHASE",
+      "amount": 44.97,
+      "balance": 857.22,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-12",
+      "description": "ENGEN BULT POTCHEFSTROO ZAF 12-02-2026 17H47:24 FEE- POS DECLINED INSUFF FUNDS",
+      "amount": 8.5,
+      "balance": 848.72,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-13",
+      "description": "CHECKERS FRES 5326*2508 10 FEB CHEQUE CARD PURCHASE",
+      "amount": 149.22,
+      "balance": 699.5,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-13",
+      "description": "C*THE CRAZY S 5326*2508 12 FEB CHEQUE CARD PURCHASE",
+      "amount": 49.98,
+      "balance": 649.52,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-14",
+      "description": "PNP CRP POTCH 5326*2508 05 FEB CHEQUE CARD PURCHASE",
+      "amount": 45.27,
+      "balance": 604.25,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-14",
+      "description": "ZIG MART POTC 5326*2508 12 FEB CHEQUE CARD PURCHASE",
+      "amount": 359.8,
+      "balance": 244.45,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-14",
+      "description": "*****4907027 09H56 *****2508 IB TRANSFER FROM",
+      "amount": 500.0,
+      "balance": 744.45,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2026-02-16",
+      "description": "BOXER SPR POT 5326*2508 13 FEB CHEQUE CARD PURCHASE",
+      "amount": 132.0,
+      "balance": 612.45,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-16",
+      "description": "YELLO DATA71883-260215 SERVICE AGREEMENT",
+      "amount": 19.0,
+      "balance": 593.45,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-17",
+      "description": "SHAIKSMOTORSP 5326*2508 14 FEB CHEQUE CARD PURCHASE",
+      "amount": 90.0,
+      "balance": 503.45,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-17",
+      "description": "BOXER SPR POT 5326*2508 14 FEB CHEQUE CARD PURCHASE",
+      "amount": 132.0,
+      "balance": 371.45,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-17",
+      "description": "SUPERSPAR POT 5326*2508 15 FEB CHEQUE CARD PURCHASE",
+      "amount": 95.2,
+      "balance": 276.25,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-18",
+      "description": "CHECKERS FRES 5326*2508 15 FEB CHEQUE CARD PURCHASE",
+      "amount": 49.99,
+      "balance": 226.26,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-18",
+      "description": "*****4907027 08H22 *****2508 IB TRANSFER FROM",
+      "amount": 300.0,
+      "balance": 526.26,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2026-02-19",
+      "description": "CHECKERS FRES 5326*2508 16 FEB CHEQUE CARD PURCHASE",
+      "amount": 35.73,
+      "balance": 490.53,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-19",
+      "description": "CHECKERS FRES 5326*2508 17 FEB CHEQUE CARD PURCHASE",
+      "amount": 52.97,
+      "balance": 437.56,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-20",
+      "description": "CHECKERS FRES 5326*2508 18 FEB CHEQUE CARD PURCHASE",
+      "amount": 70.96,
+      "balance": 366.6,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-21",
+      "description": "PNP CRP POTCH 5326*2508 19 FEB CHEQUE CARD PURCHASE",
+      "amount": 43.99,
+      "balance": 322.61,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-25",
+      "description": "DICON SALARY IB PAYMENT FROM",
+      "amount": 16183.16,
+      "balance": 16505.77,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2026-02-26",
+      "description": "SBSA CML 10261609511001260226 DEBICHECK DEBIT ORDER",
+      "amount": 2715.77,
+      "balance": 13790.0,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-26",
+      "description": "P005423POT MOSAIC FUNERAL GROUP STOP ORDER",
+      "amount": 190.0,
+      "balance": 13600.0,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-26",
+      "description": "CHECKERS FRES 5326*2508 24 FEB CHEQUE CARD PURCHASE",
+      "amount": 67.16,
+      "balance": 13532.84,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-26",
+      "description": "LAKES MAGTAPE CREDIT",
+      "amount": 150.0,
+      "balance": 13682.84,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2026-02-27",
+      "description": "SB CARD DC39826902975853260227 MIGRATED DC DEBIT",
+      "amount": 1750.75,
+      "balance": 11932.09,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-28",
+      "description": "DISCHEM MOOIR 5326*2508 26 FEB CHEQUE CARD PURCHASE",
+      "amount": 281.17,
+      "balance": 11650.92,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-28",
+      "description": "CHECKERS FRES 5326*2508 26 FEB CHEQUE CARD PURCHASE",
+      "amount": 65.26,
+      "balance": 11585.66,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-28",
+      "description": "MTN SP 5060298170 DEBIT TRANSFER",
+      "amount": 549.0,
+      "balance": 11036.66,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-02-28",
+      "description": "FIXED MONTHLY FEE FIXED MONTHLY FEE",
+      "amount": 260.0,
+      "balance": 10776.66,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-02",
+      "description": "IE JOHNSON IAN JOHNSON STOP ORDER",
+      "amount": 50.0,
+      "balance": 10726.66,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-02",
+      "description": "AA JOHNSON ABIGAIL JOHNSON STOP ORDER",
+      "amount": 50.0,
+      "balance": 10676.66,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-02",
+      "description": "SUPERSPAR POT 5326*2508 27 FEB CHEQUE CARD PURCHASE",
+      "amount": 87.97,
+      "balance": 10588.69,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-02",
+      "description": "IAN PAYSHAP PAYMENT TO",
+      "amount": 1000.0,
+      "balance": 9588.69,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-02",
+      "description": "FEE: PAYSHAP PAYMENT FEE: PAYSHAP PAYMENT",
+      "amount": 7.0,
+      "balance": 9581.69,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-02",
+      "description": "VAS00194203749 ELECTRICITY PURCHASE",
+      "amount": 1000.0,
+      "balance": 8581.69,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-02",
+      "description": "FEE: ELECTRICITY PURCHASE FEE: ELECTRICITY PURCHASE",
+      "amount": 1.6,
+      "balance": 8580.09,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-02",
+      "description": "OLDMUTCOL 33401076820260228 INSURANCE PREMIUM",
+      "amount": 1139.17,
+      "balance": 7440.92,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-02",
+      "description": "UCOUNT MEMBERSHIP FEE",
+      "amount": 25.0,
+      "balance": 7415.92,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-02",
+      "description": "GAME/DIONW0005022190315055980 ACCOUNT PAYMENT",
+      "amount": 2494.05,
+      "balance": 4921.87,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-03",
+      "description": "ASTRO PAWN PO 5326*2508 28 FEB CHEQUE CARD PURCHASE",
+      "amount": 150.0,
+      "balance": 4771.87,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-03",
+      "description": "ENGEN MOOIRIV 5326*2508 01 MAR CHEQUE CARD PURCHASE",
+      "amount": 688.06,
+      "balance": 4083.81,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-03",
+      "description": "NIGRINIBATTER 5326*2508 28 FEB CHEQUE CARD PURCHASE",
+      "amount": 1350.0,
+      "balance": 2733.81,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-03",
+      "description": "ENGEN BULT 5326*2508 28 FEB CHEQUE CARD PURCHASE",
+      "amount": 150.0,
+      "balance": 2583.81,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-03",
+      "description": "SUPERSPAR POT 5326*2508 28 FEB CHEQUE CARD PURCHASE",
+      "amount": 83.54,
+      "balance": 2500.27,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-03",
+      "description": "SHELL GREENTR 5326*2508 01 MAR CHEQUE CARD PURCHASE",
+      "amount": 255.37,
+      "balance": 2244.9,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-03",
+      "description": "ESKORT CASTLE 5326*2508 01 MAR CHEQUE CARD PURCHASE",
+      "amount": 200.0,
+      "balance": 2044.9,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-03",
+      "description": "KAMPUS PHA EASTERN CAPE ZAF 03-03-2026 07H59:48 OUTSTANDING CARD AUTHORISATION",
+      "amount": 194.9,
+      "balance": 1850.0,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-03",
+      "description": "CHECKERS F SB084008 ZAF 03-03-2026 14H18:17 OUTSTANDING CARD AUTHORISATION",
+      "amount": 76.97,
+      "balance": 1773.03,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-03",
+      "description": "REDSPOT HY POTCHEFSTROO ZAF 03-03-2026 16H57:37 OUTSTANDING CARD AUTHORISATION",
+      "amount": 198.64,
+      "balance": 1574.39,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-03",
+      "description": "PNP CRP PO POTCHEFSTROO ZAF 03-03-2026 17H17:44 OUTSTANDING CARD AUTHORISATION",
+      "amount": 229.96,
+      "balance": 1344.43,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-04",
+      "description": "SUPERSPAR POT 5326*2508 02 MAR CHEQUE CARD PURCHASE",
+      "amount": 49.97,
+      "balance": 1294.46,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-04",
+      "description": "BOXER SPR POT 5326*2508 02 MAR CHEQUE CARD PURCHASE",
+      "amount": 132.0,
+      "balance": 1162.46,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-03-04",
+      "description": "CLICKS VYF NORTH WEST ZAF 04-03-2026 09H07:34 OUTSTANDING CARD AUTHORISATION",
+      "amount": 154.78,
+      "balance": 1007.68,
+      "transaction_type": "debit"
+    }
+  ]
 }

@@ -216,7 +216,11 @@ class TestBankProfileFactory:
         assert "discovery_bank" in banks
         assert "investec" in banks
         assert "old_mutual" in banks
-        assert len(banks) == 11
+        assert "standard_bank_online" in banks
+        assert "standard_bank_prestige" in banks
+        assert "standard_bank_achieva" in banks
+        assert "standard_bank_achieva_afrikaans" in banks
+        assert len(banks) == 15
 
     def test_detect_absa(self):
         text = "ABSA Bank\nCheque Account\nAccount Number: 1234567890"
@@ -251,7 +255,7 @@ class TestBankProfileFactory:
     def test_detect_standard_bank_from_domain_branding(self):
         text = "Website: www.standardbank.co.za\nTransactions\nAccount: PureSave"
         profile = BankProfileFactory.detect(text)
-        assert profile.name == "Standard Bank"
+        assert profile.name == "Standard Bank Online"
 
     def test_detect_capitec(self):
         text = "Capitec Bank\nGlobal One Account\nBranch: 470010"

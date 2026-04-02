@@ -157,6 +157,9 @@ class BankProfile:
             cleaned = cleaned[:-1].strip()
             negate = True
 
+        # Handle leading plus (credit indicator in some formats, e.g. "+ 2 250.00")
+        cleaned = re.sub(r"^\+\s*", "", cleaned.strip())
+
         # Handle leading minus with space (OCR: "- 300,00")
         cleaned = re.sub(r"^-\s+", "-", cleaned.strip())
 

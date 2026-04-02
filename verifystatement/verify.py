@@ -45,7 +45,7 @@ from src.utils.logger import get_logger
 logger = get_logger(__name__)
 
 DEFAULT_MODEL = "claude-sonnet-4-20250514"
-MAX_FIX_ATTEMPTS = 3
+MAX_FIX_ATTEMPTS = 10
 # Maximum page images to include in new-profile creation prompts.  Each page
 # renders at ~300 DPI and is sent as a base64 PNG, so we cap to avoid
 # exceeding Claude's context window for very large statements.
@@ -912,6 +912,33 @@ def main() -> None:
         help="Enable auto-fix mode (modifies bank profiles)",
     )
     parser.add_argument(
+        "--support-loop",
+        action="store_true",
+        help="Run the task-driven support loop: discover → classify → repair → validate → learn",
+    )
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Resume the most recent support-loop run for the given PDF",
+    )
+    parser.add_argument(
+        "--inspect-run",
+        type=str,
+        default=None,
+        help="Inspect the state of a support-loop run directory",
+    )
+    parser.add_argument(
+        "--archive-run",
+        type=str,
+        default=None,
+        help="Archive a completed support-loop run directory",
+    )
+    parser.add_argument(
+        "--list-runs",
+        action="store_true",
+        help="List all support-loop runs",
+    )
+    parser.add_argument(
         "--report-dir",
         type=str,
         default=str(PROJECT_ROOT / "verifystatement" / "reports"),
@@ -932,6 +959,39 @@ def main() -> None:
 
     args = parser.parse_args()
 
+    # -- Support-loop management commands (no PDF needed) --
+    if args.list_runs:
+        from verifystatement.support_loop import list_runs
+
+        runs = list_runs()
+        if not runs:
+            print("No support-loop runs found.")
+        else:
+            print(f"{'Run ID':<45} {'Status':<15} {'Bank':<20} {'Attempts'}")
+            print("-" * 90)
+            for r in runs:
+                print(
+                    f"{r['run_id']:<45} {r['status']:<15} "
+                    f"{r.get('detected_bank', ''):<20} "
+                    f"{r.get('attempt_count', 0)}"
+                )
+        return
+
+    if args.inspect_run:
+        from verifystatement.support_loop import inspect_run
+
+        info = inspect_run(args.inspect_run)
+        print(json.dumps(info, indent=2))
+        return
+
+    if args.archive_run:
+        from verifystatement.support_loop import archive_run
+
+        dest = archive_run(args.archive_run)
+        print(f"Archived to: {dest}")
+        return
+
+    # -- Modes that require a PDF --
     if not args.pdf_file and not args.pdf_dir:
         parser.error("Provide --pdf-file or --pdf-dir")
 
@@ -954,8 +1014,25 @@ def main() -> None:
         print("No PDF files found.")
         sys.exit(1)
 
-    print(f"Found {len(pdf_files)} PDF(s) to verify\n")
+    print(f"Found {len(pdf_files)} PDF(s) to process\n")
 
+    # -- Support-loop mode --
+    if args.support_loop:
+        from verifystatement.support_loop import run_support_loop
+
+        for pdf_path in pdf_files:
+            result = run_support_loop(
+                str(pdf_path),
+                client=client,
+                model=args.model,
+                max_attempts=args.max_attempts,
+                resume=args.resume,
+            )
+            print(f"\n  Support-loop result: {result.get('status', 'unknown')}")
+            print(f"  Run directory: {result.get('run_dir', '?')}")
+        return
+
+    # -- Default: verify (+ optional auto-fix) --
     for pdf_path in pdf_files:
         # Phase 1: Verify
         report = verify_pdf(str(pdf_path), client, args.model)
@@ -965,7 +1042,7 @@ def main() -> None:
         report_file = save_report(report, report_dir, pdf_path)
         print(f"  Report saved: {report_file}")
 
-        # Phase 2: Auto-fix
+        # Phase 2: Auto-fix (legacy compatibility path)
         if args.auto_fix:
             fix_result = auto_fix(
                 str(pdf_path), report, client, args.model, args.max_attempts,

@@ -31,4 +31,6 @@ teststatement/*.db
 verifystatement/input/*.pdf
 verifystatement/reports/*
 !verifystatement/reports/.gitkeep
+verifystatement/runs/
+verifystatement/learnings/
 verifystatement/*.db

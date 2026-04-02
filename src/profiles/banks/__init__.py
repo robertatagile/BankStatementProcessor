@@ -15,7 +15,13 @@ def register_all() -> None:
     from src.profiles.banks.absa_afrikaans import absa_afrikaans_profile
     from src.profiles.banks.fnb import fnb_profile
     from src.profiles.banks.nedbank import nedbank_profile
-    from src.profiles.banks.standard_bank import standard_bank_profile
+    from src.profiles.banks.standard_bank import (
+        standard_bank_profile,
+        standard_bank_online_profile,
+        standard_bank_prestige_profile,
+        standard_bank_achieva_profile,
+        standard_bank_achieva_afrikaans_profile,
+    )
     from src.profiles.banks.capitec import capitec_profile
     from src.profiles.banks.african_bank import african_bank_profile
     from src.profiles.banks.tymebank import tymebank_profile
@@ -28,6 +34,10 @@ def register_all() -> None:
     BankProfileFactory.register("fnb", fnb_profile)
     BankProfileFactory.register("nedbank", nedbank_profile)
     BankProfileFactory.register("standard_bank", standard_bank_profile)
+    BankProfileFactory.register("standard_bank_online", standard_bank_online_profile)
+    BankProfileFactory.register("standard_bank_prestige", standard_bank_prestige_profile)
+    BankProfileFactory.register("standard_bank_achieva", standard_bank_achieva_profile)
+    BankProfileFactory.register("standard_bank_achieva_afrikaans", standard_bank_achieva_afrikaans_profile)
     BankProfileFactory.register("capitec", capitec_profile)
     BankProfileFactory.register("african_bank", african_bank_profile)
     BankProfileFactory.register("tymebank", tymebank_profile)
