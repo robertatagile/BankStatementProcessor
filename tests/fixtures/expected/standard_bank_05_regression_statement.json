@@ -1,0 +1,481 @@
+{
+  "line_count": 68,
+  "lines": [
+    {
+      "date": "2025-12-13",
+      "description": "CHEQUE CARD PURCHASE NEW UBER EATS 5222*6036 11 DEC",
+      "amount": 376.35,
+      "balance": 27123.72,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-13",
+      "description": "CHEQUE CARD PURCHASE C*YAMI CUISIN 5222*2463 12 DEC",
+      "amount": 348.0,
+      "balance": 26775.72,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-13",
+      "description": "CHEQUE CARD PURCHASE KFC MB MONTAN 5222*2463 11 DEC",
+      "amount": 287.2,
+      "balance": 26488.52,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-13",
+      "description": "IB TRANSFER TO *****2031121 05H40 *****6036",
+      "amount": 3000.0,
+      "balance": 23488.52,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-13",
+      "description": "IB TRANSFER TO *****6339509 05H40 *****6036",
+      "amount": 10250.0,
+      "balance": 13238.52,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-13",
+      "description": "IB TRANSFER FROM *****6339509 13H01 *****6036",
+      "amount": 1200.0,
+      "balance": 14438.52,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2025-12-15",
+      "description": "IB PAYMENT TO",
+      "amount": 500.0,
+      "balance": 13938.52,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-15",
+      "description": "CHEQUE CARD PURCHASE DELTA 5 GAMES 5222*2463 12 DEC",
+      "amount": 750.0,
+      "balance": 13188.52,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-15",
+      "description": "CHEQUE CARD PURCHASE ENGEN ZAMBESI 5222*2463 12 DEC",
+      "amount": 518.74,
+      "balance": 12669.78,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-15",
+      "description": "IB PAYMENT FROM",
+      "amount": 500.0,
+      "balance": 13169.78,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2025-12-15",
+      "description": "IB TRANSFER FROM WOOLIES EN KOEK",
+      "amount": 2460.7,
+      "balance": 15630.48,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2025-12-17",
+      "description": "IB PAYMENT FROM",
+      "amount": 14720.0,
+      "balance": 30350.48,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2025-12-17",
+      "description": "PAYSHAP PAYMENT TO",
+      "amount": 1500.0,
+      "balance": 28850.48,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-17",
+      "description": "FEE: PAYSHAP PAYMENT ##",
+      "amount": 7.0,
+      "balance": 28843.48,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-17",
+      "description": "IB PAYMENT TO DANIEL GIFFORD",
+      "amount": 10000.0,
+      "balance": 18843.48,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-17",
+      "description": "CHEQUE CARD PURCHASE KFC MB MONTAN 5222*2463 14 DEC",
+      "amount": 225.7,
+      "balance": 18617.78,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-17",
+      "description": "CHEQUE CARD PURCHASE NEWLANDACCESS 5222*2463 13 DEC",
+      "amount": 60.0,
+      "balance": 18557.78,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-17",
+      "description": "CHEQUE CARD PURCHASE",
+      "amount": 358.95,
+      "balance": 18198.83,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-17",
+      "description": "CHEQUE CARD PURCHASE WALLIE'S 5222*2463 13 DEC",
+      "amount": 150.0,
+      "balance": 18048.83,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-17",
+      "description": "CHEQUE CARD PURCHASE MOOTDELI 5222*2463 13 DEC",
+      "amount": 60.0,
+      "balance": 17988.83,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-17",
+      "description": "CHEQUE CARD PURCHASE KFC MB DOORNP 5222*2463 14 DEC",
+      "amount": 72.8,
+      "balance": 17916.03,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-17",
+      "description": "CHEQUE CARD PURCHASE YOCO *XHASH 5222*2463 13 DEC",
+      "amount": 120.0,
+      "balance": 17796.03,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-17",
+      "description": "CHEQUE CARD PURCHASE WIMPY ZAMBESI 5222*2463 13 DEC",
+      "amount": 214.8,
+      "balance": 17581.23,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-17",
+      "description": "CHEQUE CARD PURCHASE ALLESPAMPOEN 5222*2463 13 DEC",
+      "amount": 80.0,
+      "balance": 17501.23,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-17",
+      "description": "CHEQUE CARD PURCHASE YOCO *ARTC 5222*2463 13 DEC",
+      "amount": 400.0,
+      "balance": 17101.23,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-17",
+      "description": "IB TRANSFER FROM *****6339509 08H23 *****6036",
+      "amount": 600.0,
+      "balance": 17701.23,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2025-12-17",
+      "description": "IB TRANSFER FROM KLERE A",
+      "amount": 1700.0,
+      "balance": 19401.23,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2025-12-18",
+      "description": "CHEQUE CARD PURCHASE TAKEALOT 5222*6036 16 DEC",
+      "amount": 811.0,
+      "balance": 18590.23,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-18",
+      "description": "CHEQUE CARD PURCHASE PAYFAST*KARIE 5222*6036 15 DEC",
+      "amount": 1224.0,
+      "balance": 17366.23,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-18",
+      "description": "CHEQUE CARD PURCHASE TAKEALOT 5222*6036 16 DEC",
+      "amount": 849.0,
+      "balance": 16517.23,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-18",
+      "description": "CHEQUE CARD PURCHASE C*V044-EDG KO 5222*2463 17 DEC",
+      "amount": 851.92,
+      "balance": 15665.31,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-18",
+      "description": "CHEQUE CARD PURCHASE KFC MB MONTAN 5222*2463 15 DEC",
+      "amount": 159.6,
+      "balance": 15505.71,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-18",
+      "description": "CHEQUE CARD PURCHASE WOOLWORTHS 5222*2463 15 DEC",
+      "amount": 1236.7,
+      "balance": 14269.01,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-18",
+      "description": "CHEQUE CARD PURCHASE OBARO WONDERB 5222*2463 13 DEC",
+      "amount": 1212.0,
+      "balance": 13057.01,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-18",
+      "description": "CHEQUE CARD PURCHASE MRP SPORT KOL 5222*2463 15 DEC",
+      "amount": 300.0,
+      "balance": 12757.01,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-18",
+      "description": "CHEQUE CARD PURCHASE CMPA ARRIE NE 5222*2463 13 DEC",
+      "amount": 334.39,
+      "balance": 12422.62,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-18",
+      "description": "CHEQUE CARD PURCHASE LIQUOR CITY Z 5222*2463 13 DEC",
+      "amount": 237.17,
+      "balance": 12185.45,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-18",
+      "description": "CHEQUE CARD PURCHASE SMULHOEKIE KO 5222*2463 13 DEC",
+      "amount": 146.0,
+      "balance": 12039.45,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-18",
+      "description": "CHEQUE CARD PURCHASE CLICKS KOLONA 5222*2463 15 DEC",
+      "amount": 1436.1,
+      "balance": 10603.35,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-18",
+      "description": "CHEQUE CARD PURCHASE DISCHEM MONTA 5222*2463 15 DEC",
+      "amount": 940.57,
+      "balance": 9662.78,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-19",
+      "description": "CHEQUE CARD PURCHASE DISCHEM MONTA 5222*2463 17 DEC",
+      "amount": 295.35,
+      "balance": 9367.43,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-19",
+      "description": "CHEQUE CARD PURCHASE CHAMBERLAIN M 5222*2463 16 DEC",
+      "amount": 755.2,
+      "balance": 8612.23,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-19",
+      "description": "CHEQUE CARD PURCHASE FLM MENLYN MA 5222*2463 17 DEC",
+      "amount": 154.84,
+      "balance": 8457.39,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-19",
+      "description": "CHEQUE CARD PURCHASE PNP CLT MENLY 5222*2463 17 DEC",
+      "amount": 471.97,
+      "balance": 7985.42,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-19",
+      "description": "CHEQUE CARD PURCHASE MCD ZAMBEZI ( 5222*2463 17 DEC",
+      "amount": 141.8,
+      "balance": 7843.62,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-19",
+      "description": "CHEQUE CARD PURCHASE CLICKS MENLYN 5222*2463 17 DEC",
+      "amount": 32.98,
+      "balance": 7810.64,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-19",
+      "description": "CHEQUE CARD PURCHASE KFC MB MONTAN 5222*2463 17 DEC",
+      "amount": 79.8,
+      "balance": 7730.84,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-19",
+      "description": "IB PAYMENT FROM D BDAY",
+      "amount": 400.0,
+      "balance": 8130.84,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2025-12-20",
+      "description": "DEBICHECK DEBIT ORDER NEDABF/MFC27855500001 251220",
+      "amount": 4403.97,
+      "balance": 3726.87,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-22",
+      "description": "IB TRANSFER FROM",
+      "amount": 2609.0,
+      "balance": 6335.87,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2025-12-22",
+      "description": "CHEQUE CARD PURCHASE MCD ZAMBEZI ( 5222*2463 19 DEC",
+      "amount": 106.8,
+      "balance": 6229.07,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-22",
+      "description": "CHEQUE CARD PURCHASE NEW UBER EATS 5222*6036 19 DEC",
+      "amount": 211.31,
+      "balance": 6017.76,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-23",
+      "description": "CHEQUE CARD PURCHASE TAKEALOT 5222*6036 21 DEC",
+      "amount": 2609.0,
+      "balance": 3408.76,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-29",
+      "description": "MEMBERSHIP FEE ##",
+      "amount": 25.0,
+      "balance": 3383.76,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-29",
+      "description": "INSURANCE PREMIUM",
+      "amount": 1058.15,
+      "balance": 2325.61,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-31",
+      "description": "DEBICHECK DEBIT ORDER MTN SP BA147359366 251231",
+      "amount": 488.99,
+      "balance": 1836.62,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-31",
+      "description": "FIXED MONTHLY FEE ##",
+      "amount": 115.0,
+      "balance": 1721.62,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-02",
+      "description": "INSURANCE PREMIUM SL-DEBITS SANLAM 81861963",
+      "amount": 1000.0,
+      "balance": 721.62,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-02",
+      "description": "SERVICE AGREEMENT CAP LEGACY382102862 NETCASH",
+      "amount": 125.83,
+      "balance": 595.79,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-05",
+      "description": "PAYSHAP PAYMENT FROM D GIFFORD",
+      "amount": 1000.0,
+      "balance": 1595.79,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2026-01-07",
+      "description": "IB PAYMENT FROM",
+      "amount": 150.0,
+      "balance": 1745.79,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2026-01-09",
+      "description": "PAYSHAP PAYMENT FROM A VAN SCHALKWYK",
+      "amount": 380.0,
+      "balance": 2125.79,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2026-01-09",
+      "description": "IB TRANSFER FROM *****6339509 15H00 *****6036",
+      "amount": 1000.0,
+      "balance": 3125.79,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2026-01-10",
+      "description": "CHEQUE CARD PURCHASE CHECKERSFX ZA 5222*2463 07 JAN",
+      "amount": 503.51,
+      "balance": 2622.28,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-10",
+      "description": "CHEQUE CARD PURCHASE CMPA ARRIE NE 5222*2463 07 JAN",
+      "amount": 564.34,
+      "balance": 2057.94,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-10",
+      "description": "IB TRANSFER TO *****2031121 16H41 *****6036",
+      "amount": 1000.0,
+      "balance": 1057.94,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-12",
+      "description": "CHEQUE CARD PURCHASE SPECSAVERS KO 5222*2463 09 JAN",
+      "amount": 599.0,
+      "balance": 458.94,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2026-01-12",
+      "description": "CHEQUE CARD PURCHASE YOCO *ARTC 5222*2463 09 JAN ## These fees include VAT at 15% VAT Summary Total charge amount (excluding VAT) 127.83- Total VAT 19.17- Total charge amount (including VAT) 147.00-",
+      "amount": 385.0,
+      "balance": 73.94,
+      "transaction_type": "debit"
+    }
+  ]
+}

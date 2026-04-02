@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
 from fastapi.testclient import TestClient
 
 from src.api import jobs, server
@@ -39,6 +40,53 @@ STANDARD_BANK_REGRESSION_PDF = (
 STANDARD_BANK_REGRESSION_EXPECTED = (
     FIXTURES_DIR / "expected" / "standard_bank_regression_statement.json"
 )
+STANDARD_BANK_02_REGRESSION_PDF = (
+    FIXTURES_DIR / "pdfs" / "standard_bank_02_regression_statement.pdf"
+)
+STANDARD_BANK_02_REGRESSION_EXPECTED = (
+    FIXTURES_DIR / "expected" / "standard_bank_02_regression_statement.json"
+)
+STANDARD_BANK_03_REGRESSION_PDF = (
+    FIXTURES_DIR / "pdfs" / "standard_bank_03_regression_statement.pdf"
+)
+STANDARD_BANK_03_REGRESSION_EXPECTED = (
+    FIXTURES_DIR / "expected" / "standard_bank_03_regression_statement.json"
+)
+STANDARD_BANK_04_REGRESSION_PDF = (
+    FIXTURES_DIR / "pdfs" / "standard_bank_04_regression_statement.pdf"
+)
+STANDARD_BANK_04_REGRESSION_EXPECTED = (
+    FIXTURES_DIR / "expected" / "standard_bank_04_regression_statement.json"
+)
+STANDARD_BANK_05_REGRESSION_PDF = (
+    FIXTURES_DIR / "pdfs" / "standard_bank_05_regression_statement.pdf"
+)
+STANDARD_BANK_05_REGRESSION_EXPECTED = (
+    FIXTURES_DIR / "expected" / "standard_bank_05_regression_statement.json"
+)
+
+STANDARD_BANK_EXTRACTION_REGRESSION_CASES = [
+    pytest.param(
+        STANDARD_BANK_02_REGRESSION_PDF,
+        STANDARD_BANK_02_REGRESSION_EXPECTED,
+        id="standard_bank_02",
+    ),
+    pytest.param(
+        STANDARD_BANK_03_REGRESSION_PDF,
+        STANDARD_BANK_03_REGRESSION_EXPECTED,
+        id="standard_bank_03",
+    ),
+    pytest.param(
+        STANDARD_BANK_04_REGRESSION_PDF,
+        STANDARD_BANK_04_REGRESSION_EXPECTED,
+        id="standard_bank_04",
+    ),
+    pytest.param(
+        STANDARD_BANK_05_REGRESSION_PDF,
+        STANDARD_BANK_05_REGRESSION_EXPECTED,
+        id="standard_bank_05",
+    ),
+]
 
 
 def _run_jobs_inline(monkeypatch):
@@ -583,20 +631,29 @@ def test_discovery_statement_regression_returns_expected_lines(tmp_path, monkeyp
     server._session_factory = None
 
 
-def test_standard_bank_statement_regression_returns_expected_extracted_lines(tmp_path, monkeypatch):
+@pytest.mark.parametrize(
+    ("pdf_path", "expected_path"),
+    STANDARD_BANK_EXTRACTION_REGRESSION_CASES,
+)
+def test_standard_bank_statement_regression_returns_expected_extracted_lines(
+    tmp_path,
+    monkeypatch,
+    pdf_path,
+    expected_path,
+):
     _configure_api_test_env(tmp_path, monkeypatch)
     _run_jobs_inline(monkeypatch)
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
 
-    expected = json.loads(STANDARD_BANK_REGRESSION_EXPECTED.read_text(encoding="utf-8"))
+    expected = json.loads(expected_path.read_text(encoding="utf-8"))
 
     with TestClient(server.app) as client:
         response = client.post(
             "/api/upload",
             files={
                 "file": (
-                    STANDARD_BANK_REGRESSION_PDF.name,
-                    STANDARD_BANK_REGRESSION_PDF.read_bytes(),
+                    pdf_path.name,
+                    pdf_path.read_bytes(),
                     "application/pdf",
                 )
             },

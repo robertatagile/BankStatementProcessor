@@ -1,0 +1,1279 @@
+{
+    "line_count": 182,
+    "lines": [
+        {
+            "date": "2025-12-23",
+            "description": "SAS30999 2025-12-23T13:13:22 5196*3688 - autobank cash withdrawal at",
+            "amount": 500.0,
+            "balance": -91491.79,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-23",
+            "description": "NEDABF/MFC80341540001 251223 - registered dc debit",
+            "amount": 2715.18,
+            "balance": -94206.97,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-23",
+            "description": "C*Makro Gonub 5196*3688 22 DEC - cheque card purchase",
+            "amount": 1100.9,
+            "balance": -95307.87,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-23",
+            "description": "C*Makro Gonub 5196*3688 22 DEC - cheque card purchase",
+            "amount": 510.2,
+            "balance": -95818.07,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-24",
+            "description": "overdraft interest - overdraft interest",
+            "amount": 1366.59,
+            "balance": -97184.66,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-24",
+            "description": "excess interest - excess interest",
+            "amount": 18.28,
+            "balance": -97202.94,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-27",
+            "description": "PnP Crp Mo Mokopane ZAF 27-12-2025 12H33:56 ## - fee-pos declined insuff funds",
+            "amount": 8.5,
+            "balance": -97211.44,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-27",
+            "description": "OK MM VINCENT 5196*3688 22 DEC - cheque card purchase",
+            "amount": 711.45,
+            "balance": -97922.89,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-27",
+            "description": "CRAVEBURGERBA 5196*3688 23 DEC - cheque card purchase",
+            "amount": 463.0,
+            "balance": -98385.89,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-27",
+            "description": "C*BAY COLLECT 5196*3688 23 DEC - cheque card purchase",
+            "amount": 110.0,
+            "balance": -98495.89,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-27",
+            "description": "C*BAY COLLECT 5196*3688 23 DEC - cheque card purchase",
+            "amount": 40.0,
+            "balance": -98535.89,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-29",
+            "description": "HPY*Al-Nur Ba 5196*3688 23 DEC - cheque card purchase",
+            "amount": 110.0,
+            "balance": -98645.89,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-29",
+            "description": "MUGG AND BEAN 5196*3688 24 DEC - cheque card purchase",
+            "amount": 330.0,
+            "balance": -98975.89,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-29",
+            "description": "C*NYLPARK DRA 5196*3688 24 DEC - cheque card purchase",
+            "amount": 1097.5,
+            "balance": -100073.39,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-29",
+            "description": "SPUR PETROPOR 5196*3688 24 DEC - cheque card purchase",
+            "amount": 600.0,
+            "balance": -100673.39,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-30",
+            "description": "OM UNITTRU21672222000000054342 - unit trust purchase",
+            "amount": 500.0,
+            "balance": -101173.39,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-30",
+            "description": "OM UNITTRU21672222000000054342 - rtd-not provided for",
+            "amount": 500.0,
+            "balance": -100673.39,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2025-12-30",
+            "description": "fee-unpaid item ## - fee-unpaid item",
+            "amount": 130.0,
+            "balance": -100803.39,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-31",
+            "description": "TELKOMMOBI50466648701186288031 - telephone account",
+            "amount": 1337.01,
+            "balance": -102140.4,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-31",
+            "description": "TELKOMMOBI50466648701186288031 - rtd-not provided for",
+            "amount": 1337.01,
+            "balance": -100803.39,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2025-12-31",
+            "description": "fee-unpaid item ## - fee-unpaid item",
+            "amount": 130.0,
+            "balance": -100933.39,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-31",
+            "description": "CAPRICOM 381241146 NETCASH - service agreement",
+            "amount": 449.0,
+            "balance": -101382.39,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-31",
+            "description": "CAPRICOM 381241146 NETCASH - rtd-not provided for",
+            "amount": 449.0,
+            "balance": -100933.39,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2025-12-31",
+            "description": "fee-unpaid item ## - fee-unpaid item",
+            "amount": 130.0,
+            "balance": -101063.39,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-31",
+            "description": "UCOUNT ## - membership fee",
+            "amount": 25.0,
+            "balance": -101088.39,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-31",
+            "description": "overdraft service fee ## - overdraft service fee",
+            "amount": 69.0,
+            "balance": -101157.39,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2025-12-31",
+            "description": "evolve-monthly management fee ## - evolve-monthly management fee",
+            "amount": 445.0,
+            "balance": -101602.39,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-02",
+            "description": "PI - ib transfer",
+            "amount": 5000.0,
+            "balance": -96602.39,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-01-02",
+            "description": "MOMENTUM 095612421 V08647 - insurance premium",
+            "amount": 423.23,
+            "balance": -97025.62,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-02",
+            "description": "NBMRENASA NBMREND06534 92KU7 - debit transfer",
+            "amount": 2668.91,
+            "balance": -99694.53,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-03",
+            "description": "PI - ib transfer",
+            "amount": 3000.0,
+            "balance": -96694.53,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-01-03",
+            "description": "MH VAN DER KOLFF MARNU/SEUN - ib payment",
+            "amount": 400.0,
+            "balance": -97094.53,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-03",
+            "description": "VAS00173722926 LOTTO - lottery purchase",
+            "amount": 20.0,
+            "balance": -97114.53,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-03",
+            "description": "fee lottery purchase ## - fee lottery purchase",
+            "amount": 2.95,
+            "balance": -97117.48,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-03",
+            "description": "VAS00173723104 LOTTO - lottery purchase",
+            "amount": 20.0,
+            "balance": -97137.48,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-03",
+            "description": "fee lottery purchase ## - fee lottery purchase",
+            "amount": 2.95,
+            "balance": -97140.43,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-05",
+            "description": "WIEHAN/ - payshap payment",
+            "amount": 250.0,
+            "balance": -97390.43,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-05",
+            "description": "fee: payshap payment ## - fee: payshap payment",
+            "amount": 7.0,
+            "balance": -97397.43,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-05",
+            "description": "VAS00173723104 - lottery winnings",
+            "amount": 7.2,
+            "balance": -97390.23,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-01-05",
+            "description": "VAS00173722926 - lottery winnings",
+            "amount": 7.2,
+            "balance": -97383.03,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-01-05",
+            "description": "TRUWORTHS LTD - ib payment",
+            "amount": 300.0,
+            "balance": -97683.03,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-05",
+            "description": "FOSCHINI RETAIL GR AMERICAN SW - ib payment",
+            "amount": 910.0,
+            "balance": -98593.03,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-05",
+            "description": "CAPRICOM NETWORKS - ib payment",
+            "amount": 449.0,
+            "balance": -99042.03,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-05",
+            "description": "CAPITAL RADIOLOGY - ib payment",
+            "amount": 300.0,
+            "balance": -99342.03,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-06",
+            "description": "DR MERCHANT AND ASS MARNU / DR - ib payment",
+            "amount": 542.38,
+            "balance": -99884.41,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-06",
+            "description": "PI - ib transfer",
+            "amount": 1500.0,
+            "balance": -98384.41,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-01-06",
+            "description": "EDGARS STORE CARD - ib payment",
+            "amount": 200.0,
+            "balance": -98584.41,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-07",
+            "description": "Pekhawar tradin63169160694 - real time transfer",
+            "amount": 77000.0,
+            "balance": -21584.41,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-01-07",
+            "description": "MAKOPANE MALL3 12H28 070163688 - autobank cash deposit",
+            "amount": 3600.0,
+            "balance": -17984.41,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-01-07",
+            "description": "276237637 ERASMUS J BREEDT - immediate payment",
+            "amount": 77000.0,
+            "balance": -94984.41,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-07",
+            "description": "fee immediate payment ## - fee immediate payment",
+            "amount": 50.0,
+            "balance": -95034.41,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-07",
+            "description": "12H25 MAKOPANE MALL1 ## - fee-autobank mini statement at",
+            "amount": 1.0,
+            "balance": -95035.41,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-09",
+            "description": "RENASA SPM904667/SPM904667 - bolsa third party payment",
+            "amount": 6878.99,
+            "balance": -88156.42,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-01-09",
+            "description": "RCS CARDS - ib payment",
+            "amount": 2000.0,
+            "balance": -90156.42,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-12",
+            "description": "RCS CARDS - ib payment",
+            "amount": 500.0,
+            "balance": -90656.42,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-12",
+            "description": "EDGARS STORE CARD - ib payment",
+            "amount": 500.0,
+            "balance": -91156.42,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-12",
+            "description": "BASSOPA SEKURITEIT - ib payment",
+            "amount": 500.0,
+            "balance": -91656.42,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-12",
+            "description": "276891399 PI VAN DER KOLFF - immediate payment",
+            "amount": 3500.0,
+            "balance": -95156.42,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-12",
+            "description": "fee immediate payment ## - fee immediate payment",
+            "amount": 50.0,
+            "balance": -95206.42,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-12",
+            "description": "WOOLWORTHS 5196*3688 09 JAN - cheque card purchase",
+            "amount": 1252.07,
+            "balance": -96458.49,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-13",
+            "description": "JAVED KHAN - magtape credit",
+            "amount": 5000.0,
+            "balance": -91458.49,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-01-13",
+            "description": "PnP Crp Mokop 5196*3688 11 JAN - cheque card purchase",
+            "amount": 1279.27,
+            "balance": -92737.76,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-13",
+            "description": "BEX MOKOPANE 5196*3688 10 JAN - cheque card purchase",
+            "amount": 240.35,
+            "balance": -92978.11,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-14",
+            "description": "277177565 KEYHEALTH MEDICAL - immediate payment",
+            "amount": 5704.0,
+            "balance": -98682.11,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-14",
+            "description": "fee immediate payment ## - fee immediate payment",
+            "amount": 50.0,
+            "balance": -98732.11,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-14",
+            "description": "KEYHEAL/LESHE - payshap payment",
+            "amount": 500.0,
+            "balance": -99232.11,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-14",
+            "description": "fee: payshap payment ## - fee: payshap payment",
+            "amount": 7.0,
+            "balance": -99239.11,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-15",
+            "description": "PI - ib transfer",
+            "amount": 5000.0,
+            "balance": -94239.11,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-01-15",
+            "description": "KEYHEALTH/PI - payshap payment",
+            "amount": 3000.0,
+            "balance": -97239.11,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-15",
+            "description": "fee: payshap payment ## - fee: payshap payment",
+            "amount": 50.0,
+            "balance": -97289.11,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-15",
+            "description": "MANIE P BEATER - ib transfer",
+            "amount": 5000.0,
+            "balance": -92289.11,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-01-15",
+            "description": "277370130 HS VAN WYK - immediate payment",
+            "amount": 5000.0,
+            "balance": -97289.11,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-15",
+            "description": "fee immediate payment ## - fee immediate payment",
+            "amount": 50.0,
+            "balance": -97339.11,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-16",
+            "description": "W VAN DER KOLFF - payshap payment",
+            "amount": 2500.0,
+            "balance": -94839.11,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-01-16",
+            "description": "SA HOME LOANS TRU SAHL/DUDU213 - ib payment",
+            "amount": 3000.0,
+            "balance": -97839.11,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-17",
+            "description": "MODERN PI/DIR LEN - ib payment",
+            "amount": 2000.0,
+            "balance": -95839.11,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-01-17",
+            "description": "SASB2991 2026-01-17T13:07:07 5196*3688 - autobank cash withdrawal at",
+            "amount": 500.0,
+            "balance": -96339.11,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-17",
+            "description": "C*VLEIS LAPA 5196*3688 16 JAN - cheque card purchase",
+            "amount": 711.48,
+            "balance": -97050.59,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-17",
+            "description": "PnP Crp Mokop 5196*3688 15 JAN - cheque card purchase",
+            "amount": 819.51,
+            "balance": -97870.1,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-19",
+            "description": "AMINGOS LIQUI 5196*3688 16 JAN - cheque card purchase",
+            "amount": 491.0,
+            "balance": -98361.1,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-20",
+            "description": "Pekhawar tradin63169160694 - real time transfer",
+            "amount": 120000.0,
+            "balance": 21638.9,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-01-20",
+            "description": "278076141 SIPHORI MANYEKE - immediate payment",
+            "amount": 120000.0,
+            "balance": -98361.1,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-20",
+            "description": "fee immediate payment ## - fee immediate payment",
+            "amount": 50.0,
+            "balance": -98411.1,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-20",
+            "description": "278076141 SIP HORI MANYEKE - transaction reversal immediate payment",
+            "amount": 120000.0,
+            "balance": 21588.9,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-01-20",
+            "description": "reversal: bank fee fee immediate payment ## - reversal: bank fee fee immediate payment",
+            "amount": 50.0,
+            "balance": 21638.9,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-01-21",
+            "description": "0000A140 2026-01-21T10:23:30 5196*3688 - autobank cash withdrawal at",
+            "amount": 100.0,
+            "balance": 21538.9,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-21",
+            "description": "278227085 SIPHORI MANYEKE - immediate payment",
+            "amount": 70000.0,
+            "balance": -48461.1,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-21",
+            "description": "fee immediate payment ## - fee immediate payment",
+            "amount": 50.0,
+            "balance": -48511.1,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-21",
+            "description": "278227210 SIPHORI MANYEKE - immediate payment",
+            "amount": 50000.0,
+            "balance": -98511.1,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-21",
+            "description": "fee immediate payment ## - fee immediate payment",
+            "amount": 50.0,
+            "balance": -98561.1,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-21",
+            "description": "KEYHEALTH MEDICAL KEYHEALTH/PI - ib payment",
+            "amount": 690.0,
+            "balance": -99251.1,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-22",
+            "description": "MAKOPANE MALL2 11H14 070163688 - autobank cash deposit",
+            "amount": 6000.0,
+            "balance": -93251.1,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-01-22",
+            "description": "cash deposit fee - autobank ## - cash deposit fee - autobank",
+            "amount": 28.8,
+            "balance": -93279.9,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-22",
+            "description": "0000A140 2026-01-22T16:13:46 5196*3688 - autobank cash withdrawal at",
+            "amount": 500.0,
+            "balance": -93779.9,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-22",
+            "description": "PnP Crp Mokop 5196*3688 20 JAN - cheque card purchase",
+            "amount": 560.05,
+            "balance": -94339.95,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-23",
+            "description": "NEDABF/MFC80341540001 260123 - registered dc debit",
+            "amount": 2715.18,
+            "balance": -97055.13,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-23",
+            "description": "iK *Perfect W 5196*3688 20 JAN - cheque card purchase",
+            "amount": 30.0,
+            "balance": -97085.13,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-24",
+            "description": "PnP Crp Mo Mokopane ZAF 24-01-2026 13H40:28 ## - fee-pos declined insuff funds",
+            "amount": 8.5,
+            "balance": -97093.63,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-24",
+            "description": "MANIE P BEATER - ib transfer",
+            "amount": 500.0,
+            "balance": -96593.63,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-01-24",
+            "description": "WOOLWORTHS 5196*3688 22 JAN - cheque card purchase",
+            "amount": 706.47,
+            "balance": -97300.1,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-24",
+            "description": "C*VOOMA FUEL 5196*3688 22 JAN - cheque card purchase",
+            "amount": 560.0,
+            "balance": -97860.1,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-24",
+            "description": "WOOLWORTHS 5196*3688 22 JAN - cheque card purchase",
+            "amount": 359.47,
+            "balance": -98219.57,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-24",
+            "description": "overdraft interest - overdraft interest",
+            "amount": 1654.18,
+            "balance": -99873.75,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-24",
+            "description": "excess interest - excess interest",
+            "amount": 2.66,
+            "balance": -99876.41,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-27",
+            "description": "NETDIEBESTESL 5196*3688 24 JAN - cheque card purchase",
+            "amount": 582.82,
+            "balance": -100459.23,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-29",
+            "description": "Van Af FNB Pi - payshap payment",
+            "amount": 1500.0,
+            "balance": -98959.23,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-01-29",
+            "description": "PI - ib transfer",
+            "amount": 1004.0,
+            "balance": -99963.23,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-29",
+            "description": "CAPITEC L VAN DER KOLFF - credit transfer",
+            "amount": 1500.0,
+            "balance": -98463.23,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-01-30",
+            "description": "PI DIR LENING - magtape credit",
+            "amount": 1000.0,
+            "balance": -97463.23,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-01-30",
+            "description": "OM UNITTRU21672222000000006285 - unit trust purchase",
+            "amount": 500.0,
+            "balance": -97963.23,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-31",
+            "description": "TELKOMMOBI50466648701187701832 - telephone account",
+            "amount": 931.0,
+            "balance": -98894.23,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-31",
+            "description": "TELKOMMOBI50466648701187701832 - rtd-not provided for",
+            "amount": 931.0,
+            "balance": -97963.23,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-01-31",
+            "description": "fee-unpaid item ## - fee-unpaid item",
+            "amount": 130.0,
+            "balance": -98093.23,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-31",
+            "description": "overdraft service fee ## - overdraft service fee",
+            "amount": 69.0,
+            "balance": -98162.23,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-01-31",
+            "description": "evolve-monthly management fee ## - evolve-monthly management fee",
+            "amount": 490.0,
+            "balance": -98652.23,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-02",
+            "description": "PEKHAWAR TRADING - magtape credit",
+            "amount": 12000.0,
+            "balance": -86652.23,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-02-02",
+            "description": "PnP Crp Mokop 5196*3688 30 JAN - cheque card purchase",
+            "amount": 331.29,
+            "balance": -86983.52,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-02",
+            "description": "MOMENTUM 095612421 Z96660 - insurance premium",
+            "amount": 423.23,
+            "balance": -87406.75,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-02",
+            "description": "PnP Crp Mokop 5196*3688 30 JAN - cheque card purchase",
+            "amount": 343.13,
+            "balance": -87749.88,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-02",
+            "description": "NBMRENASA NBMREND06534 AIYE3 - debit transfer",
+            "amount": 2729.91,
+            "balance": -90479.79,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-02",
+            "description": "UCOUNT ## - membership fee",
+            "amount": 25.0,
+            "balance": -90504.79,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-02",
+            "description": "CAPRICOM 387225562 NETCASH - service agreement",
+            "amount": 449.0,
+            "balance": -90953.79,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-03",
+            "description": "RCS CARDS - ib payment",
+            "amount": 1500.0,
+            "balance": -92453.79,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-03",
+            "description": "TRUWORTHS LTD - ib payment",
+            "amount": 197.0,
+            "balance": -92650.79,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-03",
+            "description": "EDGARS STORE CARD - ib payment",
+            "amount": 700.0,
+            "balance": -93350.79,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-03",
+            "description": "FOSCHINI RETAIL GROU MARKHAMS - ib payment",
+            "amount": 600.0,
+            "balance": -93950.79,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-03",
+            "description": "FOSCHINI RETAIL GR AMERICAN SW - ib payment",
+            "amount": 1000.0,
+            "balance": -94950.79,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-03",
+            "description": "PI - ib transfer",
+            "amount": 500.0,
+            "balance": -95450.79,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-03",
+            "description": "KEYHEALTH MEDICAL KEYHEALTH/PI - ib payment",
+            "amount": 2500.0,
+            "balance": -97950.79,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-03",
+            "description": "Yoco *Colby 5196*3688 01 FEB - cheque card purchase",
+            "amount": 92.0,
+            "balance": -98042.79,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-03",
+            "description": "iK *Perfect W 5196*3688 30 JAN - cheque card purchase",
+            "amount": 89.0,
+            "balance": -98131.79,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-03",
+            "description": "CHOPSANDCHIVE 5196*3688 31 JAN - cheque card purchase",
+            "amount": 160.0,
+            "balance": -98291.79,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-03",
+            "description": "DEBONAIRS 5196*3688 30 JAN - cheque card purchase",
+            "amount": 328.9,
+            "balance": -98620.69,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-04",
+            "description": "PnP Crp Mo Mokopane ZAF 04-02-2026 16H14:31 ## - fee-pos declined insuff funds",
+            "amount": 8.5,
+            "balance": -98629.19,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-05",
+            "description": "PnP Crp Mokop 5196*3688 03 FEB - cheque card purchase",
+            "amount": 481.88,
+            "balance": -99111.07,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-06",
+            "description": "VAN AF FNB PI 62110903061 - real time transfer",
+            "amount": 10000.0,
+            "balance": -89111.07,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-02-06",
+            "description": "MAKOPANE MALL2 14H59 070163688 - autobank cash deposit",
+            "amount": 5000.0,
+            "balance": -84111.07,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-02-06",
+            "description": "PnP Crp Mokop 5196*3688 04 FEB - cheque card purchase",
+            "amount": 329.99,
+            "balance": -84441.06,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-06",
+            "description": "NETDIEBESTESL 5196*3688 04 FEB - cheque card purchase",
+            "amount": 201.46,
+            "balance": -84642.52,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-07",
+            "description": "KEYHEALTH MEDICAL KEYHEALTH/PI - ib payment",
+            "amount": 5000.0,
+            "balance": -89642.52,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-07",
+            "description": "MH VAN DER KOLFF MARNU/SEUN - ib payment",
+            "amount": 300.0,
+            "balance": -89942.52,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-07",
+            "description": "280786498 PI VAN DER KOLFF - immediate payment",
+            "amount": 8500.0,
+            "balance": -98442.52,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-07",
+            "description": "fee immediate payment ## - fee immediate payment",
+            "amount": 50.0,
+            "balance": -98492.52,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-07",
+            "description": "RAINBOW MEAT 5196*3688 04 FEB - cheque card purchase",
+            "amount": 274.89,
+            "balance": -98767.41,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-09",
+            "description": "0000A140 2026-02-08T12:11:13 5196*3688 - autobank cash withdrawal at",
+            "amount": 350.0,
+            "balance": -99117.41,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-10",
+            "description": "MODERN PI/SALARY - ib payment",
+            "amount": 4000.0,
+            "balance": -95117.41,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-02-10",
+            "description": "PnP Crp Mokop 5196*3688 08 FEB - cheque card purchase",
+            "amount": 405.89,
+            "balance": -95523.3,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-10",
+            "description": "PnP Crp Mokop 5196*3688 07 FEB - cheque card purchase",
+            "amount": 199.09,
+            "balance": -95722.39,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-12",
+            "description": "NA FNB/ - payshap payment",
+            "amount": 3000.0,
+            "balance": -98722.39,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-12",
+            "description": "fee: payshap payment ## - fee: payshap payment",
+            "amount": 50.0,
+            "balance": -98772.39,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-12",
+            "description": "MODERN PI/SALARY - ib payment",
+            "amount": 1800.0,
+            "balance": -96972.39,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-02-12",
+            "description": "MH VAN DER KOLFF MARNU/SEUN - ib payment",
+            "amount": 300.0,
+            "balance": -97272.39,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-13",
+            "description": "KEYHEALTH MEDICAL KEYHEALTH/PI - ib payment",
+            "amount": 1894.0,
+            "balance": -99166.39,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-13",
+            "description": "PnP Crp Mo Mokopane ZAF 13-02-2026 15H24:02 ## - fee-pos declined insuff funds",
+            "amount": 8.5,
+            "balance": -99174.89,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-13",
+            "description": "0000A140 2026-02-13T15:38:01 5196*3688 - autobank cash withdrawal at",
+            "amount": 70.0,
+            "balance": -99244.89,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-14",
+            "description": "VAN AF FNB PI/262110903061 - real time transfer",
+            "amount": 141904.0,
+            "balance": 42659.11,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-02-14",
+            "description": "PI - ib transfer",
+            "amount": 138000.0,
+            "balance": -95340.89,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-14",
+            "description": "PI / HEIN/ REKE - ib transfer",
+            "amount": 10000.0,
+            "balance": -85340.89,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-02-14",
+            "description": "HM VAN DER KOLFF HEIN/LENING - ib payment",
+            "amount": 5000.0,
+            "balance": -90340.89,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-14",
+            "description": "CARTRACK - ib payment",
+            "amount": 129.0,
+            "balance": -90469.89,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-14",
+            "description": "0000A140 2026-02-14T14:05:05 5196*3688 - autobank cash withdrawal at",
+            "amount": 500.0,
+            "balance": -90969.89,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-14",
+            "description": "MH VAN DER KOLFF MARNU/SEUN - ib payment",
+            "amount": 200.0,
+            "balance": -91169.89,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-14",
+            "description": "VAS00188351007 LOTTO - lottery purchase",
+            "amount": 20.0,
+            "balance": -91189.89,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-14",
+            "description": "fee lottery purchase ## - fee lottery purchase",
+            "amount": 2.95,
+            "balance": -91192.84,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-16",
+            "description": "0000A140 2026-02-16T14:50:26 5196*3688 - autobank cash withdrawal at",
+            "amount": 350.0,
+            "balance": -91542.84,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-16",
+            "description": "WOOLWORTHS 5196*3688 13 FEB - cheque card purchase",
+            "amount": 202.97,
+            "balance": -91745.81,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-16",
+            "description": "PnP Crp Mokop 5196*3688 13 FEB - cheque card purchase",
+            "amount": 550.0,
+            "balance": -92295.81,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-17",
+            "description": "WOOLWORTHS 5196*3688 15 FEB - cheque card purchase",
+            "amount": 2267.25,
+            "balance": -94563.06,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-17",
+            "description": "PnP Crp Mokop 5196*3688 14 FEB - cheque card purchase",
+            "amount": 3392.03,
+            "balance": -97955.09,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-17",
+            "description": "BEX MOKOPANE 5196*3688 15 FEB - cheque card purchase",
+            "amount": 614.3,
+            "balance": -98569.39,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-17",
+            "description": "C*PETZONE MOK 5196*3688 15 FEB - cheque card purchase",
+            "amount": 529.9,
+            "balance": -99099.29,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-18",
+            "description": "ENGEN KRAN Warmbaths ZAF 18-02-2026 09H53:10 - outstanding card authorisation",
+            "amount": 76.97,
+            "balance": -99176.26,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-18",
+            "description": "*****1395381 11H26 *****3688 - ib transfer",
+            "amount": 8000.0,
+            "balance": -91176.26,
+            "transaction_type": "credit"
+        },
+        {
+            "date": "2026-02-18",
+            "description": "Dischem Ca GP ZAF 18-02-2026 11H45:19 - outstanding card authorisation",
+            "amount": 184.99,
+            "balance": -91361.25,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-18",
+            "description": "DOPPIO ZER WATERKLOOF R ZAF 18-02-2026 12H29:28 - outstanding card authorisation",
+            "amount": 730.0,
+            "balance": -92091.25,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-18",
+            "description": "DRS NIEMAN PRETORIA ZAF 18-02-2026 13H06:59 - outstanding card authorisation",
+            "amount": 100.0,
+            "balance": -92191.25,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-18",
+            "description": "Total Pano GP ZAF 18-02-2026 14H43:50 - outstanding card authorisation",
+            "amount": 106.4,
+            "balance": -92297.65,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-18",
+            "description": "PnP Crp Mo Mokopane ZAF 18-02-2026 17H05:51 - outstanding card authorisation",
+            "amount": 451.27,
+            "balance": -92748.92,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-18",
+            "description": "PnP Crp Mokop 5196*3688 16 FEB - cheque card purchase",
+            "amount": 249.99,
+            "balance": -92998.91,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-19",
+            "description": "VAS00189586519 LOTTO - lottery purchase",
+            "amount": 40.0,
+            "balance": -93038.91,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-19",
+            "description": "fee lottery purchase ## - fee lottery purchase",
+            "amount": 2.95,
+            "balance": -93041.86,
+            "transaction_type": "debit"
+        },
+        {
+            "date": "2026-02-19",
+            "description": "VAS00189586519 - lottery winnings",
+            "amount": 4.2,
+            "balance": -93037.66,
+            "transaction_type": "credit"
+        }
+    ]
+}

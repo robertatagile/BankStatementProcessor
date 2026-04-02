@@ -1,0 +1,488 @@
+{
+  "line_count": 69,
+  "lines": [
+    {
+      "date": "2025-11-13",
+      "description": "TJEKKAART-AANKOOP OK EXPRESS GR 4451*5208 11 NOV",
+      "amount": 47.98,
+      "balance": 2937.09,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-13",
+      "description": "TJEKKAART-AANKOOP KARABO PARKIN 4451*5208 10 NOV",
+      "amount": 5.0,
+      "balance": 2932.09,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-13",
+      "description": "KREDIETOORPLASING CAMDEBOO FARMS (PTY)",
+      "amount": 950.0,
+      "balance": 3882.09,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2025-11-15",
+      "description": "TJEKKAART-AANKOOP C*GRT HARDWAR 4451*5208 14 NOV",
+      "amount": 36.0,
+      "balance": 3846.09,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-15",
+      "description": "TJEKKAART-AANKOOP SUPERSPAR SPA 4451*5208 12 NOV",
+      "amount": 259.46,
+      "balance": 3586.63,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-15",
+      "description": "IB-BETALING UIT K VILJOEN",
+      "amount": 1000.0,
+      "balance": 4586.63,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2025-11-17",
+      "description": "IB-BETALING NA CAMDEBOO MUNISIPALIT",
+      "amount": 2568.78,
+      "balance": 2017.85,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-17",
+      "description": "TJEKKAART-AANKOOP SUPERSPAR SPA 4451*5208 13 NOV",
+      "amount": 96.16,
+      "balance": 1921.69,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-18",
+      "description": "TJEKKAART-AANKOOP PNP FAM GRAAF 4451*5208 15 NOV",
+      "amount": 108.46,
+      "balance": 1813.23,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-18",
+      "description": "TJEKKAART-AANKOOP SPAR CAMDEBOO 4451*5208 14 NOV",
+      "amount": 199.22,
+      "balance": 1614.01,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-19",
+      "description": "TJEKKAART-AANKOOP SPAR CAMDEBOO 4451*5208 15 NOV",
+      "amount": 68.23,
+      "balance": 1545.78,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-19",
+      "description": "TJEKKAART-AANKOOP SUPERSPAR SPA 4451*5208 16 NOV",
+      "amount": 131.74,
+      "balance": 1414.04,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-20",
+      "description": "TJEKKAART-AANKOOP CMPA MERINO A 4451*5208 17 NOV",
+      "amount": 111.73,
+      "balance": 1302.31,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-20",
+      "description": "TJEKKAART-AANKOOP C*DR MARAIS 4451*5208 19 NOV",
+      "amount": 310.0,
+      "balance": 992.31,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-20",
+      "description": "IB-BETALING NA AFISWITCH PDP",
+      "amount": 110.0,
+      "balance": 882.31,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-21",
+      "description": "GEMIGREERDE DC-DEBIET SB CARD DC21008465170533251121",
+      "amount": 345.0,
+      "balance": 537.31,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-21",
+      "description": "TJEKKAART-AANKOOP BLUE SKY EXPR 4451*5208 19 NOV",
+      "amount": 30.0,
+      "balance": 507.31,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-22",
+      "description": "TJEKKAART-AANKOOP",
+      "amount": 50.97,
+      "balance": 456.34,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-22",
+      "description": "TJEKKAART-AANKOOP C*DR BEYERS N 4451*5208 20 NOV",
+      "amount": 108.0,
+      "balance": 348.34,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-22",
+      "description": "TJEKKAART-AANKOOP PNP FAM GRAAF 4451*5208 20 NOV",
+      "amount": 55.98,
+      "balance": 292.36,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-22",
+      "description": "TJEKKAART-AANKOOP TOPS SPANDAU 4451*5208 19 NOV",
+      "amount": 111.45,
+      "balance": 180.91,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-24",
+      "description": "TJEKKAART-AANKOOP SPAR CAMDEBOO 4451*5208 20 NOV",
+      "amount": 139.19,
+      "balance": 41.72,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-25",
+      "description": "KREDIETLEWEBESKERMING",
+      "amount": 4.0,
+      "balance": 37.72,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-26",
+      "description": "TJEKKAART-AANKOOP SPAR CAMDEBOO 4451*5208 23 NOV",
+      "amount": 29.99,
+      "balance": 7.73,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-28",
+      "description": "SALARIS RANSACSI SALARY",
+      "amount": 20102.79,
+      "balance": 20110.52,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2025-11-28",
+      "description": "DEBIETOORPLASING VODACOM 0472653726 I9990649",
+      "amount": 949.0,
+      "balance": 19161.52,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-29",
+      "description": "OORTREKKING-DIENSGELD ##",
+      "amount": 69.0,
+      "balance": 19092.52,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-29",
+      "description": "VASTE MAANDELIKSE FOOI ##",
+      "amount": 115.0,
+      "balance": 18977.52,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-01",
+      "description": "IB-BETALING NA HOER VOLKSKOOL SKOOL FONDS",
+      "amount": 2300.0,
+      "balance": 16677.52,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-01",
+      "description": "AUTOBANK-KONTANTONTTREKKING 0000A431 2025-11-30T08:50:47 44",
+      "amount": 90.0,
+      "balance": 16587.52,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-01",
+      "description": "AUTOBANK-KONTANTONTTREKKING 0000A431 2025-11-30T08:51:43 44",
+      "amount": 90.0,
+      "balance": 16497.52,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-01",
+      "description": "AFTREKORDER CH VILJOEN HUBERT VILJOEN",
+      "amount": 50.0,
+      "balance": 16447.52,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-01",
+      "description": "AFTREKORDER CH VILJOEN ELNE VILJOEN",
+      "amount": 50.0,
+      "balance": 16397.52,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-11-29",
+      "description": "FOOI:MU PRIMRE SMS ## 0000000083152636 00043 R19.35",
+      "amount": 19.35,
+      "balance": 16378.17,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-01",
+      "description": "VERSEKERINGSPREMIE OLDMUTCOL 33345087720251201",
+      "amount": 966.54,
+      "balance": 15411.63,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-01",
+      "description": "DIENSOOREENKOMS SOLIDARITYSOL 00204900511567",
+      "amount": 204.0,
+      "balance": 15207.63,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-01",
+      "description": "REKENINGBETALING OMSUREPREM024195801-0052539680",
+      "amount": 1198.13,
+      "balance": 14009.5,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-01",
+      "description": "VERSEKERINGSPREMIE OLD MUTUAL307268097 251201",
+      "amount": 1519.0,
+      "balance": 12490.5,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-01",
+      "description": "DEBIETOORPLASING SABCSAUKTV 432514818 DEC 25",
+      "amount": 28.0,
+      "balance": 12462.5,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-01",
+      "description": "LIDMAATSKAPFOOI ##",
+      "amount": 25.0,
+      "balance": 12437.5,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-02",
+      "description": "TJEKKAART-AANKOOP YOCO *LOUIS 4451*5208 29 NOV",
+      "amount": 70.0,
+      "balance": 12367.5,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-02",
+      "description": "TJEKKAART-AANKOOP PNP FAM GRAAF 4451*5208 29 NOV",
+      "amount": 969.49,
+      "balance": 11398.01,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-02",
+      "description": "TJEKKAART-AANKOOP C*THE CRAZY S 4451*5208 01 DEC",
+      "amount": 115.97,
+      "balance": 11282.04,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-03",
+      "description": "TJEKKAART-AANKOOP SUPERSPAR SPA 4451*5208 29 NOV",
+      "amount": 85.94,
+      "balance": 11196.1,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-03",
+      "description": "TJEKKAART-AANKOOP SUPERSPAR SPA 4451*5208 29 NOV",
+      "amount": 931.28,
+      "balance": 10264.82,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-03",
+      "description": "TJEKKAART-AANKOOP SUPERSPAR SPA 4451*5208 29 NOV",
+      "amount": 199.63,
+      "balance": 10065.19,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-03",
+      "description": "IB-BETALING NA HS VILJOEN",
+      "amount": 1000.0,
+      "balance": 9065.19,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-03",
+      "description": "AUTOBANK-KONTANTONTTREKKING 0000A431 2025-12-03T17:33:28 44",
+      "amount": 160.0,
+      "balance": 8905.19,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-04",
+      "description": "TJEKKAART-AANKOOP SUPERSPAR SPA 4451*5208 01 DEC",
+      "amount": 334.22,
+      "balance": 8570.97,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-04",
+      "description": "TJEKKAART-AANKOOP C*DR BEYERS N 4451*5208 02 DEC",
+      "amount": 312.0,
+      "balance": 8258.97,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-04",
+      "description": "AUTOBANK-KONTANTONTTREKKING 0000A431 2025-12-04T14:51:36 44",
+      "amount": 380.0,
+      "balance": 7878.97,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-04",
+      "description": "KREDIETOORPLASING CAMDEBOO FARMS (PTY)",
+      "amount": 950.0,
+      "balance": 8828.97,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2025-12-05",
+      "description": "IB-BETALING NA ELNE VILJOEN",
+      "amount": 200.0,
+      "balance": 8628.97,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-06",
+      "description": "TJEKKAART-AANKOOP C*MARK VIR DI 4451*5208 04 DEC",
+      "amount": 190.02,
+      "balance": 8438.95,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-08",
+      "description": "AUTOBANK-KONTANTONTTREKKING",
+      "amount": 120.0,
+      "balance": 8318.95,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-08",
+      "description": "AUTOBANK-KONTANTONTTREKKING 0000A431 2025-12-07T09:03:14 44",
+      "amount": 80.0,
+      "balance": 8238.95,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-08",
+      "description": "IB-BETALING NA NG KERK DANKOFFER",
+      "amount": 750.0,
+      "balance": 7488.95,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-08",
+      "description": "TJEKKAART-AANKOOP SPAR CAMDEBOO 4451*5208 04 DEC",
+      "amount": 251.37,
+      "balance": 7237.58,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-08",
+      "description": "IB-BETALING NA",
+      "amount": 2200.0,
+      "balance": 5037.58,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-09",
+      "description": "TJEKKAART-AANKOOP PNP FAM GRAAF 4451*5208 06 DEC",
+      "amount": 361.17,
+      "balance": 4676.41,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-09",
+      "description": "TJEKKAART-AANKOOP BUILD IT GRAA 4451*5208 06 DEC",
+      "amount": 522.97,
+      "balance": 4153.44,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-09",
+      "description": "TJEKKAART-AANKOOP SPAR CAMDEBOO 4451*5208 05 DEC",
+      "amount": 71.96,
+      "balance": 4081.48,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-09",
+      "description": "TJEKKAART-AANKOOP OK EXPRESS GR 4451*5208 06 DEC",
+      "amount": 45.58,
+      "balance": 4035.9,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-10",
+      "description": "TJEKKAART-AANKOOP SPAR CAMDEBOO 4451*5208 07 DEC",
+      "amount": 193.71,
+      "balance": 3842.19,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-10",
+      "description": "TJEKKAART-AANKOOP SUPERSPAR SPA 4451*5208 06 DEC",
+      "amount": 140.58,
+      "balance": 3701.61,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-11",
+      "description": "MAGNEETBANDKREDIET CAMDEBOO FARMS (PTY)",
+      "amount": 870.0,
+      "balance": 4571.61,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2025-12-12",
+      "description": "SALARIS RANSACSI SALARY",
+      "amount": 54728.42,
+      "balance": 59300.03,
+      "transaction_type": "credit"
+    },
+    {
+      "date": "2025-12-12",
+      "description": "TJEKKAART-AANKOOP OK EXPRESS GR 4451*5208 10 DEC",
+      "amount": 67.26,
+      "balance": 59232.77,
+      "transaction_type": "debit"
+    },
+    {
+      "date": "2025-12-12",
+      "description": "AUTOBANK-KONTANTONTTREKKING 0000A431 2025-12-12T06:54:30 44 ## Hierdie fooie sluit BTW teen 15%",
+      "amount": 350.0,
+      "balance": 58882.77,
+      "transaction_type": "debit"
+    }
+  ]
+}

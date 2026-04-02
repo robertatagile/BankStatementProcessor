@@ -935,6 +935,252 @@
       "category": "Healthcare",
       "priority": 158,
       "source": "ai"
+    },
+    {
+      "pattern": "(?i)overdra(ft|lt)\\s*ir?nterest|overdraft\\s*interest",
+      "category": "Fees",
+      "priority": 159,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)craveburger|crave\\s*burger",
+      "category": "Dining",
+      "priority": 160,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)c'?bay\\s*collect",
+      "category": "Shopping",
+      "priority": 161,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)unit\\s*tru|unit\\s*trust\\s*purchase",
+      "category": "Other",
+      "priority": 162,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)fee-unpaid\\s*item",
+      "category": "Fees",
+      "priority": 163,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)fee-unpaid\\s*ile?m",
+      "category": "Fees",
+      "priority": 164,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)ugount|membership\\s*fee",
+      "category": "Fees",
+      "priority": 165,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)overdra(ft|lt)\\s*service\\s*fee",
+      "category": "Fees",
+      "priority": 166,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)van\\s*der\\s*kolff|marnli|seun|ib\\s*payment",
+      "category": "Transfer",
+      "priority": 167,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)vas\\d+.*lotto|lottery\\s*purchase",
+      "category": "Entertainment",
+      "priority": 168,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)fee\\s*lo[tt]ery\\s*purchase",
+      "category": "Fees",
+      "priority": 169,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)vas\\d+.*lo[tt]ery\\s*winnings",
+      "category": "Entertainment",
+      "priority": 170,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)vas\\d+.*la[tt]ery\\s*winnings",
+      "category": "Entertainment",
+      "priority": 171,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)capricom\\s*networks",
+      "category": "Utilities",
+      "priority": 172,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)capital\\s*radiology",
+      "category": "Healthcare",
+      "priority": 173,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)dr\\s*merghant|merghant\\s*and\\s*ass",
+      "category": "Healthcare",
+      "priority": 174,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)\\+\\d+\\s*deposit",
+      "category": "Transfer",
+      "priority": 175,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)\\d+\\s*erasmus\\s*j\\s*breedt",
+      "category": "Transfer",
+      "priority": 176,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)fee\\s*immediate\\s*payment",
+      "category": "Fees",
+      "priority": 177,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)renasa\\s*spm\\d+",
+      "category": "Insurance",
+      "priority": 178,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)bassopa\\s*sekuriteit",
+      "category": "Other",
+      "priority": 179,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)\\d+\\s*pl\\s*van\\s*der\\s*kolff",
+      "category": "Transfer",
+      "priority": 180,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)javed\\s*khan.*magtape\\s*credit",
+      "category": "Transfer",
+      "priority": 181,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)bex\\s*mokopane.*cheque\\s*card\\s*purchase",
+      "category": "Shopping",
+      "priority": 182,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)\\d+\\s*hs\\s*van\\s*wyk",
+      "category": "Transfer",
+      "priority": 183,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)fee\\s*immediale\\s*payment",
+      "category": "Fees",
+      "priority": 184,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)pekhawar\\s*(?:trading|lradin)",
+      "category": "Transfer",
+      "priority": 185,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)siphori\\s*manyeke",
+      "category": "Transfer",
+      "priority": 186,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)immediate\\s*payment\\s*\\+",
+      "category": "Transfer",
+      "priority": 187,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)reversal:\\s*bank\\s*fee",
+      "category": "Fees",
+      "priority": 188,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)pekhawar\\s*trading.*credit",
+      "category": "Transfer",
+      "priority": 189,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)chopsandchive",
+      "category": "Dining",
+      "priority": 190,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)mh\\s*van\\s*der\\s*kolff",
+      "category": "Transfer",
+      "priority": 191,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)hm\\s*van\\s*der\\s*kolff",
+      "category": "Transfer",
+      "priority": 192,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)lotto.*lottery\\s*purchase",
+      "category": "Entertainment",
+      "priority": 193,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)doppio\\s*zer",
+      "category": "Dining",
+      "priority": 194,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)drs\\s*nieman",
+      "category": "Healthcare",
+      "priority": 195,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)total\\s*pano\\s*gp|pano\\s*gp",
+      "category": "Transport",
+      "priority": 196,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)lotto|lottery\\s*purchase",
+      "category": "Entertainment",
+      "priority": 197,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)fee\\s*lottery\\s*purchase",
+      "category": "Fees",
+      "priority": 198,
+      "source": "ai"
+    },
+    {
+      "pattern": "(?i)lottery\\s*winnings",
+      "category": "Entertainment",
+      "priority": 199,
+      "source": "ai"
     }
   ]
 }
